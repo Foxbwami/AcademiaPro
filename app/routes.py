@@ -1170,11 +1170,13 @@ def support_tickets():
 @login_required
 def profile():
     form = ProfileForm(obj=current_user)
+    writer_profile = Writer.query.filter_by(name=current_user.name, approved=True).first()
+    writer_docs_enabled = bool(writer_profile and _is_approved_writer(current_user))
     if form.validate_on_submit():
         existing = User.query.filter(User.email == form.email.data.strip().lower(), User.id != current_user.id).first()
         if existing:
             flash("That email is already used by another account.", "danger")
-            return render_template("profile.html", form=form)
+            return render_template("profile.html", form=form, writer_docs_enabled=writer_docs_enabled, writer_profile=writer_profile)
         current_user.name = form.name.data or current_user.name
         current_user.email = (form.email.data or current_user.email).strip().lower()
         pending_password_hash = None
@@ -1187,6 +1189,7 @@ def profile():
             form.photo.data.save(os.path.join(UPLOAD_FOLDER, photo_name))
             current_user.photo = photo_name
         writer_profile = Writer.query.filter_by(name=current_user.name, approved=True).first()
+        writer_docs_enabled = bool(writer_profile and _is_approved_writer(current_user))
         if writer_profile and form.writer_portfolio.data:
             filename = secure_filename(form.writer_portfolio.data.filename)
             file_name = f"writer_portfolio_{writer_profile.id}_{int(datetime.utcnow().timestamp())}_{filename}"
@@ -1204,7 +1207,7 @@ def profile():
         except IntegrityError:
             db.session.rollback()
             flash("That email is already used by another account.", "danger")
-            return render_template("profile.html", form=form)
+            return render_template("profile.html", form=form, writer_docs_enabled=writer_docs_enabled, writer_profile=writer_profile)
         if pending_password_hash and not _otp_enabled():
             current_user.password_hash = pending_password_hash
             db.session.commit()
@@ -1222,7 +1225,7 @@ def profile():
             return redirect(url_for("main.verify_password_change"))
         flash("Profile updated.", "success")
         return redirect(url_for("main.profile"))
-    return render_template("profile.html", form=form)
+    return render_template("profile.html", form=form, writer_docs_enabled=writer_docs_enabled, writer_profile=writer_profile)
 
 
 @main.route("/settings", methods=["GET", "POST"])
