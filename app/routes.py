@@ -13,10 +13,10 @@ import urllib.request
 import urllib.error
 
 from app.extensions import db, login_manager
-from app.forms import OrderForm, RegistrationForm, LoginForm, ProfileForm, SettingForm, ApplicationForm
+from app.forms import OrderForm, RegistrationForm, LoginForm, ProfileForm, SettingForm
 from app.models import (
-    BlogPost, Sample, User, Testimonial, Lead, Writer, SiteReview, ChatMessage, Message,
-    Announcement, Order, OrderFile, Application, JobApplication, Payment, SiteSetting, SupportTicket, OrderReview,
+    BlogPost, Sample, User, Testimonial, Lead, SiteReview, ChatMessage, Message,
+    Announcement, Order, OrderFile, Payment, SiteSetting, SupportTicket,
     AIConversationMessage, OTPCode, calculate_price
 )
 from flask_mail import Message as MailMessage
@@ -79,13 +79,11 @@ def _strip_support_attachment_tokens(content):
 
 
 def _order_access_context(order):
-    approved_app = JobApplication.query.filter_by(order_id=order.id, status="approved").first()
+    # Writer ecosystem removed - orders now admin-only
     allowed_ids = {order.user_id}
-    if approved_app:
-        allowed_ids.add(approved_app.writer_user_id)
     if current_user.is_admin:
         allowed_ids.add(current_user.id)
-    return approved_app, allowed_ids
+    return None, allowed_ids
 
 
 def _cleanup_taken_job_announcements():
@@ -106,16 +104,8 @@ def _job_id_from_announcement_title(title):
 
 
 def _is_approved_writer(user):
-    if not user or not user.is_authenticated:
-        return False
-    if getattr(user, "is_writer", False):
-        linked_writer = Writer.query.filter_by(name=user.name).order_by(Writer.created_at.desc()).first()
-        if linked_writer and not linked_writer.approved:
-            return False
-        return True
-    approved_application = Application.query.filter_by(email=user.email, approved=True).first()
-    approved_writer = Writer.query.filter_by(name=user.name, approved=True).first()
-    return bool(approved_application or approved_writer)
+    # Writer ecosystem removed - always returns False
+    return False
 
 
 def _is_rejected_application(app_item):
@@ -442,35 +432,21 @@ def index():
         (Announcement.category == "jobs_taken")
     ).order_by(Announcement.created_at.desc()).paginate(page=page, per_page=5)
 
-    job_order_ids = [
-        jid for jid in (_job_id_from_announcement_title(a.title) for a in announcements.items)
-        if jid is not None
-    ]
-    open_jobs = {
-        o.id for o in Order.query.filter(Order.id.in_(job_order_ids), Order.writer_id.is_(None)).all()
-    }
+    job_order_ids = []
+    open_jobs = set()
     job_apply_map = {}
     for a in announcements.items:
         jid = _job_id_from_announcement_title(a.title)
         if jid and jid in open_jobs:
             job_apply_map[a.id] = jid
 
-    top_writer_ids = (
-        db.session.query(OrderReview.writer_id)
-        .group_by(OrderReview.writer_id)
-        .order_by(db.func.avg(OrderReview.rating).desc())
-        .limit(4)
-        .all()
-    )
-    top_ids = [wid for (wid,) in top_writer_ids]
-    writers = Writer.query.filter(Writer.id.in_(top_ids)).all() if top_ids else Writer.query.order_by(Writer.created_at.desc()).limit(4).all()
-    review_counts = dict(
-        db.session.query(OrderReview.writer_id, db.func.count(OrderReview.id)).group_by(OrderReview.writer_id).all()
-    )
+    # Writer ecosystem removed - no longer showing writers
+    writers = []
+    review_counts = {}
     posts = BlogPost.query.order_by(BlogPost.created_at.desc()).limit(3).all()
     fast_facts = {
         "students_supported": max(1200, User.query.count() * 45),
-        "writers": Writer.query.filter_by(approved=True).count(),
+        "writers": 0,
         "papers_delivered": max(3500, Order.query.count() * 7),
         "success_rate": 96,
     }
@@ -499,17 +475,8 @@ def index():
 
 @main.route("/writers/learn-more")
 def writer_recruitment():
-    recruitment = _get_writer_recruitment_content()
-    spotlight_writers = Writer.query.filter_by(approved=True).order_by(Writer.created_at.desc()).limit(6).all()
-    review_counts = dict(
-        db.session.query(OrderReview.writer_id, db.func.count(OrderReview.id)).group_by(OrderReview.writer_id).all()
-    )
-    return render_template(
-        "writer_recruitment.html",
-        recruitment=recruitment,
-        writers=spotlight_writers,
-        review_counts=review_counts,
-    )
+    flash("Writer features have been disabled.", "info")
+    return redirect(url_for("main.index"))
 
 @main.route('/lead', methods=['POST'])
 def lead():
@@ -948,62 +915,10 @@ def unauthorized_callback():
 @main.route("/dashboard")
 @login_required
 def dashboard():
-    writer_enabled = _is_approved_writer(current_user)
+    # Writer ecosystem removed - clients and admins only
     unread_count = Message.query.filter_by(receiver_id=current_user.id, is_read=False).count()
     my_orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.created_at.desc()).limit(8).all()
-    writer_apps = JobApplication.query.filter_by(writer_user_id=current_user.id).order_by(JobApplication.created_at.desc()).limit(5).all() if writer_enabled else []
-    writer_application = Application.query.filter_by(email=current_user.email).order_by(Application.created_at.desc()).first()
-
-    writer_profile = Writer.query.filter_by(name=current_user.name, approved=True).first()
-    if writer_application and writer_application.approved:
-        subject = writer_application.subject
-        bio = writer_application.bio
-    else:
-        subject = writer_profile.subject if writer_profile else "Not set"
-        bio = "Writer profile active."
-
-    approved_app_rows = JobApplication.query.filter_by(writer_user_id=current_user.id, status="approved").all()
-    approved_order_ids = [a.order_id for a in approved_app_rows]
-    assigned_orders = Order.query.filter(Order.id.in_(approved_order_ids)).order_by(Order.created_at.desc()).all() if approved_order_ids else []
-    active_writer_orders = [o for o in assigned_orders if o.status in ("Open", "In Progress")]
-    completed_writer_orders = [o for o in assigned_orders if o.status == "Completed"]
-    revision_writer_orders = [o for o in assigned_orders if "revision" in (o.status or "").lower()]
-    writer_next_order = None
-    if active_writer_orders:
-        writer_next_order = min(
-            active_writer_orders,
-            key=lambda o: o.deadline or datetime.utcnow()
-        )
-    total_writer_orders = len(active_writer_orders) + len(completed_writer_orders) + len(revision_writer_orders)
-    writer_workload_percent = int((len(completed_writer_orders) / total_writer_orders) * 100) if total_writer_orders else 0
-
-    available_orders = (
-        Order.query.filter_by(status="Open", job_posted=True)
-        .filter(Order.writer_id.is_(None))
-        .order_by(Order.created_at.desc())
-        .limit(8)
-        .all()
-    )
-    writer_announcements = (
-        Announcement.query.filter(
-            (Announcement.audience == "writers")
-            | (Announcement.category == "jobs")
-            | (Announcement.category == "jobs_taken")
-        )
-        .order_by(Announcement.created_at.desc())
-        .limit(8)
-        .all()
-    )
-    recent_notifications = Message.query.filter_by(receiver_id=current_user.id).order_by(Message.timestamp.desc()).limit(6).all()
-
-    completed_payments = Payment.query.filter_by(user_name=current_user.name, status="completed").all()
-    pending_payments = Payment.query.filter_by(user_name=current_user.name, status="pending").all()
-    payment_history = Payment.query.filter_by(user_name=current_user.name).order_by(Payment.created_at.desc()).limit(8).all()
-    total_earnings = round(sum((p.amount or 0) for p in completed_payments), 2)
-    pending_payout = round(sum((p.amount or 0) for p in pending_payments), 2)
-    on_time_bonus = round(total_earnings * 0.03, 2) if len(completed_writer_orders) >= 5 else 0.0
-    high_rating_bonus = round(total_earnings * 0.02, 2) if len(completed_writer_orders) >= 10 else 0.0
-
+    
     client_orders_all = Order.query.filter_by(user_id=current_user.id).order_by(Order.created_at.desc()).all()
     client_active_orders = [o for o in client_orders_all if (o.status or "") in ("Open", "In Progress")]
     client_completed_orders = [o for o in client_orders_all if (o.status or "") == "Completed"]
@@ -1036,17 +951,6 @@ def dashboard():
     open_tickets = SupportTicket.query.filter_by(user_id=current_user.id, status="open").count()
 
     assigned_writer_map = {}
-    if client_orders_all:
-        order_ids = [o.id for o in client_orders_all]
-        approved_apps = JobApplication.query.filter(
-            JobApplication.order_id.in_(order_ids),
-            JobApplication.status == "approved",
-        ).all()
-        writer_users = {
-            u.id: u for u in User.query.filter(User.id.in_([a.writer_user_id for a in approved_apps])).all()
-        } if approved_apps else {}
-        for app_item in approved_apps:
-            assigned_writer_map[app_item.order_id] = writer_users.get(app_item.writer_user_id)
     support_chat_enabled = _get_primary_admin() is not None
     admin_availability = "Online" if support_chat_enabled else "Offline"
     refunded_amount = round(sum((p.amount or 0) for p in client_refunds), 2)
@@ -1068,26 +972,8 @@ def dashboard():
 
     return render_template(
         "dashboard.html",
-        writer_enabled=writer_enabled,
         unread_count=unread_count,
         my_orders=my_orders,
-        writer_apps=writer_apps,
-        writer_application=writer_application,
-        writer_subject=subject,
-        writer_bio=bio,
-        active_writer_orders=active_writer_orders,
-        completed_writer_orders=completed_writer_orders,
-        revision_writer_orders=revision_writer_orders,
-        writer_next_order=writer_next_order,
-        writer_workload_percent=writer_workload_percent,
-        available_orders=available_orders,
-        recent_notifications=recent_notifications,
-        total_earnings=total_earnings,
-        pending_payout=pending_payout,
-        payment_history=payment_history,
-        on_time_bonus=on_time_bonus,
-        high_rating_bonus=high_rating_bonus,
-        writer_announcements=writer_announcements,
         client_active_orders=client_active_orders,
         client_completed_orders=client_completed_orders,
         client_revision_orders=client_revision_orders,
@@ -1170,13 +1056,11 @@ def support_tickets():
 @login_required
 def profile():
     form = ProfileForm(obj=current_user)
-    writer_profile = Writer.query.filter_by(name=current_user.name, approved=True).first()
-    writer_docs_enabled = bool(writer_profile and _is_approved_writer(current_user))
     if form.validate_on_submit():
         existing = User.query.filter(User.email == form.email.data.strip().lower(), User.id != current_user.id).first()
         if existing:
             flash("That email is already used by another account.", "danger")
-            return render_template("profile.html", form=form, writer_docs_enabled=writer_docs_enabled, writer_profile=writer_profile)
+            return render_template("profile.html", form=form)
         current_user.name = form.name.data or current_user.name
         current_user.email = (form.email.data or current_user.email).strip().lower()
         pending_password_hash = None
@@ -1188,26 +1072,12 @@ def profile():
             os.makedirs(UPLOAD_FOLDER, exist_ok=True)
             form.photo.data.save(os.path.join(UPLOAD_FOLDER, photo_name))
             current_user.photo = photo_name
-        writer_profile = Writer.query.filter_by(name=current_user.name, approved=True).first()
-        writer_docs_enabled = bool(writer_profile and _is_approved_writer(current_user))
-        if writer_profile and form.writer_portfolio.data:
-            filename = secure_filename(form.writer_portfolio.data.filename)
-            file_name = f"writer_portfolio_{writer_profile.id}_{int(datetime.utcnow().timestamp())}_{filename}"
-            os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-            form.writer_portfolio.data.save(os.path.join(UPLOAD_FOLDER, file_name))
-            writer_profile.portfolio_file = file_name
-        if writer_profile and form.writer_resume.data:
-            filename = secure_filename(form.writer_resume.data.filename)
-            file_name = f"writer_resume_{writer_profile.id}_{int(datetime.utcnow().timestamp())}_{filename}"
-            os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-            form.writer_resume.data.save(os.path.join(UPLOAD_FOLDER, file_name))
-            writer_profile.resume_file = file_name
         try:
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
             flash("That email is already used by another account.", "danger")
-            return render_template("profile.html", form=form, writer_docs_enabled=writer_docs_enabled, writer_profile=writer_profile)
+            return render_template("profile.html", form=form)
         if pending_password_hash and not _otp_enabled():
             current_user.password_hash = pending_password_hash
             db.session.commit()
@@ -1225,7 +1095,7 @@ def profile():
             return redirect(url_for("main.verify_password_change"))
         flash("Profile updated.", "success")
         return redirect(url_for("main.profile"))
-    return render_template("profile.html", form=form, writer_docs_enabled=writer_docs_enabled, writer_profile=writer_profile)
+    return render_template("profile.html", form=form)
 
 
 @main.route("/settings", methods=["GET", "POST"])
@@ -1417,204 +1287,8 @@ def verify_delete_account():
 @main.route("/writer/apply", methods=["GET", "POST"])
 @login_required
 def writer_apply():
-    expertise_options = [
-        "Nursing",
-        "Business",
-        "Law",
-        "Computer Science",
-        "Engineering",
-        "Psychology",
-        "Education",
-        "Finance",
-        "Economics",
-        "Literature",
-    ]
-    default_quiz_lines = [
-        "Choose the grammatically correct sentence.|The writer have submitted the draft yesterday.|The writer has submitted the draft yesterday.|The writer had submitted the draft yesterday.|c",
-        "Which option has correct punctuation?|However the findings were clear.|However, the findings were clear.|However the findings, were clear.|b",
-        "APA in-text citation for one author is:|(Smith, 2020)|[Smith:2020]|{Smith 2020}|a",
-        "What is the best practice for academic integrity?|Paraphrase and cite all borrowed ideas.|Reuse internet paragraphs if edited slightly.|Skip citations for common online content.|a",
-    ]
-    default_quiz_questions = [
-        {
-            "id": f"q_default_{idx+1}",
-            "question": parts[0],
-            "options": [("a", parts[1]), ("b", parts[2]), ("c", parts[3])],
-            "answer": parts[4].lower(),
-        }
-        for idx, parts in enumerate([line.split("|") for line in default_quiz_lines])
-    ]
-
-    def get_setting(key, default=""):
-        row = SiteSetting.query.filter_by(key=key).first()
-        return row.value if row and row.value is not None else default
-
-    quiz_lines_raw = get_setting("writer_quiz_items", "\n".join(default_quiz_lines))
-    quiz_lines = [line.strip() for line in (quiz_lines_raw or "").splitlines() if line.strip()]
-    quiz_questions = []
-    for idx, line in enumerate(quiz_lines):
-        parts = [part.strip() for part in line.split("|")]
-        if len(parts) < 5:
-            continue
-        answer = parts[4].lower()
-        if answer not in {"a", "b", "c"}:
-            continue
-        quiz_questions.append({
-            "id": f"q_custom_{idx+1}",
-            "question": parts[0],
-            "options": [("a", parts[1]), ("b", parts[2]), ("c", parts[3])],
-            "answer": answer,
-        })
-    if len(quiz_questions) < 2:
-        quiz_questions = default_quiz_questions
-
-    pass_mark_raw = get_setting("writer_quiz_pass_mark", "75")
-    try:
-        pass_mark = int(float(pass_mark_raw))
-    except (TypeError, ValueError):
-        pass_mark = 75
-    pass_mark = max(1, min(100, pass_mark))
-    form = ApplicationForm()
-    existing = None
-    show_confirmation = False
-    submitted_email = (session.get("writer_apply_submitted_email") or "").strip().lower()
-    if submitted_email == (current_user.email or "").strip().lower():
-        existing_by_email = (
-            Application.query.filter_by(email=current_user.email)
-            .order_by(Application.created_at.desc())
-            .first()
-        )
-        if existing_by_email:
-            existing_name = (existing_by_email.name or "").strip().lower()
-            current_name = (current_user.name or "").strip().lower()
-            if existing_name and existing_name == current_name:
-                existing = existing_by_email
-    just_submitted_id = session.pop("writer_apply_just_submitted", None)
-    if existing and just_submitted_id and str(existing.id) == str(just_submitted_id):
-        show_confirmation = True
-    if form.validate_on_submit():
-        if existing:
-            flash("You already submitted a writer application. Please wait for review.", "info")
-            return redirect(url_for("main.writer_apply"))
-        phone = (request.form.get("phone") or "").strip()
-        location_timezone = (request.form.get("location_timezone") or "").strip()
-        expertise_selected = [item.strip() for item in request.form.getlist("expertise_multi") if item and item.strip()]
-        expertise_other = (request.form.get("expertise_other") or "").strip()
-        if expertise_other:
-            expertise_selected.append(expertise_other)
-        if not expertise_selected and form.subject.data:
-            expertise_selected.append(form.subject.data.strip())
-        expertise_unique = []
-        for item in expertise_selected:
-            if item not in expertise_unique:
-                expertise_unique.append(item)
-        if not expertise_unique:
-            flash("Select at least one subject expertise before continuing.", "danger")
-            return render_template(
-                "writer_apply.html",
-                form=form,
-                existing=existing,
-                quiz_questions=quiz_questions,
-                quiz_answer_key={q["id"]: q["answer"] for q in quiz_questions},
-                pass_mark=pass_mark,
-                quiz_score=None,
-                expertise_options=expertise_options,
-                show_confirmation=show_confirmation,
-            )
-        total = len(quiz_questions)
-        correct = 0
-        for item in quiz_questions:
-            picked = (request.form.get(item["id"]) or "").strip().lower()
-            if picked == item["answer"]:
-                correct += 1
-        score = int((correct / total) * 100) if total else 0
-        if score < pass_mark:
-            flash(f"Screening test score {score}% is below the required {pass_mark}%. Please review and try again.", "danger")
-            return render_template(
-                "writer_apply.html",
-                form=form,
-                existing=existing,
-                quiz_questions=quiz_questions,
-                quiz_answer_key={q["id"]: q["answer"] for q in quiz_questions},
-                pass_mark=pass_mark,
-                quiz_score=score,
-                expertise_options=expertise_options,
-                show_confirmation=show_confirmation,
-            )
-        portfolio_name = None
-        if form.portfolio.data:
-            filename = secure_filename(form.portfolio.data.filename)
-            portfolio_name = f"writer_app_{current_user.id}_{int(datetime.utcnow().timestamp())}_{filename}"
-            os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-            form.portfolio.data.save(os.path.join(UPLOAD_FOLDER, portfolio_name))
-        expertise_text = ", ".join(expertise_unique)
-        meta_lines = []
-        if phone:
-            meta_lines.append(f"Phone: {phone}")
-        if location_timezone:
-            meta_lines.append(f"Location/Time Zone: {location_timezone}")
-        if expertise_text:
-            meta_lines.append(f"Expertise: {expertise_text}")
-        if form.writing_styles.data:
-            meta_lines.append(f"Style Mastery: {', '.join(form.writing_styles.data)}")
-        meta_block = "\n".join(meta_lines).strip()
-        stored_bio = form.bio.data.strip()
-        if meta_block:
-            stored_bio = f"{meta_block}\n\nBio:\n{stored_bio}"
-        application = Application(
-            name=form.name.data.strip(),
-            email=current_user.email,
-            subject=expertise_text[:100],
-            bio=stored_bio,
-            education_level=form.education_level.data,
-            years_experience=form.years_experience.data,
-            writing_styles=",".join(form.writing_styles.data) if form.writing_styles.data else None,
-            portfolio_file=portfolio_name,
-            accept_terms=form.accept_terms.data,
-            approved=None
-        )
-        db.session.add(application)
-        db.session.commit()
-        confirmation_body = (
-            f"Hello {form.name.data.strip()},\n\n"
-            "Thank you for applying to become a writer at AcademicPro.\n\n"
-            "Application Details\n"
-            f"- Full Name: {form.name.data.strip()}\n"
-            f"- Email: {current_user.email}\n"
-            f"- Education Level: {form.education_level.data or 'Not provided'}\n"
-            f"- Years of Experience: {form.years_experience.data if form.years_experience.data is not None else 'Not provided'}\n"
-            f"- Expertise: {expertise_text or 'Not provided'}\n"
-            f"- Writing Styles: {', '.join(form.writing_styles.data) if form.writing_styles.data else 'Not provided'}\n"
-            f"- Location/Time Zone: {location_timezone or 'Not provided'}\n"
-            "\nOur admin team will review your application within 48 hours.\n"
-            "If approved, you will receive your first assignment in your dashboard.\n\n"
-            "AcademicPro Team"
-        )
-        _send_mail_safely(
-            MailMessage(
-                subject="AcademicPro Writer Application Received",
-                recipients=[current_user.email],
-                body=confirmation_body,
-            )
-        )
-        session["writer_apply_submitted_email"] = (current_user.email or "").strip().lower()
-        session["writer_apply_just_submitted"] = str(application.id)
-        flash("Application received. Thank you for applying.", "success")
-        return redirect(url_for("main.writer_apply"))
-    if request.method == "GET":
-        form.name.data = current_user.name
-        form.email.data = current_user.email
-    return render_template(
-        "writer_apply.html",
-        form=form,
-        existing=existing,
-        quiz_questions=quiz_questions,
-        quiz_answer_key={q["id"]: q["answer"] for q in quiz_questions},
-        pass_mark=pass_mark,
-        quiz_score=None,
-        expertise_options=expertise_options,
-        show_confirmation=show_confirmation,
-    )
+    flash("Writer features have been disabled in this version.", "info")
+    return redirect(url_for("main.dashboard"))
 
 @main.route('/admin/messages')
 def admin_messages():
@@ -1648,8 +1322,8 @@ def admin_support_tickets():
 
 @main.route('/writers')
 def public_writers():
-    writers = Writer.query.filter_by(approved=True).order_by(Writer.id.desc()).all()
-    return render_template('public_writers.html', writers=writers)
+    flash("Writer features have been disabled.", "info")
+    return redirect(url_for("main.index"))
 
 
 def _can_manage_blog(user):
@@ -2085,10 +1759,6 @@ def admin_dashboard():
     leads_velocity = round(((sum(leads_7d) - sum(leads_prev_7d)) / max(sum(leads_prev_7d), 1)) * 100, 1)
     payments_velocity = round(((sum(payments_7d) - sum(payments_prev_7d)) / max(sum(payments_prev_7d), 1)) * 100, 1)
 
-    pending_applications = Application.query.filter(
-        (Application.approved.is_(None))
-        | ((Application.approved.is_(False)) & (~Application.bio.ilike("%[REJECTED]%")))
-    ).count()
     overdue_orders = Order.query.filter(Order.deadline < now, Order.status.in_(["Open", "In Progress"])).count()
     pending_withdrawals = Payment.query.filter_by(status="pending").count()
     new_users_24h = User.query.filter(User.created_at >= (now - timedelta(hours=24))).count()
@@ -2097,13 +1767,6 @@ def admin_dashboard():
     pending_orders = Order.query.filter_by(status="Pending").count()
 
     alerts = []
-    if pending_applications:
-        alerts.append({
-            "level": "warning",
-            "title": f"{pending_applications} writer applications pending",
-            "action": url_for("main.admin_writers"),
-            "action_label": "Review applications"
-        })
     if overdue_orders:
         alerts.append({
             "level": "danger",
@@ -2188,29 +1851,10 @@ def admin_dashboard():
         })
 
     unattended_tasks = []
-    pending_apps_rows = (
-        Application.query.filter(
-            (Application.approved.is_(None))
-            | ((Application.approved.is_(False)) & (~Application.bio.ilike("%[REJECTED]%")))
-        )
-        .order_by(Application.created_at.asc())
-        .limit(5)
-        .all()
-    )
-    for app in pending_apps_rows:
-        unattended_tasks.append({
-            "type": "Writer Application",
-            "title": f"{app.name} - {app.subject}",
-            "age": app.created_at.strftime("%Y-%m-%d %H:%M") if app.created_at else "",
-            "action": f"{url_for('main.admin_writers')}#application-{app.id}",
-            "action_label": "Review",
-            "level": "warning",
-        })
 
     unattended_order_rows = (
         Order.query.filter(
             (Order.status.in_(["Pending", "Pending Review"]))
-            | ((Order.status == "Open") & (Order.writer_id.is_(None)))
         )
         .order_by(Order.created_at.asc())
         .limit(5)
@@ -2243,7 +1887,6 @@ def admin_dashboard():
         })
 
     recent_users = User.query.order_by(User.created_at.desc()).limit(6).all()
-    recent_applications = Application.query.order_by(Application.created_at.desc()).limit(6).all()
     recent_orders = Order.query.order_by(Order.created_at.desc()).limit(6).all()
     settlement_snapshot = {
         "pending_count": Payment.query.filter_by(status="pending").count(),
@@ -2264,11 +1907,9 @@ def admin_dashboard():
     stats = {
         "messages": Message.query.count(),
         "testimonials": Testimonial.query.count(),
-        "writers": Writer.query.count(),
         "leads": Lead.query.count(),
         "orders": Order.query.count(),
         "payments": Payment.query.count(),
-        "pending_writer_apps": pending_applications,
         "users": total_users,
         "active_orders": active_orders,
         "completed_orders": completed_orders,
@@ -2278,15 +1919,7 @@ def admin_dashboard():
     grouped_chats = get_grouped_chats()
     announcements = Announcement.query.order_by(Announcement.created_at.desc()).limit(8).all()
     attention_users = User.query.order_by(User.created_at.desc()).limit(6).all()
-    pending_apps = (
-        Application.query.filter(
-            (Application.approved.is_(None))
-            | ((Application.approved.is_(False)) & (~Application.bio.ilike("%[REJECTED]%")))
-        )
-        .order_by(Application.created_at.desc())
-        .limit(6)
-        .all()
-    )
+    pending_apps = []
 
     return render_template(
         "admin_dashboard.html",
@@ -2308,7 +1941,6 @@ def admin_dashboard():
             "payments": payments_velocity,
         },
         recent_users=recent_users,
-        recent_applications=recent_applications,
         recent_orders=recent_orders,
         attention_users=attention_users,
         pending_apps=pending_apps,
@@ -2419,63 +2051,8 @@ def admin_samples():
 @main.route("/writer/samples", methods=["GET", "POST"])
 @login_required
 def writer_samples():
-    if not _is_approved_writer(current_user):
-        abort(403)
-    if request.method == "POST":
-        title = (request.form.get("title") or "").strip()
-        category = (request.form.get("category") or "").strip()
-        style = (request.form.get("style") or "").strip() or None
-        level = (request.form.get("level") or "").strip() or None
-        subject = (request.form.get("subject") or "").strip() or None
-        grade = (request.form.get("grade") or "").strip() or None
-        published_at_raw = (request.form.get("published_at") or "").strip()
-        source_url = (request.form.get("source_url") or "").strip() or None
-        content = (request.form.get("content") or "").strip()
-        published_at = None
-        if published_at_raw:
-            try:
-                published_at = datetime.strptime(published_at_raw, "%Y-%m-%d")
-            except ValueError:
-                published_at = None
-
-        file_name = None
-        file_type = None
-        uploaded = request.files.get("file")
-        if uploaded and uploaded.filename:
-            if not allowed_file(uploaded.filename):
-                flash("Unsupported file type.", "danger")
-                return redirect(url_for("main.writer_samples"))
-            os.makedirs(SAMPLE_UPLOAD_FOLDER, exist_ok=True)
-            safe_name = secure_filename(uploaded.filename)
-            stored = f"{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{safe_name}"
-            uploaded.save(os.path.join(SAMPLE_UPLOAD_FOLDER, stored))
-            file_name = stored
-            file_type = stored.rsplit(".", 1)[-1].lower()
-
-        if not title or not category or not content:
-            flash("Title, category, and summary are required.", "danger")
-            return redirect(url_for("main.writer_samples"))
-
-        new_sample = Sample(
-            title=title,
-            category=category,
-            style=style,
-            level=level,
-            subject=subject,
-            grade=grade,
-            published_at=published_at,
-            source_url=source_url,
-            file_type=file_type,
-            file_name=file_name,
-            content=content,
-        )
-        db.session.add(new_sample)
-        db.session.commit()
-        flash("Sample uploaded.", "success")
-        return redirect(url_for("main.writer_samples"))
-
-    samples = Sample.query.order_by(Sample.created_at.desc()).all()
-    return render_template("writer_samples.html", samples=samples)
+    flash("Writer features have been disabled.", "info")
+    return redirect(url_for("main.dashboard"))
 
 @main.route('/admin/samples/<int:id>/delete')
 @login_required
@@ -2515,126 +2092,8 @@ def delete_review(id):
 def admin_writers():
     if not current_user.is_admin:
         abort(403)
-
-    q = (request.args.get("q") or "").strip()
-    status = (request.args.get("status") or "").strip().lower()
-    subject = (request.args.get("subject") or "").strip()
-
-    writers_query = Writer.query
-    applications_query = Application.query
-
-    if q:
-        like_q = f"%{q}%"
-        writers_query = writers_query.filter(
-            Writer.name.ilike(like_q) | Writer.subject.ilike(like_q)
-        )
-        applications_query = applications_query.filter(
-            Application.name.ilike(like_q) |
-            Application.email.ilike(like_q) |
-            Application.subject.ilike(like_q)
-        )
-
-    if subject:
-        subject_like = f"%{subject}%"
-        writers_query = writers_query.filter(Writer.subject.ilike(subject_like))
-        applications_query = applications_query.filter(Application.subject.ilike(subject_like))
-
-    if status == "approved":
-        writers_query = writers_query.filter(Writer.approved.is_(True))
-        applications_query = applications_query.filter(Application.approved.is_(True))
-    elif status == "pending":
-        applications_query = applications_query.filter(
-            (Application.approved.is_(None))
-            | ((Application.approved.is_(False)) & (~Application.bio.ilike("%[REJECTED]%")))
-        )
-    elif status == "rejected":
-        applications_query = applications_query.filter(
-            (Application.approved.is_(False))
-            & (Application.bio.ilike("%[REJECTED]%"))
-        )
-
-    writers = writers_query.order_by(Writer.created_at.desc()).all()
-    applications = applications_query.order_by(Application.created_at.desc()).all()
-
-    writer_ids = [w.id for w in writers]
-    writer_ratings = {}
-    writer_completed_orders = {}
-    if writer_ids:
-        rating_rows = (
-            db.session.query(OrderReview.writer_id, db.func.avg(OrderReview.rating), db.func.count(OrderReview.id))
-            .filter(OrderReview.writer_id.in_(writer_ids))
-            .group_by(OrderReview.writer_id)
-            .all()
-        )
-        writer_ratings = {
-            int(row[0]): {"avg": round(float(row[1] or 0), 1), "count": int(row[2] or 0)}
-            for row in rating_rows
-        }
-        completed_rows = (
-            db.session.query(Order.writer_id, db.func.count(Order.id))
-            .filter(Order.writer_id.in_(writer_ids), Order.status == "Completed")
-            .group_by(Order.writer_id)
-            .all()
-        )
-        writer_completed_orders = {int(row[0]): int(row[1]) for row in completed_rows}
-
-    writer_names = [w.name for w in writers if w.name]
-    linked_users = User.query.filter(User.name.in_(writer_names)).all() if writer_names else []
-    user_by_name = {u.name: u for u in linked_users}
-    writer_user_ids = [u.id for u in linked_users]
-    last_message_rows = (
-        db.session.query(Message.sender_id, db.func.max(Message.timestamp))
-        .filter(Message.sender_id.in_(writer_user_ids))
-        .group_by(Message.sender_id)
-        .all()
-    ) if writer_user_ids else []
-    last_active_by_user_id = {int(row[0]): row[1] for row in last_message_rows}
-    writer_last_active = {}
-    for writer in writers:
-        linked_user = user_by_name.get(writer.name)
-        last_active = last_active_by_user_id.get(linked_user.id) if linked_user else None
-        writer_last_active[writer.id] = last_active
-
-    now_utc = datetime.utcnow()
-    inactive_writer_count = sum(
-        1 for w in writers
-        if w.approved and (
-            (writer_last_active.get(w.id) and (now_utc - writer_last_active[w.id]).days >= 30)
-            or (not writer_last_active.get(w.id) and (now_utc - (w.created_at or now_utc)).days >= 30)
-        )
-    )
-    pending_applications_count = Application.query.filter(
-        (Application.approved.is_(None))
-        | ((Application.approved.is_(False)) & (~Application.bio.ilike("%[REJECTED]%")))
-    ).count()
-
-    def _extract_test_score(value):
-        match = re.search(r"screening test score:\s*(\d{1,3})%", (value or ""), re.IGNORECASE)
-        return int(match.group(1)) if match else None
-
-    application_test_scores = {app.id: _extract_test_score(app.bio) for app in applications}
-    rejected_application_ids = {app.id for app in applications if _is_rejected_application(app)}
-    subject_options = sorted({
-        s for s in ([w.subject for w in Writer.query.all()] + [a.subject for a in Application.query.all()]) if s
-    })
-
-    return render_template(
-        'admin_writers.html',
-        writers=writers,
-        applications=applications,
-        q=q,
-        status=status,
-        subject=subject,
-        subject_options=subject_options,
-        writer_ratings=writer_ratings,
-        writer_completed_orders=writer_completed_orders,
-        writer_last_active=writer_last_active,
-        application_test_scores=application_test_scores,
-        rejected_application_ids=rejected_application_ids,
-        pending_applications_count=pending_applications_count,
-        inactive_writer_count=inactive_writer_count,
-        now_utc=now_utc,
-    )
+    flash("Writer features have been disabled.", "info")
+    return render_template('admin_writers.html', writers=[], applications=[], writer_ratings={}, writer_completed_orders={})
 
 
 @main.route('/admin/application/<int:id>/approve')
@@ -2642,22 +2101,7 @@ def admin_writers():
 def approve_application(id):
     if not current_user.is_admin:
         abort(403)
-    app_item = Application.query.get_or_404(id)
-    app_item.approved = True
-    if app_item.bio:
-        app_item.bio = app_item.bio.replace("[REJECTED]", "").strip()
-    user = User.query.filter_by(email=app_item.email).first()
-    if user:
-        user.role = "writer"
-    existing_writer = Writer.query.filter_by(name=app_item.name).order_by(Writer.created_at.desc()).first()
-    if existing_writer:
-        existing_writer.approved = True
-        if app_item.subject:
-            existing_writer.subject = app_item.subject
-    else:
-        db.session.add(Writer(name=app_item.name, subject=app_item.subject, approved=True))
-    db.session.commit()
-    flash('Writer application approved.', 'success')
+    flash("Writer features have been disabled.", "info")
     return redirect(url_for('main.admin_writers'))
 
 
@@ -2666,24 +2110,7 @@ def approve_application(id):
 def reject_application(id):
     if not current_user.is_admin:
         abort(403)
-    app_item = Application.query.get_or_404(id)
-    app_item.approved = False
-    if "[REJECTED]" not in (app_item.bio or ""):
-        app_item.bio = f"{(app_item.bio or '').strip()}\n[REJECTED]".strip()
-    db.session.commit()
-    if app_item.email:
-        _send_mail_safely(MailMessage(
-            subject="AcademicPro Writer Application Update",
-            recipients=[app_item.email],
-            body=(
-                f"Hello {app_item.name},\n\n"
-                "Thank you for applying to AcademicPro.\n"
-                "After review, we are unable to approve your application at this time.\n"
-                "You can reapply after strengthening your profile and writing samples.\n\n"
-                "AcademicPro Team"
-            ),
-        ))
-    flash('Writer application marked as not approved.', 'info')
+    flash("Writer features have been disabled.", "info")
     return redirect(url_for('main.admin_writers'))
 
 @main.route('/admin/writer/<int:id>/approve')
@@ -2691,13 +2118,7 @@ def reject_application(id):
 def approve_writer(id):
     if not current_user.is_admin:
         abort(403)
-    writer = Writer.query.get_or_404(id)
-    writer.approved = True
-    linked_user = User.query.filter_by(name=writer.name).first()
-    if linked_user:
-        linked_user.role = "writer"
-    db.session.commit()
-    flash('Writer approved!', 'success')
+    flash("Writer features have been disabled.", "info")
     return redirect(url_for('main.admin_writers'))
 
 @main.route('/admin/writer/<int:id>/suspend')
@@ -2705,10 +2126,7 @@ def approve_writer(id):
 def suspend_writer(id):
     if not current_user.is_admin:
         abort(403)
-    writer = Writer.query.get_or_404(id)
-    writer.approved = False
-    db.session.commit()
-    flash('Writer suspended.', 'warning')
+    flash("Writer features have been disabled.", "info")
     return redirect(url_for('main.admin_writers'))
 
 @main.route('/admin/writer/<int:id>/delete')
@@ -2716,72 +2134,21 @@ def suspend_writer(id):
 def delete_writer(id):
     if not current_user.is_admin:
         abort(403)
-    writer = Writer.query.get_or_404(id)
-    db.session.delete(writer)
-    db.session.commit()
-    flash('Writer deleted.', 'info')
+    flash("Writer features have been disabled.", "info")
     return redirect(url_for('main.admin_writers'))
 
 @main.route('/writer/thanks')
 def writer_thank_you():
-    return render_template('writer_thank_you.html')
+    flash("Writer features have been disabled.", "info")
+    return redirect(url_for('main.index'))
 
 @main.route('/admin/writer/add', methods=['GET', 'POST'])
 @login_required
 def add_writer():
     if not current_user.is_admin:
         abort(403)
-    if request.method == 'POST':
-        name = (request.form.get('name') or '').strip()
-        subject = (request.form.get('subject') or '').strip()
-        email = (request.form.get('email') or '').strip().lower()
-        image_url = (request.form.get('image_url') or '').strip() or None
-        status = (request.form.get('status') or 'approved').strip().lower()
-        approved = status in {'approved', 'active'}
-
-        resume_file = None
-        uploaded = request.files.get("resume")
-        if uploaded and uploaded.filename:
-            if not allowed_file(uploaded.filename):
-                flash("Unsupported CV file type.", "danger")
-                return redirect(url_for('main.add_writer'))
-            os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-            safe_name = secure_filename(uploaded.filename)
-            stored = f"writer_cv_{int(datetime.utcnow().timestamp())}_{safe_name}"
-            uploaded.save(os.path.join(UPLOAD_FOLDER, stored))
-            resume_file = stored
-
-        if not name:
-            flash("Writer name is required.", "danger")
-            return redirect(url_for('main.add_writer'))
-
-        if email:
-            user = User.query.filter_by(email=email).first()
-            if user:
-                user.role = "writer"
-            else:
-                temp_password = uuid.uuid4().hex[:12]
-                user = User(
-                    email=email,
-                    name=name,
-                    role="writer",
-                    email_verified=True,
-                    password_hash=generate_password_hash(temp_password),
-                )
-                db.session.add(user)
-
-        new_writer = Writer(
-            name=name,
-            subject=subject,
-            image_url=image_url,
-            resume_file=resume_file,
-            approved=approved
-        )
-        db.session.add(new_writer)
-        db.session.commit()
-        flash("Writer added successfully.", "success")
-        return redirect(url_for('main.admin_writers'))
-    return render_template('admin_writer_add.html')
+    flash("Writer features have been disabled.", "info")
+    return redirect(url_for('main.admin_writers'))
 
 @main.route("/order", methods=["GET", "POST"])
 @login_required
@@ -2794,6 +2161,7 @@ def order():
         form.name.data = current_user.name
         form.email.data = current_user.email
     if form.validate_on_submit():
+        service_track = (form.service_track.data or "writing").strip()
         task_type = (form.task_type.data or "Essay").strip()
         submitted_wc = form.word_count.data if form.word_count.data else 0
         word_count = submitted_wc if submitted_wc and submitted_wc > 0 else 1000
@@ -2804,6 +2172,7 @@ def order():
         order = Order(
             topic=form.subject.data.strip(),
             task_type=task_type,
+            service_track=service_track,
             description=form.details.data.strip(),
             citation_style=form.citation_style.data or "APA",
             sources_count=form.sources_count.data or 0,
@@ -2900,13 +2269,11 @@ def admin_orders():
 
     query = Order.query.join(User, Order.user_id == User.id)
     if q:
-        query = query.outerjoin(Writer, Order.writer_id == Writer.id)
         query = query.filter(
             (Order.topic.ilike(f"%{q}%")) |
             (Order.description.ilike(f"%{q}%")) |
             (User.name.ilike(f"%{q}%")) |
-            (User.email.ilike(f"%{q}%")) |
-            (Writer.name.ilike(f"%{q}%"))
+            (User.email.ilike(f"%{q}%"))
         )
     if status:
         query = query.filter(Order.status == status)
@@ -2926,23 +2293,14 @@ def admin_orders():
 
     orders = query.order_by(Order.created_at.desc()).all()
 
-    applications = JobApplication.query.order_by(JobApplication.created_at.desc()).all()
     applications_by_order = {}
-    for app_item in applications:
-        applications_by_order.setdefault(app_item.order_id, []).append(app_item)
-    writer_users = {
-        u.id: u for u in User.query.filter(User.id.in_([a.writer_user_id for a in applications])).all()
-    } if applications else {}
+    writer_users = {}
     files = OrderFile.query.filter(OrderFile.order_id.in_([o.id for o in orders])).order_by(OrderFile.uploaded_at.desc()).all() if orders else []
     files_by_order = {}
     for f in files:
         files_by_order.setdefault(f.order_id, []).append(f)
-    writer_name_set = [u.name for u in writer_users.values()]
-    writer_profiles = {
-        w.name: w for w in Writer.query.filter(Writer.name.in_(writer_name_set)).all()
-    } if writer_name_set else {}
-    rating_rows = db.session.query(OrderReview.writer_id, db.func.avg(OrderReview.rating), db.func.count(OrderReview.id)).group_by(OrderReview.writer_id).all()
-    writer_ratings = {int(row[0]): {"avg": round(float(row[1] or 0), 1), "count": int(row[2] or 0)} for row in rating_rows}
+    writer_profiles = {}
+    writer_ratings = {}
     now_utc = datetime.utcnow()
     deadline_alerts = [o for o in orders if o.deadline and 0 < (o.deadline - now_utc).total_seconds() <= 86400 and (o.status or "").lower() != "completed"]
     order_alerts = []
@@ -2959,7 +2317,6 @@ def admin_orders():
     return render_template(
         "admin_orders.html",
         orders=orders,
-        writers=Writer.query.filter_by(approved=True).order_by(Writer.created_at.desc()).all(),
         applications_by_order=applications_by_order,
         writer_users=writer_users,
         files_by_order=files_by_order,
@@ -2983,12 +2340,6 @@ def update_order(id):
     order = Order.query.get_or_404(id)
     if request.method == 'POST':
         order.status = (request.form.get('status') or order.status).strip()
-        writer_id = request.form.get('writer_id', type=int)
-        if writer_id:
-            order.writer_id = writer_id
-            order.assigned_at = datetime.utcnow()
-            if order.status == "Open":
-                order.status = "Assigned"
         _audit_admin_action(f"Order #{order.id}", f"Updated status to {order.status}")
         db.session.commit()
         return redirect(url_for('main.admin_orders'))
@@ -3010,7 +2361,7 @@ def publish_order_job(id):
         Announcement(
             title=f"JOB#{order.id} | {order.topic}",
             body=(
-                f"New task published. Type: {order.task_type or 'Essay'}, "
+                f"New task published. Type: {order.service_track or 'writing'}, "
                 f"Words: {order.word_count}, Budget: ${order.price or 0}, "
                 f"Deadline: {order.deadline.strftime('%Y-%m-%d') if order.deadline else 'N/A'}."
             ),
@@ -3026,49 +2377,15 @@ def publish_order_job(id):
 @main.route("/jobs")
 @login_required
 def jobs():
-    if not _is_approved_writer(current_user):
-        flash("Only approved writers can view and apply for jobs.", "warning")
-        return redirect(url_for("main.writer_apply"))
-    open_orders = (
-        Order.query.filter_by(status="Open", job_posted=True)
-        .filter(Order.writer_id.is_(None))
-        .order_by(Order.created_at.desc())
-        .all()
-    )
-    my_apps = JobApplication.query.filter_by(writer_user_id=current_user.id).all()
-    applied_order_ids = {a.order_id for a in my_apps}
-    assigned_order_ids = [a.order_id for a in my_apps if a.status == "approved"]
-    assigned_orders = Order.query.filter(Order.id.in_(assigned_order_ids)).order_by(Order.created_at.desc()).all() if assigned_order_ids else []
-    return render_template(
-        "jobs_board.html",
-        open_orders=open_orders,
-        applied_order_ids=applied_order_ids,
-        assigned_orders=assigned_orders
-    )
+    flash("Writer features have been disabled.", "info")
+    return redirect(url_for("main.dashboard"))
 
 
 @main.route("/jobs/<int:order_id>/apply", methods=["POST"])
 @login_required
 def apply_job(order_id):
-    if not _is_approved_writer(current_user):
-        flash("Only approved writers can apply for jobs.", "danger")
-        return redirect(url_for("main.writer_apply"))
-
-    order = Order.query.get_or_404(order_id)
-    if order.writer_id:
-        flash("This job is no longer available.", "warning")
-        return redirect(url_for("main.jobs"))
-
-    existing = JobApplication.query.filter_by(order_id=order.id, writer_user_id=current_user.id).first()
-    if existing:
-        flash("You already applied for this job.", "info")
-        return redirect(url_for("main.jobs"))
-
-    pitch = (request.form.get("cover_note") or "").strip()
-    db.session.add(JobApplication(order_id=order.id, writer_user_id=current_user.id, cover_note=pitch))
-    db.session.commit()
-    flash("Application sent. Admin will review it.", "success")
-    return redirect(url_for("main.jobs"))
+    flash("Writer features have been disabled.", "info")
+    return redirect(url_for("main.dashboard"))
 
 
 @main.route("/admin/job-applications/<int:application_id>/approve", methods=["POST"])
@@ -3076,83 +2393,7 @@ def apply_job(order_id):
 def approve_job_application(application_id):
     if not current_user.is_admin:
         abort(403)
-
-    app_item = JobApplication.query.get_or_404(application_id)
-    order = Order.query.get_or_404(app_item.order_id)
-    writer_user = User.query.get_or_404(app_item.writer_user_id)
-    if order.writer_id:
-        flash("This job has already been assigned.", "warning")
-        return redirect(url_for("main.admin_orders"))
-
-    app_item.status = "approved"
-    app_item.reviewed_at = datetime.utcnow()
-
-    # Mark all other applications as rejected.
-    others = JobApplication.query.filter(
-        JobApplication.order_id == order.id,
-        JobApplication.id != app_item.id,
-        JobApplication.status == "pending"
-    ).all()
-    for other in others:
-        other.status = "rejected"
-        other.reviewed_at = datetime.utcnow()
-
-    linked_writer = Writer.query.filter_by(name=writer_user.name, approved=True).first()
-    if linked_writer:
-        order.writer_id = linked_writer.id
-    order.status = "Assigned"
-    order.assigned_at = datetime.utcnow()
-
-    # Replace open job announcement with a taken-status announcement.
-    job_announce = Announcement.query.filter(
-        Announcement.category == "jobs",
-        Announcement.title.like(f"JOB#{order.id} |%")
-    ).first()
-    if job_announce:
-        db.session.delete(job_announce)
-    db.session.add(Announcement(
-        title=f"JOB TAKEN #{order.id}",
-        body=f"Writer {writer_user.name} was approved for this job.",
-        audience="public",
-        category="jobs_taken"
-    ))
-
-    admin_sender = current_user.id
-    db.session.add(Message(
-        sender_id=admin_sender,
-        receiver_id=order.user_id,
-        content=f"[Order #{order.id}] Writer {writer_user.name} has taken your job. Open order chat to communicate.",
-        is_admin=True
-    ))
-    db.session.add(Message(
-        sender_id=admin_sender,
-        receiver_id=app_item.writer_user_id,
-        content=f"[Order #{order.id}] Your application was approved. Open order chat to communicate with the client.",
-        is_admin=True
-    ))
-    _audit_admin_action(f"Order #{order.id}", f"Approved application #{app_item.id} for writer {writer_user.name}")
-    db.session.commit()
-
-    client_user = User.query.get(order.user_id)
-    if client_user:
-        tracking_url = url_for("main.dashboard", _external=True)
-        order_chat_url = url_for("main.order_chat", order_id=order.id, _external=True)
-        email_body = (
-            f"Hello {client_user.name},\n\n"
-            f"Your order #{order.id} has been assigned to writer {writer_user.name}.\n"
-            f"You can now track progress and chat directly with your writer.\n\n"
-            f"Track order: {tracking_url}\n"
-            f"Open order chat: {order_chat_url}\n\n"
-            "Thank you for choosing AcademicPro."
-        )
-        msg = MailMessage(
-            subject=f"Order #{order.id} assigned - writer {writer_user.name}",
-            recipients=[client_user.email],
-            body=email_body,
-        )
-        _send_mail_safely(msg)
-
-    flash("Writer approved and client notified.", "success")
+    flash("Writer features have been disabled.", "info")
     return redirect(url_for("main.admin_orders"))
 
 
@@ -3161,15 +2402,7 @@ def approve_job_application(application_id):
 def reject_job_application(application_id):
     if not current_user.is_admin:
         abort(403)
-    app_item = JobApplication.query.get_or_404(application_id)
-    if app_item.status == "approved":
-        flash("Approved applications cannot be rejected directly. Reassign the order first.", "warning")
-        return redirect(url_for("main.admin_orders"))
-    app_item.status = "rejected"
-    app_item.reviewed_at = datetime.utcnow()
-    _audit_admin_action(f"Order #{app_item.order_id}", f"Rejected application #{app_item.id}")
-    db.session.commit()
-    flash("Application rejected.", "info")
+    flash("Writer features have been disabled.", "info")
     return redirect(url_for("main.admin_orders"))
 
 
@@ -3178,23 +2411,7 @@ def reject_job_application(application_id):
 def clarify_job_application(application_id):
     if not current_user.is_admin:
         abort(403)
-    app_item = JobApplication.query.get_or_404(application_id)
-    note = (request.form.get("clarification") or "").strip()
-    if not note:
-        flash("Clarification message cannot be empty.", "warning")
-        return redirect(url_for("main.admin_orders"))
-    db.session.add(
-        Message(
-            sender_id=current_user.id,
-            receiver_id=app_item.writer_user_id,
-            content=f"[Order #{app_item.order_id}] Clarification requested: {note}",
-            is_admin=True,
-            is_read=False,
-        )
-    )
-    _audit_admin_action(f"Order #{app_item.order_id}", f"Requested clarification for application #{app_item.id}")
-    db.session.commit()
-    flash("Clarification request sent.", "success")
+    flash("Job applications have been disabled.", "info")
     return redirect(url_for("main.admin_orders"))
 
 
@@ -3221,32 +2438,7 @@ def admin_orders_bulk():
         flash(f"Updated {len(orders)} orders.", "success")
         return redirect(url_for("main.admin_orders"))
     if action == "approve_first_pending":
-        updated = 0
-        for order in orders:
-            app_item = JobApplication.query.filter_by(order_id=order.id, status="pending").order_by(JobApplication.created_at.asc()).first()
-            if not app_item or order.writer_id:
-                continue
-            app_item.status = "approved"
-            app_item.reviewed_at = datetime.utcnow()
-            others = JobApplication.query.filter(
-                JobApplication.order_id == order.id,
-                JobApplication.id != app_item.id,
-                JobApplication.status == "pending",
-            ).all()
-            for other in others:
-                other.status = "rejected"
-                other.reviewed_at = datetime.utcnow()
-            writer_user = User.query.get(app_item.writer_user_id)
-            if writer_user:
-                linked_writer = Writer.query.filter_by(name=writer_user.name, approved=True).first()
-                if linked_writer:
-                    order.writer_id = linked_writer.id
-            order.status = "Assigned"
-            order.assigned_at = datetime.utcnow()
-            updated += 1
-        _audit_admin_action("Bulk Application Approval", f"Approved first pending application for {updated} order(s)")
-        db.session.commit()
-        flash(f"Approved applications for {updated} orders.", "success")
+        flash("Job applications have been disabled.", "info")
         return redirect(url_for("main.admin_orders"))
     flash("Unknown bulk action selected.", "warning")
     return redirect(url_for("main.admin_orders"))
@@ -3285,7 +2477,8 @@ def order_chat(order_id):
     admin_view = current_user.is_admin
 
     status_lower = (order.status or "").lower()
-    chat_active = status_lower in ("open", "in progress", "revision") and approved_app is not None
+    # Chat is active for admin-client conversations (no writer features)
+    chat_active = status_lower in ("open", "in progress", "revision", "completed")
     if request.method == "POST":
         if admin_view:
             flash("Admin order monitoring is read-only on this page.", "info")
@@ -3350,19 +2543,14 @@ def order_chat(order_id):
             msg.is_read = True
     db.session.commit()
     order_files = OrderFile.query.filter_by(order_id=order.id).order_by(OrderFile.uploaded_at.desc()).all()
-    writer_user = User.query.get(approved_app.writer_user_id) if approved_app else None
-    writer_profile = Writer.query.filter_by(name=writer_user.name, approved=True).first() if writer_user else None
+    # Writer features removed - no writer user or profile
+    writer_user = None
+    writer_profile = None
     existing_review = None
-    if writer_profile and current_user.id == order.user_id and (order.status or "").lower() == "completed":
-        existing_review = OrderReview.query.filter_by(order_id=order.id, user_id=current_user.id).first()
     milestones = [
-        {"label": "Writer Assigned", "done": bool(approved_app)},
-        {"label": "Outline Approved", "done": "outline" in status_lower or "in progress" in status_lower or "completed" in status_lower},
-        {"label": "Research Phase", "done": "research" in status_lower or "in progress" in status_lower or "completed" in status_lower},
-        {"label": "Draft Submitted", "done": "draft" in status_lower or "revision" in status_lower or "completed" in status_lower},
-        {"label": "Plagiarism Check", "done": "plagiarism" in status_lower or "completed" in status_lower},
-        {"label": "Revision", "done": "revision" in status_lower},
-        {"label": "Completed", "done": "completed" in status_lower},
+        {"label": "Order Received", "done": order.status is not None},
+        {"label": "In Progress", "done": "in progress" in (order.status or "").lower() or "completed" in (order.status or "").lower()},
+        {"label": "Completed", "done": "completed" in (order.status or "").lower()},
     ]
     done_count = sum(1 for m in milestones if m["done"])
     progress_percent = int((done_count / len(milestones)) * 100) if milestones else 0
@@ -3615,49 +2803,8 @@ def order_admin_messages(order_id):
 @main.route("/orders/<int:order_id>/review", methods=["POST"])
 @login_required
 def submit_order_review(order_id):
-    order = Order.query.get_or_404(order_id)
-    if current_user.id != order.user_id:
-        abort(403)
-    if (order.status or "").lower() != "completed":
-        flash("Reviews can only be submitted after completion.", "warning")
-        return redirect(url_for("main.order_chat", order_id=order.id))
-    approved_app = JobApplication.query.filter_by(order_id=order.id, status="approved").first()
-    if not approved_app:
-        flash("Writer not found for this order.", "danger")
-        return redirect(url_for("main.order_chat", order_id=order.id))
-    writer_user = User.query.get(approved_app.writer_user_id)
-    writer_profile = Writer.query.filter_by(name=writer_user.name, approved=True).first() if writer_user else None
-    if not writer_profile:
-        flash("Writer profile is unavailable.", "danger")
-        return redirect(url_for("main.order_chat", order_id=order.id))
-
-    rating = request.form.get("rating", type=int)
-    comment = (request.form.get("comment") or "").strip()
-    if not rating or rating < 1 or rating > 5:
-        flash("Rating must be between 1 and 5.", "danger")
-        return redirect(url_for("main.order_chat", order_id=order.id))
-
-    existing = OrderReview.query.filter_by(order_id=order.id, user_id=current_user.id).first()
-    if existing:
-        flash("You already reviewed this order.", "info")
-        return redirect(url_for("main.order_chat", order_id=order.id))
-
-    db.session.add(OrderReview(
-        order_id=order.id,
-        writer_id=writer_profile.id,
-        user_id=current_user.id,
-        rating=rating,
-        comment=comment
-    ))
-    db.session.commit()
-
-    ratings = OrderReview.query.filter_by(writer_id=writer_profile.id).all()
-    if ratings:
-        writer_profile.rating = round(sum(r.rating for r in ratings) / len(ratings), 2)
-        db.session.commit()
-
-    flash("Thank you for your feedback.", "success")
-    return redirect(url_for("main.order_chat", order_id=order.id))
+    flash("Reviews are not available.", "info")
+    return redirect(url_for("main.dashboard"))
 
 
 @main.route("/orders/<int:order_id>/admin-message", methods=["POST"])
@@ -3668,9 +2815,7 @@ def order_admin_message(order_id):
         flash("Admin monitoring view is read-only for order chat.", "info")
         return redirect(url_for("main.order_chat", order_id=order.id))
     if current_user.id != order.user_id and not current_user.is_admin:
-        approved_app = JobApplication.query.filter_by(order_id=order.id, status="approved").first()
-        if not approved_app or approved_app.writer_user_id != current_user.id:
-            abort(403)
+        abort(403)
     text = (request.form.get("admin_message") or "").strip()
     if not text:
         flash("Message cannot be empty.", "danger")
@@ -3696,10 +2841,7 @@ def order_admin_message(order_id):
 def download_order_file(filename):
     file_item = OrderFile.query.filter_by(filename=filename).first_or_404()
     order = Order.query.get_or_404(file_item.order_id)
-    approved_app = JobApplication.query.filter_by(order_id=order.id, status="approved").first()
     allowed_ids = {order.user_id}
-    if approved_app:
-        allowed_ids.add(approved_app.writer_user_id)
     if current_user.is_admin:
         allowed_ids.add(current_user.id)
     if current_user.id not in allowed_ids:
@@ -3881,9 +3023,9 @@ def admin_chat_grouped():
     users = {u.id: u for u in User.query.filter(User.id.in_(partner_ids)).all()} if partner_ids else {}
 
     # Preload writer references and ratings for quick admin context.
-    writer_profiles = {w.name: w for w in Writer.query.filter_by(approved=True).all()}
-    approved_writer_emails = {a.email.lower() for a in Application.query.filter_by(approved=True).all() if a.email}
-    review_rows = db.session.query(OrderReview.writer_id, db.func.avg(OrderReview.rating), db.func.count(OrderReview.id)).group_by(OrderReview.writer_id).all()
+    writer_profiles = {}
+    approved_writer_emails = set()
+    review_rows = []
     ratings_by_writer = {int(r[0]): {"avg": round(float(r[1] or 0), 1), "count": int(r[2] or 0)} for r in review_rows}
 
     search_q = (request.args.get("q") or "").strip().lower()
@@ -4454,9 +3596,8 @@ def admin_blog_manage():
 @main.route('/writer/blog/manage', methods=['GET', 'POST'])
 @login_required
 def writer_blog_manage():
-    if not _is_approved_writer(current_user):
-        abort(403)
-    return redirect(url_for("main.blog_manage", scope="writer"))
+    flash("Writer features have been disabled.", "info")
+    return redirect(url_for("main.dashboard"))
 
 @main.route('/admin/blog/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
@@ -4509,41 +3650,15 @@ def delete_blog(id):
 @main.route('/writer/blog/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
 def writer_edit_blog(id):
-    if not _is_approved_writer(current_user):
-        abort(403)
-    post = BlogPost.query.get_or_404(id)
-    if post.author_id != current_user.id:
-        abort(403)
-    if request.method == 'POST':
-        post.title = (request.form.get('title') or "").strip()
-        post.excerpt = (request.form.get('excerpt') or "").strip() or None
-        post.category = (request.form.get('category') or "Academic Skills").strip()
-        post.pillar = (request.form.get('pillar') or "").strip() or None
-        post.cluster_topic = (request.form.get('cluster_topic') or "").strip() or None
-        post.content = (request.form.get('content') or "").strip()
-        post.is_published = bool(request.form.get("is_published"))
-        post.author_name = post.author_name or current_user.name
-        if not post.title or not post.content:
-            flash("Title and content are required.", "warning")
-            return redirect(url_for('main.writer_edit_blog', id=post.id))
-        db.session.commit()
-        flash('Blog post updated!', 'success')
-        return redirect(url_for('main.blog_manage', scope="writer"))
-    return render_template('edit_blog.html', post=post, manage_scope="writer")
+    flash("Writer features have been disabled.", "info")
+    return redirect(url_for("main.dashboard"))
 
 
 @main.route('/writer/blog/<int:id>/delete')
 @login_required
 def writer_delete_blog(id):
-    if not _is_approved_writer(current_user):
-        abort(403)
-    post = BlogPost.query.get_or_404(id)
-    if post.author_id != current_user.id:
-        abort(403)
-    db.session.delete(post)
-    db.session.commit()
-    flash('Blog post deleted.', 'info')
-    return redirect(url_for('main.blog_manage', scope="writer"))
+    flash("Writer features have been disabled.", "info")
+    return redirect(url_for("main.dashboard"))
 
 @main.route('/admin/messages/json', methods=['GET'])
 @login_required
@@ -4572,6 +3687,10 @@ def about():
 @main.route('/services')
 def services_page():
     return render_template('services.html')
+
+@main.route('/pricing')
+def pricing_page():
+    return render_template('pricing.html')
 
 @main.route('/testimonials')
 def testimonials():

@@ -28,21 +28,16 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto">
           <li class="nav-item"><a class="nav-link" href="{{ url_for('main.services_page') }}">Services</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.public_writers') }}">Writers</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.pricing_page') }}">Pricing</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('main.Samples') }}">Samples</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('main.public_blogs') }}">Blog</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('main.contact') }}">Contact</a></li>
         </ul>
 
         <div class="d-flex align-items-center gap-2 ms-lg-3">
-          {% if current_user.is_authenticated and writer_enabled and not current_user.is_admin %}
-            <span class="badge text-bg-info">Writer Mode</span>
-          {% endif %}
           {% if current_user.is_authenticated %}
             {% if current_user.is_admin %}
               <a class="btn btn-warning btn-sm fw-semibold" href="{{ url_for('main.admin_dashboard') }}">Admin Panel</a>
-            {% elif writer_enabled %}
-              <a class="btn btn-warning btn-sm fw-semibold" href="{{ url_for('main.jobs') }}">Open Jobs</a>
             {% else %}
               <a class="btn btn-warning btn-sm fw-semibold" href="{{ url_for('main.order') }}">Place Order</a>
             {% endif %}
@@ -73,10 +68,6 @@
                 <li><a class="dropdown-item" href="{{ url_for('main.admin_dashboard') }}">Admin Dashboard</a></li>
                 <li><a class="dropdown-item" href="{{ url_for('main.admin_blog_manage') }}">Manage Blogs</a></li>
                 <li><a class="dropdown-item" href="{{ url_for('main.admin_samples') }}">Manage Samples</a></li>
-                {% elif writer_enabled %}
-                <li><a class="dropdown-item" href="{{ url_for('main.dashboard') }}">Writer Dashboard</a></li>
-                <li><a class="dropdown-item" href="{{ url_for('main.writer_blog_manage') }}">Manage Blogs</a></li>
-                <li><a class="dropdown-item" href="{{ url_for('main.writer_samples') }}">Writer Samples</a></li>
                 {% else %}
                 <li><a class="dropdown-item" href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
                 {% endif %}
@@ -119,7 +110,7 @@
     <div class="ai-panel-head">
       <div>
         <div class="ai-title">AcademicPro AI</div>
-        <div class="ai-sub">Smart assistant for orders, pricing, writers, and deadlines</div>
+        <div class="ai-sub">Smart assistant for orders, pricing, services, and deadlines</div>
       </div>
       <button type="button" class="btn-close btn-close-sm" id="globalAiClose" aria-label="Close"></button>
     </div>
@@ -234,7 +225,7 @@
           if (!res.ok || !data.ok) return;
           const rows = data.messages || [];
           if (!rows.length) {
-            body.innerHTML = bubble("assistant", "I am ready. Tell me your topic, deadline, level, and word count, and I will guide you step by step.");
+          body.innerHTML = bubble("assistant", "I am ready. Tell me your topic, deadline, level, service type, and word count, and I will guide you step by step.");
             return;
           }
           body.innerHTML = rows.map((m) => bubble(m.role, m.content, m.timestamp)).join("");

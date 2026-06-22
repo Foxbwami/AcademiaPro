@@ -1,249 +1,91 @@
-﻿{% extends "base.html" %}
-{% block title %}AcademicPro - Home{% endblock %}
+{% extends "base.html" %}
+{% block title %}AcademicPro - Academic & Technical Consultancy{% endblock %}
 {% block content %}
-<section class="home-hero text-center py-5">
-  <h1 class="display-5 fw-bold">Explore AcademicPro - Trusted Academic Support</h1>
-  <p class="lead text-muted">Discover expert writing services, free learning resources, and a secure academic workflow.</p>
-  <div class="d-flex justify-content-center gap-2 flex-wrap">
-    {% if is_admin %}
-    <a href="{{ url_for('main.admin_dashboard') }}" class="btn btn-primary btn-lg">Open Admin Dashboard</a>
-    <a href="{{ url_for('main.admin_orders') }}" class="btn btn-warning btn-lg">Monitor Orders</a>
-    <a href="{{ url_for('main.public_blogs') }}" class="btn btn-outline-primary btn-lg">Resource Hub</a>
-    {% elif is_writer %}
-    <a href="{{ url_for('main.jobs') }}" class="btn btn-primary btn-lg">Open Job Board</a>
-    <a href="{{ url_for('main.dashboard') }}" class="btn btn-warning btn-lg">Writer Dashboard</a>
-    <a href="{{ url_for('main.public_blogs') }}" class="btn btn-outline-primary btn-lg">Resource Hub</a>
-    {% elif is_authenticated %}
-    <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary btn-lg">Open Dashboard</a>
-    <a href="{{ url_for('main.order') }}" class="btn btn-warning btn-lg">Place Order</a>
-    <a href="{{ url_for('main.public_blogs') }}" class="btn btn-outline-primary btn-lg">Resource Hub</a>
-    {% else %}
-    <a href="{{ url_for('main.register') }}" class="btn btn-primary btn-lg">Sign Up</a>
-    <a href="{{ url_for('main.order') }}" class="btn btn-warning btn-lg">Place Order</a>
-    <a href="{{ url_for('main.writer_apply') }}" class="btn btn-outline-primary btn-lg">Apply as Writer</a>
-    {% endif %}
+<section class="consult-hero mb-4">
+  <div class="row g-4 align-items-center">
+    <div class="col-lg-7">
+      <div class="eyebrow">Scholarly & Technical Consultancy</div>
+      <h1 class="display-5 fw-bold mb-3">From Research to Code, Excellence Delivered.</h1>
+      <p class="lead mb-3">Academic research, programming projects, career guidance, exam preparation, and technical consulting for students and professionals worldwide.</p>
+      <div class="d-flex flex-wrap gap-2 mb-4">
+        <span class="hero-chip">Research</span>
+        <span class="hero-chip">Programming</span>
+        <span class="hero-chip">AI & ML</span>
+        <span class="hero-chip">Career Growth</span>
+      </div>
+      <div class="d-flex flex-wrap gap-2">
+        {% if is_admin %}
+          <a href="{{ url_for('main.admin_dashboard') }}" class="btn btn-warning btn-lg">Open Admin Dashboard</a>
+          <a href="{{ url_for('main.admin_orders') }}" class="btn btn-outline-light btn-lg">Monitor Orders</a>
+        {% elif is_authenticated %}
+          <a href="{{ url_for('main.dashboard') }}" class="btn btn-warning btn-lg">Open Client Dashboard</a>
+          <a href="{{ url_for('main.order') }}" class="btn btn-outline-light btn-lg">Request Consultation</a>
+        {% else %}
+          <a href="{{ url_for('main.order') }}" class="btn btn-warning btn-lg">Request Consultation</a>
+          <a href="{{ url_for('main.services_page') }}" class="btn btn-outline-light btn-lg">Explore Services</a>
+        {% endif %}
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="hero-console">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <span class="small text-uppercase fw-semibold">Project Desk</span>
+          <span class="badge text-bg-success">Online</span>
+        </div>
+        <div class="console-row"><span>Manuscript</span><strong>Originality review</strong></div>
+        <div class="console-row"><span>Codebase</span><strong>Python / React / SQL</strong></div>
+        <div class="console-row"><span>Career</span><strong>CV + LinkedIn optimization</strong></div>
+        <div class="console-row"><span>Response</span><strong>Within 2 hours</strong></div>
+      </div>
+    </div>
   </div>
 </section>
 
 <section class="mb-5">
   <div class="row g-3 text-center">
-    <div class="col-md-3"><div class="tile-soft"><div class="metric-value">1200+</div><div class="metric-label">Students Supported</div></div></div>
-    <div class="col-md-3"><div class="tile-soft"><div class="metric-value">3500</div><div class="metric-label">Papers Delivered</div></div></div>
-    <div class="col-md-3"><div class="tile-soft"><div class="metric-value">96%</div><div class="metric-label">On-Time Success</div></div></div>
-    <div class="col-md-3"><div class="tile-soft text-start small"><div>✔ SSL Secure Portal</div><div>✔ Free Similarity Report Included</div><div>✔ Confidentiality Guaranteed</div></div></div>
+    <div class="col-md-3"><div class="tile-soft"><div class="metric-value">700+</div><div class="metric-label">Clients Supported</div></div></div>
+    <div class="col-md-3"><div class="tile-soft"><div class="metric-value">30+</div><div class="metric-label">Countries Reached</div></div></div>
+    <div class="col-md-3"><div class="tile-soft"><div class="metric-value">5.0</div><div class="metric-label">Client Rating</div></div></div>
+    <div class="col-md-3"><div class="tile-soft text-start small"><div>SSL Secure Portal</div><div>NDA Protected</div><div>Fast Turnaround Available</div></div></div>
   </div>
 </section>
 
-<section class="mb-5">
-  <h2 class="section-title text-center">Trust & Transparency</h2>
-  <div class="row g-3">
-    <div class="col-md-4"><div class="tile-soft h-100"><h5>Plagiarism Report Included</h5><p class="mb-0">Every completed order includes a similarity report summary for transparency and quality assurance.</p></div></div>
-    <div class="col-md-4"><div class="tile-soft h-100"><h5>Money-Back & Revision Policy</h5><p class="mb-2">Clear terms for refunds and revisions reduce client risk.</p><a href="{{ url_for('main.payment_policy') }}">View policy</a></div></div>
-    <div class="col-md-4"><div class="tile-soft h-100"><h5>Professional Standards</h5><p class="mb-0">Our internal quality process follows academic integrity, formatting accuracy, and deadline discipline.</p></div></div>
-  </div>
-</section>
-
-<section class="home-structured-block mb-5">
+<section class="home-structured-block mb-5" id="services">
   <div class="home-structured-shell">
-    <h2 class="section-title text-center mb-2">How It Works</h2>
-    <p class="text-center text-muted mb-4">A transparent process designed for secure delivery and clear communication.</p>
-    <div class="how-timeline">
-      <article class="how-step-card">
-        <div class="how-step-icon"><i class="bi bi-file-earmark-text"></i></div>
-        <h5>Submit Instructions</h5>
-        <p>Share your topic, academic level, citation style, and deadline with full requirements.</p>
-        <div class="small text-muted">Clear briefs lead to faster, stronger drafts.</div>
-      </article>
-      <article class="how-step-card">
-        <div class="how-step-icon"><i class="bi bi-shield-check"></i></div>
-        <h5>Admin Review</h5>
-        <p>Every order is checked and matched to a qualified writer by subject expertise.</p>
-        <div class="small text-muted">Quality and fit are verified before work starts.</div>
-      </article>
-      <article class="how-step-card">
-        <div class="how-step-icon"><i class="bi bi-lock"></i></div>
-        <h5>Secure Deposit</h5>
-        <p>Payment is held under platform rules while your task progresses.</p>
-        <div class="small text-muted">Safe escrow-style handling protects both sides.</div>
-      </article>
-      <article class="how-step-card">
-        <div class="how-step-icon"><i class="bi bi-chat-dots"></i></div>
-        <h5>Live Collaboration</h5>
-        <p>Use built-in chat to clarify details, review updates, and guide the outcome.</p>
-        <div class="small text-muted">Everything stays in one organized workspace.</div>
-      </article>
-      <article class="how-step-card">
-        <div class="how-step-icon"><i class="bi bi-check-circle"></i></div>
-        <h5>Review & Release</h5>
-        <p>Approve the final paper or request revision before payment is released.</p>
-        <div class="small text-muted">Completion is controlled by your satisfaction.</div>
-      </article>
-    </div>
-  </div>
-</section>
-
-<section class="home-structured-block home-structured-block-alt mb-5" id="services">
-  <div class="home-structured-shell">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-      <h2 class="section-title mb-0">Our Services</h2>
-      <a href="{{ url_for('main.services_page') }}" class="btn btn-outline-primary">Explore All Services</a>
-    </div>
+    <div class="section-kicker">Our Focus Areas</div>
+    <h2 class="section-title mb-2">Elite Solutions Tailored for Academic Success</h2>
+    <p class="text-muted mb-4">A single consultancy desk for research, technical builds, exam readiness, and career documents.</p>
     <div class="row g-3">
-      <div class="col-md-6 col-lg-3">
-        <div class="service-card h-100">
+      <div class="col-md-6 col-xl-3">
+        <article class="service-card h-100">
           <div class="service-icon"><i class="bi bi-journal-text"></i></div>
-          <h5>Essay Writing</h5>
-          <p>Narrative, persuasive, and analytical essays tailored to your academic level and rubric.</p>
-        </div>
-      </div>
-      <div class="col-md-6 col-lg-3">
-        <div class="service-card h-100">
-          <div class="service-icon"><i class="bi bi-bar-chart-line"></i></div>
-          <h5>Research Papers</h5>
-          <p>Evidence-based papers with credible sources, proper citations, and plagiarism-free originality.</p>
-        </div>
-      </div>
-      <div class="col-md-6 col-lg-3">
-        <div class="service-card h-100">
-          <div class="service-icon"><i class="bi bi-mortarboard"></i></div>
-          <h5>Dissertations</h5>
-          <p>Comprehensive support from proposal design and methodology to final review and defense prep.</p>
-        </div>
-      </div>
-      <div class="col-md-6 col-lg-3">
-        <div class="service-card h-100">
-          <div class="service-icon"><i class="bi bi-check2-square"></i></div>
-          <h5>Assignments</h5>
-          <p>Reliable help for coursework, problem-solving tasks, and case studies across disciplines.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="home-structured-block mb-5" id="writers">
-  <div class="home-structured-shell">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-      <h2 class="section-title mb-0">Meet Our Writers</h2>
-      <a href="{{ url_for('main.public_writers') }}" class="btn btn-primary">View Writers</a>
-    </div>
-    <div class="row g-3">
-      {% if writers %}
-        {% for w in writers %}
-          {% set safe_rating = w.rating if w.rating and w.rating > 0 else 4.8 %}
-          {% set safe_reviews = review_counts.get(w.id, 0) if review_counts.get(w.id, 0) > 0 else 25 %}
-          <div class="col-md-6 col-lg-4">
-            <div class="writer-profile-card h-100">
-              <div class="writer-profile-head">
-                <img src="{{ url_for('static', filename='img/writer-photo.png') }}" alt="{{ w.name }} profile" class="writer-profile-avatar">
-                <div>
-                  <h5 class="mb-0">{{ w.name }}</h5>
-                  <div class="small text-muted">{{ w.subject or 'Academic Specialist' }}</div>
-                </div>
-              </div>
-              <div class="writer-rating-line">
-                <span class="stars">★★★★☆</span>
-                <span class="small">{{ '%.1f'|format(safe_rating) }}/5</span>
-                <span class="small text-muted">({{ safe_reviews }} reviews)</span>
-              </div>
-              <p class="mb-3">Trusted for clear structure, accurate referencing, and dependable on-time delivery.</p>
-              <a href="{{ url_for('main.public_writers') }}" class="btn btn-outline-primary btn-sm">View Full Profile</a>
-            </div>
-          </div>
-        {% endfor %}
-      {% else %}
-        <div class="col-12"><div class="tile-soft">No approved writers yet.</div></div>
-      {% endif %}
-    </div>
-  </div>
-</section>
-
-<section class="writer-recruit-band mb-5" id="writer-recruitment">
-  <div class="writer-recruit-shell">
-    <div class="row g-4 align-items-stretch">
-      <div class="col-lg-6">
-        <div class="d-flex align-items-center gap-2 mb-2">
-          <i class="bi bi-mortarboard-fill"></i>
-          <h2 class="mb-0">{{ recruitment.headline }}</h2>
-        </div>
-        <p class="mb-3">{{ recruitment.subtext }}</p>
-        <div class="writer-recruit-benefits mb-3">
-          <div class="benefit-row"><i class="bi bi-clock-history"></i><span>{{ recruitment.benefits[0] if recruitment.benefits|length > 0 else 'Flexible work schedule' }}</span></div>
-          <div class="benefit-row"><i class="bi bi-shield-check"></i><span>{{ recruitment.benefits[1] if recruitment.benefits|length > 1 else 'Secure payments' }}</span></div>
-          <div class="benefit-row"><i class="bi bi-journal-bookmark"></i><span>{{ recruitment.benefits[2] if recruitment.benefits|length > 2 else 'Build your academic portfolio' }}</span></div>
-          <div class="benefit-row"><i class="bi bi-globe2"></i><span>{{ recruitment.benefits[3] if recruitment.benefits|length > 3 else 'Work with global clients' }}</span></div>
-        </div>
-        <div class="d-flex gap-2 flex-wrap">
-          <a href="{{ url_for('main.writer_apply') }}" class="btn writer-recruit-btn btn-lg">{{ recruitment.cta_text }}</a>
-          <a href="{{ url_for('main.writer_recruitment') }}" class="btn writer-learn-btn btn-lg">Learn More About Becoming a Writer</a>
-        </div>
-
-        <blockquote class="writer-quote mt-3 mb-0">"{{ recruitment.testimonial }}" - {{ recruitment.testimonial_author }}</blockquote>
-      </div>
-      <div class="col-lg-6">
-        <div class="writer-recruit-right h-100">
-          <div class="writer-visual-stage mb-3" aria-label="Writer recruitment visual">
-            <div class="writer-visual-overlay">
-              <div class="writer-visual-title">Writer Pathway</div>
-              <div class="writer-visual-sub">Structured onboarding for quality and consistency</div>
-              <div class="writer-visual-steps">
-                {% for step in recruitment.steps[:4] %}
-                <span class="visual-step">{{ loop.index }}. {{ step }}</span>
-                {% endfor %}
-              </div>
-            </div>
-          </div>
-          <div class="writer-recruit-card writer-spotlight-card">
-            <h5 class="mb-2">Writer Spotlight</h5>
-            {% if writers %}
-            {% set sw = writers[0] %}
-            <div class="d-flex align-items-center gap-2">
-              <img src="{{ url_for('static', filename='img/writer-photo.png') }}" alt="Writer spotlight" class="writer-spotlight-avatar">
-              <div>
-                <div class="fw-semibold">{{ sw.name }}</div>
-                <div class="small text-muted">{{ sw.subject or 'Academic Specialist' }}</div>
-                <div class="small">Rating: {{ sw.rating or 4.8 }}/5</div>
-              </div>
-            </div>
-            {% else %}
-            <div class="small text-muted">Approved writer spotlights will appear here.</div>
-            {% endif %}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="home-structured-block mb-5" id="testimonials">
-  <div class="home-structured-shell">
-    <h2 class="section-title mb-2">Testimonials</h2>
-    <p class="text-muted mb-4">Real feedback from students who used AcademicPro to meet tight deadlines with confidence.</p>
-    <div class="row g-3">
-      <div class="col-md-6">
-        <article class="testimonial-card h-100">
-          <div class="testimonial-quote-mark"><i class="bi bi-quote"></i></div>
-          <p class="mb-3">"AcademicPro helped me meet my deadline and improve my grade. The process was smooth and professional."</p>
-          <div class="d-flex align-items-center gap-2">
-            <span class="testimonial-avatar">S</span>
-            <div>
-              <div class="fw-semibold">Sarah</div>
-              <div class="small text-muted">University Student</div>
-            </div>
-          </div>
+          <h5>Academic & Research Writing</h5>
+          <p>Literature reviews, dissertations, methodology support, quantitative studies, research papers, and publication-ready editing.</p>
+          <ul class="small mb-0"><li>APA, Harvard, IEEE, Chicago</li><li>Abstracts and literature maps</li></ul>
         </article>
       </div>
-      <div class="col-md-6">
-        <article class="testimonial-card h-100">
-          <div class="testimonial-quote-mark"><i class="bi bi-quote"></i></div>
-          <p class="mb-3">"I was impressed by the quality of research and the attention to detail. Highly recommended!"</p>
-          <div class="d-flex align-items-center gap-2">
-            <span class="testimonial-avatar">D</span>
-            <div>
-              <div class="fw-semibold">Daniel</div>
-              <div class="small text-muted">Graduate Student</div>
-            </div>
-          </div>
+      <div class="col-md-6 col-xl-3">
+        <article class="service-card h-100">
+          <div class="service-icon"><i class="bi bi-code-slash"></i></div>
+          <h5>Programming & Technical</h5>
+          <p>Full-stack apps, database designs, algorithms, Python, Java, R, SQL, machine learning, AI integrations, and debugging.</p>
+          <ul class="small mb-0"><li>Documented repositories</li><li>Implementation guidance</li></ul>
+        </article>
+      </div>
+      <div class="col-md-6 col-xl-3">
+        <article class="service-card h-100">
+          <div class="service-icon"><i class="bi bi-mortarboard"></i></div>
+          <h5>Exam Preparation</h5>
+          <p>Custom study maps, mock exams, concept breakdowns, flashcards, timed practice, and diagnostic review loops.</p>
+          <ul class="small mb-0"><li>Subject timelines</li><li>Step-by-step logic sheets</li></ul>
+        </article>
+      </div>
+      <div class="col-md-6 col-xl-3">
+        <article class="service-card h-100">
+          <div class="service-icon"><i class="bi bi-briefcase"></i></div>
+          <h5>Career & Resume</h5>
+          <p>CV revamping, LinkedIn optimization, personal statements, cover letters, job applications, and interview coaching.</p>
+          <ul class="small mb-0"><li>ATS-aware formatting</li><li>Recruiter-aligned language</li></ul>
         </article>
       </div>
     </div>
@@ -252,56 +94,105 @@
 
 <section class="home-structured-block home-structured-block-alt mb-5">
   <div class="home-structured-shell">
-    <h2 class="section-title mb-2">Student Success Stories</h2>
-    <p class="text-muted mb-4">Selected examples showing how structured support turned high-pressure tasks into strong submissions.</p>
+    <div class="section-kicker">Capabilities & Outcomes</div>
+    <h2 class="section-title mb-3">Proven Project Outcomes</h2>
     <div class="row g-3">
       <div class="col-md-6">
-        <article class="success-story-card h-100">
-          <div class="success-story-icon"><i class="bi bi-heart-pulse"></i></div>
-          <h5>Dissertation Rescue (Nursing)</h5>
-          <p class="mb-1"><span class="fw-semibold">Challenge:</span> Weak methodology chapter and deadline pressure.</p>
-          <p class="mb-0"><span class="fw-semibold">Outcome:</span> Revised structure, evidence-backed data interpretation, and on-time submission with supervisor approval.</p>
+        <article class="outcome-card h-100">
+          <span class="pill">Originality Reviewed</span>
+          <h5>Academic & Thesis Consultancy</h5>
+          <p>Methodology support, literature review development, dissertation structuring, and academic writing guidance aligned with university-level expectations.</p>
+          <strong>Key Outcome:</strong> Originality-focused delivery with plagiarism checks available where applicable.
         </article>
       </div>
       <div class="col-md-6">
-        <article class="success-story-card h-100">
-          <div class="success-story-icon"><i class="bi bi-graph-up-arrow"></i></div>
-          <h5>Data Analysis Support (Business)</h5>
-          <p class="mb-1"><span class="fw-semibold">Challenge:</span> Complex dataset and unclear narrative.</p>
-          <p class="mb-0"><span class="fw-semibold">Outcome:</span> Clear analysis framework, visualized findings, and stronger argument quality for final grading.</p>
+        <article class="outcome-card h-100">
+          <span class="pill">Implementation Ready</span>
+          <h5>Coding, AI & ML Project Support</h5>
+          <p>Machine learning pipelines, full-stack development, database systems, API integration, and technical documentation.</p>
+          <strong>Key Outcome:</strong> Clean, documented, and structured implementation support.
+        </article>
+      </div>
+      <div class="col-md-6">
+        <article class="outcome-card h-100">
+          <span class="pill">Career Ready</span>
+          <h5>CV, LinkedIn & ATS Optimization</h5>
+          <p>CV restructuring, keyword optimization, LinkedIn profile improvement, and application support for students and professionals.</p>
+          <strong>Key Outcome:</strong> Documents designed for stronger recruiter readability.
+        </article>
+      </div>
+      <div class="col-md-6">
+        <article class="outcome-card h-100">
+          <span class="pill">Performance Focused</span>
+          <h5>Systems Design & Architecture</h5>
+          <p>Database design, system planning, debugging, scalability review, and technical consultation for complex programming projects.</p>
+          <strong>Key Outcome:</strong> Structured technical guidance for maintainable solutions.
         </article>
       </div>
     </div>
   </div>
 </section>
 
-<section class="mb-5">
-  <h2 class="section-title text-center">Accreditation & Quality Badges</h2>
-  <div class="d-flex flex-wrap justify-content-center gap-3">
-    <span class="badge bg-light text-dark border p-2">Academic Integrity Standard</span>
-    <span class="badge bg-light text-dark border p-2">Secure Payments Verified</span>
-    <span class="badge bg-light text-dark border p-2">Confidential Workflow Certified</span>
+<section class="home-structured-block mb-5">
+  <div class="home-structured-shell">
+    <div class="section-kicker">Transparent Pricing</div>
+    <h2 class="section-title mb-3">Transparent Investments in Excellence</h2>
+    <div class="row g-3">
+      <div class="col-md-6 col-xl-3"><div class="pricing-card h-100"><h5>Academic Research</h5><div class="price">$12/page</div><p>Bespoke drafting, advisory, editing, citations, and literature synthesis.</p><a href="{{ url_for('main.order') }}" class="btn btn-outline-primary btn-sm">Inquire</a></div></div>
+      <div class="col-md-6 col-xl-3"><div class="pricing-card featured h-100"><div class="badge text-bg-warning mb-2">Most Popular</div><h5>Programming</h5><div class="price">$25/task</div><p>Documented coding solutions, databases, scripts, AI/ML, and custom builds.</p><a href="{{ url_for('main.order') }}" class="btn btn-primary btn-sm">Inquire</a></div></div>
+      <div class="col-md-6 col-xl-3"><div class="pricing-card h-100"><h5>Exam Prep</h5><div class="price">$30/session</div><p>Study mapping, conceptual coaching, mock exams, and revision plans.</p><a href="{{ url_for('main.order') }}" class="btn btn-outline-primary btn-sm">Inquire</a></div></div>
+      <div class="col-md-6 col-xl-3"><div class="pricing-card h-100"><h5>Career Services</h5><div class="price">$45/review</div><p>CV polishing, personal statements, cover letters, LinkedIn, and applications.</p><a href="{{ url_for('main.order') }}" class="btn btn-outline-primary btn-sm">Inquire</a></div></div>
+    </div>
   </div>
 </section>
 
-<section class="mb-5" id="blog">
-  <h2 class="section-title">Blog / Resources</h2>
-  <ul class="list-group">
-    <li class="list-group-item"><a href="{{ url_for('main.public_blogs') }}?q=thesis statement">How to Write a Strong Thesis Statement</a></li>
-    <li class="list-group-item"><a href="{{ url_for('main.public_blogs') }}?q=study hacks">Top 5 Study Hacks for Busy Students</a></li>
-    <li class="list-group-item"><a href="{{ url_for('main.public_blogs') }}?q=plagiarism">Avoiding Plagiarism: A Student’s Guide</a></li>
-  </ul>
+<section class="home-structured-block home-structured-block-alt mb-5">
+  <div class="home-structured-shell">
+    <div class="section-kicker">Our Advisory Framework</div>
+    <h2 class="section-title text-center mb-4">A Structured Blueprint to Execution</h2>
+    <div class="how-timeline">
+      <article class="how-step-card"><div class="how-step-icon"><i class="bi bi-search"></i></div><h5>Requirement Assessment</h5><p>We review rubrics, code requirements, datasets, citations, deadlines, and success criteria.</p></article>
+      <article class="how-step-card"><div class="how-step-icon"><i class="bi bi-person-check"></i></div><h5>Admin Allocation</h5><p>The admin desk assigns the best internal specialist path and confirms scope before work begins.</p></article>
+      <article class="how-step-card"><div class="how-step-icon"><i class="bi bi-layers"></i></div><h5>Milestone Updates</h5><p>You receive structured progress updates, drafts, code modules, or review checkpoints.</p></article>
+      <article class="how-step-card"><div class="how-step-icon"><i class="bi bi-shield-check"></i></div><h5>Quality Diagnostics</h5><p>Deliverables are checked for instructions, formatting, originality, and technical function.</p></article>
+      <article class="how-step-card"><div class="how-step-icon"><i class="bi bi-check-circle"></i></div><h5>Delivery & Support</h5><p>Final files are delivered through your client dashboard with revision and support options.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="mb-5">
+  <div class="row g-3">
+    <div class="col-lg-4"><div class="trust-panel h-100"><h5>NDA-Protected Privacy</h5><p>Your files, identity, research topics, formulas, and project details remain confidential.</p></div></div>
+    <div class="col-lg-4"><div class="trust-panel h-100"><h5>Dedicated Admin Support</h5><p>Client communication is managed through the admin desk for clarity, accountability, and fast response.</p></div></div>
+    <div class="col-lg-4"><div class="trust-panel h-100"><h5>Global Academic Standards</h5><p>Support is aligned to international rubrics, citation rules, software practices, and professional expectations.</p></div></div>
+  </div>
+</section>
+
+<section class="home-structured-block mb-5">
+  <div class="home-structured-shell">
+    <div class="section-kicker">Client Testimonials</div>
+    <h2 class="section-title mb-3">Verified Voices of Academic Success</h2>
+    <div class="row g-3">
+      <div class="col-md-4"><article class="testimonial-card h-100"><div class="stars">★★★★★</div><p>"Outstanding support on my machine learning project. Clean, documented code delivered ahead of deadline."</p><div class="small text-muted">Verified Client - Computer Science</div></article></div>
+      <div class="col-md-4"><article class="testimonial-card h-100"><div class="stars">★★★★★</div><p>"The dissertation was properly structured, cited, and delivered with excellent attention to supervisor feedback."</p><div class="small text-muted">Verified Client - Nursing</div></article></div>
+      <div class="col-md-4"><article class="testimonial-card h-100"><div class="stars">★★★★★</div><p>"My CV and LinkedIn profile were rebuilt clearly. The application package looked much more professional."</p><div class="small text-muted">Verified Client - Career Support</div></article></div>
+    </div>
+  </div>
 </section>
 
 <section class="cta-band text-center py-4 mb-3">
-  <h2 class="h3 fw-bold">Ready to Ace Your Papers?</h2>
-  <p class="mb-3">Get started today with expert academic support.</p>
-  <a href="{{ url_for('main.order') }}" class="btn btn-warning btn-lg">Place Order</a>
+  <div class="section-kicker">Get In Touch</div>
+  <h2 class="h3 fw-bold">Connect With AcademicPro</h2>
+  <p class="mb-3">Share your deadline, topic, files, and preferred service. The admin desk will respond with the next step.</p>
+  <div class="d-flex justify-content-center gap-2 flex-wrap">
+    <a href="{{ url_for('main.order') }}" class="btn btn-warning btn-lg">Start a Project</a>
+    <a href="mailto:bwamistevenez001@gmail.com" class="btn btn-outline-primary btn-lg">Email Admin</a>
+  </div>
 </section>
 
 <div class="guest-float-stack" aria-label="Guest support tools">
   {% if not current_user.is_authenticated %}
-  <button id="guestMsgFab" class="guest-fab msg" type="button" title="Message Admin" aria-label="Message admin">💬</button>
+  <button id="guestMsgFab" class="guest-fab msg" type="button" title="Message Admin" aria-label="Message admin"><i class="bi bi-chat-dots"></i></button>
   {% endif %}
 </div>
 
@@ -314,17 +205,11 @@
   <div class="guest-panel-body">
     <div id="guestMsgThread" class="mb-2"></div>
     <div class="small text-muted mb-2">For follow-up, include your email.</div>
-    <div class="mb-2">
-      <input id="guestMsgEmail" class="form-control form-control-sm" placeholder="Email (optional)">
-    </div>
-    <div class="mb-2">
-      <textarea id="guestMsgInput" rows="4" class="form-control form-control-sm" placeholder="Type your message..." required></textarea>
-    </div>
+    <div class="mb-2"><input id="guestMsgEmail" class="form-control form-control-sm" placeholder="Email (optional)"></div>
+    <div class="mb-2"><textarea id="guestMsgInput" rows="4" class="form-control form-control-sm" placeholder="Type your message..." required></textarea></div>
     <div id="guestMsgStatus" class="small text-muted"></div>
   </div>
-  <div class="guest-panel-foot">
-    <button id="guestMsgSendBtn" class="btn btn-primary btn-sm w-100" type="button">Send Message</button>
-  </div>
+  <div class="guest-panel-foot"><button id="guestMsgSendBtn" class="btn btn-primary btn-sm w-100" type="button">Send Message</button></div>
 </div>
 
 <div class="position-fixed top-0 end-0 p-3" style="z-index: 1080;">
@@ -334,7 +219,7 @@
       <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
     <div class="toast-body">
-      We noticed you are visiting as a guest. Create an account to access full order tracking, writer chat, and advanced features.
+      Create a client account to access order tracking, admin chat, file delivery, and support tickets.
       <div class="mt-2 d-flex gap-2">
         <a class="btn btn-sm btn-primary" href="{{ url_for('main.register') }}">Create Account</a>
         <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('main.login') }}">Sign In</a>
@@ -350,19 +235,13 @@
   (function () {
     const msgFab = document.getElementById("guestMsgFab");
     const msgPanel = document.getElementById("guestMsgPanel");
-
-    function togglePanel(panel) {
-      panel.classList.toggle("d-none");
-    }
-
+    function togglePanel(panel) { panel.classList.toggle("d-none"); }
     if (msgFab && msgPanel) msgFab.addEventListener("click", function () { togglePanel(msgPanel); });
-
     document.querySelectorAll("[data-close]").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        const id = btn.getAttribute("data-close");
-        const panel = document.getElementById(id);
+        const panel = document.getElementById(btn.getAttribute("data-close"));
         if (panel) panel.classList.add("d-none");
-        if (id === "guestMsgPanel" && guestMsgPollTimer) {
+        if (guestMsgPollTimer) {
           clearInterval(guestMsgPollTimer);
           guestMsgPollTimer = null;
         }
@@ -375,17 +254,10 @@
     const msgStatus = document.getElementById("guestMsgStatus");
     const msgThread = document.getElementById("guestMsgThread");
     let guestMsgPollTimer = null;
-    let guestMsgLastId = 0;
 
     function escapeHtml(value) {
-      return String(value || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/\"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+      return String(value || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#039;");
     }
-
     function renderGuestMessages(messages) {
       if (!msgThread) return;
       if (!messages.length) {
@@ -398,23 +270,15 @@
         return '<div class="guest-bubble ' + bubbleClass + '">' + escapeHtml(m.content) + stamp + '</div>';
       }).join("");
       msgThread.scrollTop = msgThread.scrollHeight;
-      const last = messages[messages.length - 1];
-      guestMsgLastId = Math.max(guestMsgLastId, Number(last.id || 0));
     }
-
     async function refreshGuestMessages() {
       if (!msgThread) return;
       try {
         const res = await fetch("{{ url_for('main.guest_chat_messages') }}", { cache: "no-store" });
         const data = await res.json();
-        if (res.ok && data.ok) {
-          renderGuestMessages(data.messages || []);
-        }
-      } catch (_err) {
-        // Keep silent; polling should not interrupt the page.
-      }
+        if (res.ok && data.ok) renderGuestMessages(data.messages || []);
+      } catch (_err) {}
     }
-
     if (sendBtn && msgInput && msgStatus) {
       sendBtn.addEventListener("click", async function () {
         const message = msgInput.value.trim();
@@ -443,28 +307,23 @@
         }
       });
     }
-
     if (msgFab && msgPanel) {
       msgFab.addEventListener("click", function () {
         if (!msgPanel.classList.contains("d-none")) {
           refreshGuestMessages();
-          if (!guestMsgPollTimer) {
-            guestMsgPollTimer = setInterval(refreshGuestMessages, 5000);
-          }
+          if (!guestMsgPollTimer) guestMsgPollTimer = setInterval(refreshGuestMessages, 5000);
         } else if (guestMsgPollTimer) {
           clearInterval(guestMsgPollTimer);
           guestMsgPollTimer = null;
         }
       });
     }
-
     const guestToast = document.getElementById("guestWelcomeToast");
     if (guestToast && !sessionStorage.getItem("guest_welcome_seen")) {
       const toast = new bootstrap.Toast(guestToast, { delay: 9000 });
       toast.show();
       sessionStorage.setItem("guest_welcome_seen", "1");
     }
-
   })();
 </script>
 {% endblock %}

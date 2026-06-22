@@ -17,23 +17,6 @@
           <div class="mb-3">{{ form.name.label(class='form-label') }} {{ form.name(class="form-control") }}</div>
           <div class="mb-3">{{ form.email.label(class='form-label') }} {{ form.email(class="form-control") }}</div>
           <div class="mb-3">{{ form.photo.label(class='form-label') }} {{ form.photo(class="form-control") }}</div>
-          {% if writer_docs_enabled %}
-            <div class="small fw-semibold mb-2">Writer Documents</div>
-            <div class="mb-3">{{ form.writer_portfolio.label(class='form-label') }} {{ form.writer_portfolio(class="form-control") }}</div>
-            {% if writer_profile and writer_profile.portfolio_file %}
-            <div class="small mb-2">
-              Current portfolio:
-              <a href="{{ url_for('static', filename='uploads/' ~ writer_profile.portfolio_file) }}" target="_blank" rel="noopener">View file</a>
-            </div>
-            {% endif %}
-            <div class="mb-3">{{ form.writer_resume.label(class='form-label') }} {{ form.writer_resume(class="form-control") }}</div>
-            {% if writer_profile and writer_profile.resume_file %}
-            <div class="small mb-2">
-              Current resume:
-              <a href="{{ url_for('static', filename='uploads/' ~ writer_profile.resume_file) }}" target="_blank" rel="noopener">View file</a>
-            </div>
-            {% endif %}
-          {% endif %}
           <div class="mb-3">{{ form.password.label(class='form-label') }} {{ form.password(class="form-control") }}</div>
           <div class="mb-3">{{ form.confirm_password.label(class='form-label') }} {{ form.confirm_password(class="form-control") }}</div>
           <button class="btn btn-primary" type="submit">{{ form.submit.label.text }}</button>

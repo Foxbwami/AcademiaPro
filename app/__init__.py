@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_mail import Mail
 from app.extensions import db, login_manager, migrate
-from app.models import User, Message, Application, Writer, BlogPost, AIConversationMessage, OTPCode
+from app.models import User, Message, BlogPost, AIConversationMessage, OTPCode
 from flask_login import current_user
 from sqlalchemy import inspect, text
 from werkzeug.security import generate_password_hash
@@ -44,9 +44,6 @@ def create_app():
                 db.session.commit()
             if "price" not in order_columns:
                 db.session.execute(text("ALTER TABLE \"order\" ADD COLUMN price FLOAT"))
-                db.session.commit()
-            if "job_posted" not in order_columns:
-                db.session.execute(text("ALTER TABLE \"order\" ADD COLUMN job_posted BOOLEAN DEFAULT 0 NOT NULL"))
                 db.session.commit()
             order_additions = [
                 ("citation_style", "ALTER TABLE \"order\" ADD COLUMN citation_style VARCHAR(30)"),
@@ -98,7 +95,6 @@ def create_app():
                 ("preferred_channel", "ALTER TABLE user ADD COLUMN preferred_channel VARCHAR(30)"),
                 ("layout_mode", "ALTER TABLE user ADD COLUMN layout_mode VARCHAR(20)"),
                 ("citation_style", "ALTER TABLE user ADD COLUMN citation_style VARCHAR(30)"),
-                ("favorite_writers", "ALTER TABLE user ADD COLUMN favorite_writers VARCHAR(255)"),
                 ("marketing_opt_in", "ALTER TABLE user ADD COLUMN marketing_opt_in BOOLEAN DEFAULT 0 NOT NULL"),
             ]
             for col_name, sql in user_additions:
@@ -108,60 +104,6 @@ def create_app():
                         db.session.commit()
                     except Exception:
                         db.session.rollback()
-        if "writer" in inspector.get_table_names():
-            writer_columns = {col["name"] for col in inspector.get_columns("writer")}
-            if "degree" not in writer_columns:
-                db.session.execute(text("ALTER TABLE writer ADD COLUMN degree VARCHAR(120)"))
-                db.session.commit()
-            if "years_experience" not in writer_columns:
-                db.session.execute(text("ALTER TABLE writer ADD COLUMN years_experience INTEGER"))
-                db.session.commit()
-            if "portfolio_url" not in writer_columns:
-                db.session.execute(text("ALTER TABLE writer ADD COLUMN portfolio_url VARCHAR(255)"))
-                db.session.commit()
-            if "rating" not in writer_columns:
-                db.session.execute(text("ALTER TABLE writer ADD COLUMN rating FLOAT"))
-                db.session.commit()
-            if "portfolio_file" not in writer_columns:
-                db.session.execute(text("ALTER TABLE writer ADD COLUMN portfolio_file VARCHAR(255)"))
-                db.session.commit()
-            if "resume_file" not in writer_columns:
-                db.session.execute(text("ALTER TABLE writer ADD COLUMN resume_file VARCHAR(255)"))
-                db.session.commit()
-        if "application" in inspector.get_table_names():
-            app_columns = {col["name"] for col in inspector.get_columns("application")}
-            app_additions = [
-                ("education_level", "ALTER TABLE application ADD COLUMN education_level VARCHAR(50)"),
-                ("years_experience", "ALTER TABLE application ADD COLUMN years_experience INTEGER"),
-                ("writing_styles", "ALTER TABLE application ADD COLUMN writing_styles VARCHAR(255)"),
-                ("portfolio_file", "ALTER TABLE application ADD COLUMN portfolio_file VARCHAR(255)"),
-                ("accept_terms", "ALTER TABLE application ADD COLUMN accept_terms BOOLEAN DEFAULT 0 NOT NULL"),
-            ]
-            for col_name, sql in app_additions:
-                if col_name not in app_columns:
-                    try:
-                        db.session.execute(text(sql))
-                        db.session.commit()
-                    except Exception:
-                        db.session.rollback()
-        if "order_review" not in inspector.get_table_names():
-            try:
-                db.session.execute(text(
-                    "CREATE TABLE order_review ("
-                    "id INTEGER PRIMARY KEY, "
-                    "order_id INTEGER NOT NULL, "
-                    "writer_id INTEGER NOT NULL, "
-                    "user_id INTEGER NOT NULL, "
-                    "rating INTEGER NOT NULL, "
-                    "comment TEXT, "
-                    "created_at DATETIME, "
-                    "FOREIGN KEY(order_id) REFERENCES \"order\"(id), "
-                    "FOREIGN KEY(writer_id) REFERENCES writer(id), "
-                    "FOREIGN KEY(user_id) REFERENCES user(id))"
-                ))
-                db.session.commit()
-            except Exception:
-                db.session.rollback()
         if "sample" in inspector.get_table_names():
             sample_columns = {col["name"] for col in inspector.get_columns("sample")}
             sample_additions = [
@@ -392,13 +334,8 @@ def create_app():
         if getattr(current_user, "is_authenticated", False):
             try:
                 unread_count = Message.query.filter_by(receiver_id=current_user.id, is_read=False).count()
-                writer_enabled = bool(
-                    Application.query.filter_by(email=current_user.email, approved=True).first()
-                    or Writer.query.filter_by(name=current_user.name, approved=True).first()
-                )
             except Exception:
                 unread_count = 0
-                writer_enabled = False
         return dict(current_user=current_user, unread_count=unread_count, writer_enabled=writer_enabled)
 
     @login_manager.user_loader

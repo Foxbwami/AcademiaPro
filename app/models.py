@@ -30,20 +30,6 @@ class Lead(db.Model):
     topic = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-class Writer(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    subject = db.Column(db.String(100))
-    degree = db.Column(db.String(120), nullable=True)
-    years_experience = db.Column(db.Integer, nullable=True)
-    portfolio_url = db.Column(db.String(255), nullable=True)
-    portfolio_file = db.Column(db.String(255), nullable=True)
-    resume_file = db.Column(db.String(255), nullable=True)
-    rating = db.Column(db.Float, nullable=True)
-    image_url = db.Column(db.String(255))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    approved = db.Column(db.Boolean, nullable=True, default=None)
-
 class Settings(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -82,8 +68,6 @@ class User(UserMixin, db.Model):
     preferred_channel = db.Column(db.String(30), nullable=True, default="chat")
     layout_mode = db.Column(db.String(20), nullable=True, default="detailed")
     citation_style = db.Column(db.String(30), nullable=True, default="APA")
-    favorite_writers = db.Column(db.String(255), nullable=True)
-    marketing_opt_in = db.Column(db.Boolean, default=False, nullable=False)
     photo = db.Column(db.String(120), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     orders = db.relationship('Order', backref='user', lazy=True)
@@ -92,11 +76,6 @@ class User(UserMixin, db.Model):
     def is_admin(self):
         role = (getattr(self, "role", "") or "").strip().lower()
         return role == "admin"
-
-    @property
-    def is_writer(self):
-        role = (getattr(self, "role", "") or "").strip().lower()
-        return role == "writer"
 
     def set_password(self, password):
         from werkzeug.security import generate_password_hash
@@ -147,6 +126,7 @@ class Order(db.Model):
     topic = db.Column(db.String(255), nullable=False)
     task_type = db.Column(db.String(60), nullable=True)
     description = db.Column(db.Text, nullable=False)
+    service_track = db.Column(db.String(50), nullable=False, default="writing")  # writing, programming, exams, career
     citation_style = db.Column(db.String(30), nullable=True)
     sources_count = db.Column(db.Integer, nullable=True)
     currency = db.Column(db.String(10), nullable=True, default="USD")
@@ -155,25 +135,9 @@ class Order(db.Model):
     word_count = db.Column(db.Integer, nullable=False)
     level = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float, nullable=True)
-    job_posted = db.Column(db.Boolean, default=False, nullable=False)
     status = db.Column(db.String(50), default="Pending")
-    writer_id = db.Column(db.Integer, db.ForeignKey("writer.id"))
-    assigned_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
-
-class JobApplication(db.Model):
-    __table_args__ = (
-        db.UniqueConstraint("order_id", "writer_user_id", name="uq_job_application_order_writer"),
-    )
-    id = db.Column(db.Integer, primary_key=True)
-    order_id = db.Column(db.Integer, db.ForeignKey("order.id"), nullable=False)
-    writer_user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    cover_note = db.Column(db.Text, nullable=True)
-    status = db.Column(db.String(20), default="pending", nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    reviewed_at = db.Column(db.DateTime, nullable=True)
 
 def calculate_price(word_count, level, deadline):
     base_rate = 0.05
@@ -217,21 +181,6 @@ class Sample(db.Model):
     content = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-class Application(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(120), nullable=False)
-    subject = db.Column(db.String(100), nullable=False)
-    bio = db.Column(db.Text, nullable=False)
-    education_level = db.Column(db.String(50), nullable=True)
-    years_experience = db.Column(db.Integer, nullable=True)
-    writing_styles = db.Column(db.String(255), nullable=True)
-    portfolio_file = db.Column(db.String(255), nullable=True)
-    accept_terms = db.Column(db.Boolean, default=False, nullable=False)
-    approved = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-
 class SupportTicket(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
@@ -243,16 +192,6 @@ class SupportTicket(db.Model):
     admin_note = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-
-class OrderReview(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    order_id = db.Column(db.Integer, db.ForeignKey("order.id"), nullable=False)
-    writer_id = db.Column(db.Integer, db.ForeignKey("writer.id"), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    rating = db.Column(db.Integer, nullable=False)
-    comment = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 class AIConversationMessage(db.Model):

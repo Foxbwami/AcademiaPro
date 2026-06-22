@@ -27,6 +27,16 @@ class OrderForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     subject = StringField('Subject', validators=[DataRequired()])
+    service_track = SelectField(
+        "Service Track",
+        choices=[
+            ("writing", "Academic & Research Writing"),
+            ("programming", "Programming & Technical"),
+            ("exams", "Exam Preparation"),
+            ("career", "Career & Resume"),
+        ],
+        validators=[DataRequired()],
+    )
     task_type = SelectField(
         "Task Type",
         choices=[
@@ -73,8 +83,6 @@ class ProfileForm(FlaskForm):
     password = PasswordField("New Password", validators=[Optional()])
     confirm_password = PasswordField("Confirm Password", validators=[Optional(), EqualTo('password')])
     photo = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
-    writer_portfolio = FileField('Writer Portfolio (PDF/DOC)', validators=[FileAllowed(['pdf', 'doc', 'docx'], 'Documents only!')])
-    writer_resume = FileField('Writer Resume (PDF/DOC)', validators=[FileAllowed(['pdf', 'doc', 'docx'], 'Documents only!')])
     submit = SubmitField("Update Profile")
 
 class SettingForm(FlaskForm):
@@ -134,20 +142,10 @@ class SettingForm(FlaskForm):
         choices=[("APA", "APA"), ("MLA", "MLA"), ("Chicago", "Chicago"), ("Harvard", "Harvard")],
         validators=[Optional()],
     )
-    favorite_writers = StringField("Favorite Writers", validators=[Optional()])
+    favorite_writers = StringField("Preferred Service Notes", validators=[Optional()])
     marketing_opt_in = BooleanField("Receive marketing/newsletter emails")
     photo = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
     submit = SubmitField("Save changes")
-
-class ApplicationForm(FlaskForm):
-    name = StringField("Full Name", validators=[DataRequired()])
-    email = StringField("Email", validators=[DataRequired(), Email()])
-    education_level = SelectField(
-        "Highest Education Level",
-        choices=[("Bachelor", "Bachelors"), ("Masters", "Masters"), ("PhD", "PhD"), ("Other", "Other")],
-        validators=[Optional()],
-    )
-    subject = StringField("Subject/Expertise", validators=[DataRequired()])
     years_experience = IntegerField("Years of Experience", validators=[Optional()])
     writing_styles = SelectMultipleField(
         "Writing Styles",

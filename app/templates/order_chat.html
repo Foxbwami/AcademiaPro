@@ -30,7 +30,7 @@
     </div>
     <div class="col-lg-5">
       <div class="section-card mb-3">
-        <h5 class="mb-3">Writer Profile</h5>
+        <h5 class="mb-3">Assigned Specialist</h5>
         {% if writer_user %}
           <div class="small mb-1"><strong>Name:</strong> {{ writer_user.name }}</div>
           <div class="small mb-1"><strong>Rating:</strong> {{ writer_profile.rating if writer_profile and writer_profile.rating else 'New' }}</div>
@@ -47,7 +47,7 @@
             <a class="btn btn-outline-secondary btn-sm mt-2" href="{{ url_for('static', filename='uploads/' ~ writer_profile.resume_file) }}" target="_blank">View Resume</a>
           {% endif %}
         {% else %}
-          <div class="text-muted small">Writer not assigned yet.</div>
+          <div class="text-muted small">Specialist not assigned yet.</div>
         {% endif %}
       </div>
       <div class="section-card">
@@ -82,8 +82,8 @@
         <div class="small mb-1"><strong>Order ID:</strong> #{{ admin_overview.order_id }}</div>
         <div class="small mb-1"><strong>Topic:</strong> {{ admin_overview.topic }}</div>
         <div class="small mb-1"><strong>Client:</strong> {{ admin_overview.client_name }} ({{ admin_overview.client_email }})</div>
-        <div class="small mb-1"><strong>Writer:</strong> {{ admin_overview.writer_name }}</div>
-        <div class="small mb-1"><strong>Writer Rating:</strong> {{ admin_overview.writer_rating if admin_overview.writer_rating else 'New' }}</div>
+        <div class="small mb-1"><strong>Specialist:</strong> {{ admin_overview.writer_name }}</div>
+        <div class="small mb-1"><strong>Specialist Rating:</strong> {{ admin_overview.writer_rating if admin_overview.writer_rating else 'New' }}</div>
         <div class="small mb-1"><strong>Expertise:</strong> {{ admin_overview.writer_expertise }}</div>
         <div class="small mb-2"><strong>Status:</strong> {{ admin_overview.status }}</div>
         <div class="small fw-semibold mb-1">Attachment Checklist</div>
@@ -124,7 +124,7 @@
         </form>
       </div>
       <div class="col-lg-4">
-        <div class="small fw-semibold mb-2">Writer Tools Oversight</div>
+        <div class="small fw-semibold mb-2">Quality Tools Oversight</div>
         <div class="small mb-1"><strong>Plagiarism:</strong> {{ admin_quality.plagiarism }}</div>
         <div class="small mb-1"><strong>AI Detection:</strong> {{ admin_quality.ai_detection }}</div>
         <div class="small fw-semibold mt-2 mb-1">Self-Editing Checklist</div>
@@ -137,7 +137,7 @@
         <div class="small">First Update: {{ admin_time_tracker.first_update }}</div>
         <div class="small">Last Update: {{ admin_time_tracker.last_update }}</div>
         <div class="small">Logged Hours: {{ admin_time_tracker.logged_hours }}</div>
-        <div class="small">Writer Updates: {{ admin_time_tracker.updates_count }}</div>
+        <div class="small">Specialist Updates: {{ admin_time_tracker.updates_count }}</div>
       </div>
     </div>
     {% if admin_alerts %}
@@ -157,21 +157,21 @@
       <div class="card mb-3">
         <div id="orderThreadBox" class="card-body" style="max-height: 420px; overflow-y: auto;">
           {% if admin_view %}
-          <h5 class="mb-3">Client <-> Writer Thread (Admin Monitor)</h5>
+          <h5 class="mb-3">Client Project Thread (Admin Monitor)</h5>
           <div class="alert alert-info small">
             Admin view is read-only. This page is for progress monitoring and quality oversight.
           </div>
           {% else %}
-          <h5 class="mb-3">Client <-> Writer Thread</h5>
+          <h5 class="mb-3">Client Project Thread</h5>
           {% endif %}
           {% if not chat_active %}
             <div class="alert alert-warning small">
-              Client-writer chat is inactive. You can view history, but new messages are disabled. Use admin support for follow-ups.
+              Project chat is inactive. You can view history, but new messages are disabled. Use admin support for follow-ups.
             </div>
           {% endif %}
           {% if not approved_app %}
             <div class="alert alert-info small">
-              Writer not assigned yet. This thread will activate once a writer is approved.
+              Specialist not assigned yet. This thread will activate once admin approves the project workflow.
             </div>
           {% endif %}
           {% for msg in messages %}
@@ -210,7 +210,7 @@
           </select>
         </div>
         <div class="mb-2">
-          <input name="message" class="form-control" placeholder="Type a message for writer/client/admin">
+          <input name="message" class="form-control" placeholder="Type a message for the project team or admin">
         </div>
         <div class="mb-2">
           <label class="form-label small">Upload reference/draft file</label>
@@ -234,7 +234,7 @@
 
       {% if chat_active and approved_app and current_user.id == approved_app.writer_user_id %}
       <div class="section-card mt-3">
-        <h6 class="mb-2">Writer Tools</h6>
+        <h6 class="mb-2">Specialist Tools</h6>
         <div class="mb-2 small text-muted">One-click status updates</div>
         <div class="d-flex flex-wrap gap-2 mb-3">
           <button type="button" class="btn btn-outline-primary btn-sm status-btn" data-message="Reviewing instructions now.">Reviewing instructions</button>
@@ -459,12 +459,12 @@
       const data = await res.json();
       if (!res.ok || !data.ok) return;
       let html = {% if admin_view %}
-        '<h5 class="mb-3">Client <-> Writer Thread (Admin Monitor)</h5><div class="alert alert-info small">Admin view is read-only. This page is for progress monitoring and quality oversight.</div>';
+        '<h5 class="mb-3">Client Project Thread (Admin Monitor)</h5><div class="alert alert-info small">Admin view is read-only. This page is for progress monitoring and quality oversight.</div>';
       {% else %}
-        '<h5 class="mb-3">Client <-> Writer Thread</h5>';
+        '<h5 class="mb-3">Client Project Thread</h5>';
       {% endif %}
       if (!data.chat_active) {
-        html += '<div class="alert alert-warning small">Client-writer chat is inactive. You can view history, but new messages are disabled. Use admin support for follow-ups.</div>';
+        html += '<div class="alert alert-warning small">Project chat is inactive. You can view history, but new messages are disabled. Use admin support for follow-ups.</div>';
       }
       const rows = data.messages || [];
       if (!rows.length) {

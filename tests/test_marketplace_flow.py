@@ -43,11 +43,12 @@ def client(app):
     return app.test_client()
 
 
-def _create_user(email, name, password):
+def _create_user(email, name, password, role="client"):
     user = User(
         email=email,
         name=name,
         password_hash=generate_password_hash(password),
+        role=role,
     )
     db.session.add(user)
     db.session.commit()
@@ -78,7 +79,7 @@ def test_client_post_writer_apply_admin_approve_flow(app, client):
     with app.app_context():
         client_user = _create_user("client@example.com", "Client User", "pass12345")
         writer_user = _create_user("writer@example.com", "Writer User", "pass12345")
-        admin_user = _create_user("bwamistevenez001@gmail.com", "Admin User", "pass12345")
+        admin_user = _create_user("bwamistevenez001@gmail.com", "Admin User", "pass12345", role="admin")
         db.session.add(
             Application(
                 name=writer_user.name,
@@ -103,6 +104,8 @@ def test_client_post_writer_apply_admin_approve_flow(app, client):
             "subject": "History Essay",
             "details": "Need a 1500-word essay.",
             "deadline": deadline,
+            "accept_terms": "y",
+            "accept_privacy": "y",
         },
         follow_redirects=True,
     )
@@ -149,7 +152,7 @@ def test_client_post_writer_apply_admin_approve_flow(app, client):
 
     with app.app_context():
         updated_order = Order.query.get(order_id)
-        assert updated_order.status == "In Progress"
+        assert updated_order.status == "Assigned"
         assert updated_order.assigned_at is not None
 
         open_announcement = Announcement.query.filter(

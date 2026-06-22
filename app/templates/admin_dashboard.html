@@ -53,7 +53,7 @@
     <div class="admin-card p-3"><div class="text-muted small">Payments</div><div class="stat-value">{{ stats.payments }}</div></div>
   </div>
   <div class="col-xl-2 col-md-4">
-    <div class="admin-card p-3"><div class="text-muted small">Writers</div><div class="stat-value">{{ stats.writers }}</div></div>
+    <div class="admin-card p-3"><div class="text-muted small">Specialists</div><div class="stat-value">{{ stats.writers }}</div></div>
   </div>
   <div class="col-xl-2 col-md-4">
     <div class="admin-card p-3"><div class="text-muted small">On-time Rate</div><div class="stat-value">96%</div></div>
@@ -136,7 +136,7 @@
             </span>
           </li>
         {% else %}
-          <li class="list-group-item px-0 small text-muted">No pending writer applications.</li>
+          <li class="list-group-item px-0 small text-muted">No pending specialist applications.</li>
         {% endfor %}
       </ul>
     </div>
@@ -187,16 +187,16 @@
     if (window.__adminTrendChart) {
       window.__adminTrendChart.destroy();
     }
-    const annotations = {{ chart_annotations|tojson }};
+    const annotations = { chart_annotations|tojson };
     window.__adminTrendChart = new Chart(ctx, {
       type: "line",
       data: {
-        labels: {{ chart_labels|tojson }},
+        labels: { chart_labels|tojson },
         datasets: [
-          { label: "Orders", data: {{ chart_orders|tojson }}, borderColor: "#1f6bff", tension: 0.3 },
-          { label: "Leads", data: {{ chart_leads|tojson }}, borderColor: "#1ea97c", tension: 0.3 },
-          { label: "Payments", data: {{ chart_payments|tojson }}, borderColor: "#f59e0b", tension: 0.3 },
-          { label: "Target", data: {{ chart_targets|tojson }}, borderColor: "#dc3545", borderDash: [6,6], tension: 0.2 }
+          { label: "Orders", data: { chart_orders|tojson }, borderColor: "#1f6bff", tension: 0.3 },
+          { label: "Leads", data: { chart_leads|tojson }, borderColor: "#1ea97c", tension: 0.3 },
+          { label: "Payments", data: { chart_payments|tojson }, borderColor: "#f59e0b", tension: 0.3 },
+          { label: "Target", data: { chart_targets|tojson }, borderColor: "#dc3545", borderDash: [6,6], tension: 0.2 }
         ]
       },
       options: {

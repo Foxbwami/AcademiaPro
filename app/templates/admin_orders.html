@@ -186,7 +186,7 @@
                   </div>
                   <div class="col-md-4">
                     <div class="admin-card p-3 h-100">
-                      <h6 class="mb-2">Writer Applications</h6>
+                      <h6 class="mb-2">Specialist Assignment Requests</h6>
                       {% if apps %}
                         {% for app in apps %}
                         {% set writer_user = writer_users.get(app.writer_user_id) %}
@@ -203,7 +203,7 @@
                           <div class="d-grid gap-1 mt-2">
                             {% if app.status == 'pending' %}
                             <form method="POST" action="{{ url_for('main.approve_job_application', application_id=app.id) }}">
-                              <button class="btn btn-sm btn-success w-100">Approve Writer</button>
+                            <button class="btn btn-sm btn-success w-100">Approve Specialist</button>
                             </form>
                             <form method="POST" action="{{ url_for('main.reject_job_application', application_id=app.id) }}">
                               <button class="btn btn-sm btn-outline-danger w-100">Reject</button>
@@ -217,7 +217,7 @@
                         </div>
                         {% endfor %}
                       {% else %}
-                      <div class="small text-muted">No writer applications yet.</div>
+                      <div class="small text-muted">No specialist requests yet.</div>
                       {% endif %}
                     </div>
                   </div>

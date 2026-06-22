@@ -1,48 +1,266 @@
 ﻿{% extends "base.html" %}
-{% block title %}About Us | AcademicPro{% endblock %}
+{% block title %}About AcademicPro | Scholarly & Technical Consultancy{% endblock %}
 {% block content %}
-<section class="mb-4">
-  <h1 class="section-title">Who We Are</h1>
-  <p>At AcademicPro, we believe every student deserves access to reliable academic support. Our mission is to empower learners worldwide by providing expert writing assistance that saves time, reduces stress, and helps achieve academic success.</p>
+<section class="mb-5">
+  <div class="text-center mb-5">
+    <div class="section-kicker">Our Story</div>
+    <h1 class="section-title">From Research to Code, Excellence Delivered</h1>
+    <p class="lead">AcademicPro is a scholarly and technical consultancy trusted by 700+ clients across 30+ countries for expert-led support in research, programming, career guidance, and exam preparation.</p>
+  </div>
 </section>
-<section class="mb-4">
-  <h2 class="section-title">Our Mission</h2>
-  <p>To deliver high-quality, plagiarism-free academic work that meets deadlines and exceeds expectations. We aim to be more than a writing service - we are your partner in academic excellence.</p>
+
+<!-- Mission, Vision, Values -->
+<section class="mb-5">
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <div class="value-card p-4 bg-light rounded-3 text-center h-100">
+        <i class="bi bi-target text-primary mb-3" style="font-size: 2rem;"></i>
+        <h3 class="h5 mb-3">Our Mission</h3>
+        <p class="text-muted">Bridge the gap between high-level academic research and complex technical engineering through expert consultancy backed by exhaustive methodologies.</p>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="value-card p-4 bg-light rounded-3 text-center h-100">
+        <i class="bi bi-eye text-info mb-3" style="font-size: 2rem;"></i>
+        <h3 class="h5 mb-3">Our Vision</h3>
+        <p class="text-muted">A world where scholars and professionals have direct access to verified subject-matter experts who deliver with integrity, clarity, and uncompromising quality.</p>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="value-card p-4 bg-light rounded-3 text-center h-100">
+        <i class="bi bi-heart text-success mb-3" style="font-size: 2rem;"></i>
+        <h3 class="h5 mb-3">Our Values</h3>
+        <p class="text-muted">Integrity, expertise, confidentiality, and relentless commitment to academic excellence and professional success.</p>
+      </div>
+    </div>
+  </div>
 </section>
-<section class="mb-4">
-  <h2 class="section-title">Our Vision</h2>
-  <p>A world where students can focus on learning and growth while trusted professionals handle the challenges of academic writing.</p>
+
+<!-- Our Service Model -->
+<section class="mb-5">
+  <h2 class="section-title mb-4">Four Pillars of Expertise</h2>
+  <p class="lead mb-4">AcademicPro operates as a direct client-to-specialist model with no intermediaries. Every project is handled by verified subject-matter experts.</p>
+  
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="pillar-card p-4 border-start border-5 border-primary rounded">
+        <i class="bi bi-journal-text text-primary mb-2" style="font-size: 1.5rem;"></i>
+        <h4 class="mb-2">Academic & Research Writing</h4>
+        <p class="text-muted">Dissertations, literature reviews, research papers, and publication-ready manuscripts with 100% originality verification.</p>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="pillar-card p-4 border-start border-5 border-success rounded">
+        <i class="bi bi-code-slash text-success mb-2" style="font-size: 1.5rem;"></i>
+        <h4 class="mb-2">Programming & Technical Solutions</h4>
+        <p class="text-muted">Full-stack development, machine learning, database design, and complete code documentation with GitHub workflows.</p>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="pillar-card p-4 border-start border-5 border-info rounded">
+        <i class="bi bi-mortarboard text-info mb-2" style="font-size: 1.5rem;"></i>
+        <h4 class="mb-2">Exam Preparation & Coaching</h4>
+        <p class="text-muted">Day-by-day syllabus mapping, mock exams, and personalized tutoring for academic, technical, and professional certifications.</p>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="pillar-card p-4 border-start border-5 border-warning rounded">
+        <i class="bi bi-briefcase text-warning mb-2" style="font-size: 1.5rem;"></i>
+        <h4 class="mb-2">Career & Resume Services</h4>
+        <p class="text-muted">CV restructuring, LinkedIn optimization, cover letters, and interview coaching with ATS-aware formatting.</p>
+      </div>
+    </div>
+  </div>
 </section>
-<section class="mb-4">
-  <h2 class="section-title">What We Value</h2>
-  <ul>
-    <li>Integrity - Every paper is original, properly cited, and confidential.</li>
-    <li>Excellence - We maintain high standards in research, writing, and editing.</li>
-    <li>Reliability - 96% of our projects are delivered on time.</li>
-    <li>Student Success - Your goals are our priority.</li>
-  </ul>
+
+<!-- Why Choose Us -->
+<section class="mb-5 bg-light p-5 rounded-3">
+  <h2 class="section-title mb-4">Why Scholars & Professionals Choose AcademicPro</h2>
+  
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="d-flex gap-3 mb-3">
+        <div class="flex-shrink-0">
+          <i class="bi bi-shield-lock text-primary" style="font-size: 1.5rem;"></i>
+        </div>
+        <div>
+          <h5>NDA-Protected Confidentiality</h5>
+          <p class="text-muted small mb-0">Every engagement is governed by strict confidentiality agreements. Your work, identity, and proprietary information are never shared.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="d-flex gap-3 mb-3">
+        <div class="flex-shrink-0">
+          <i class="bi bi-person-badge text-success" style="font-size: 1.5rem;"></i>
+        </div>
+        <div>
+          <h5>Dedicated Expert Specialists</h5>
+          <p class="text-muted small mb-0">You work directly with verified Master's or Ph.D. holders in your subject — not a platform, not a chatbot.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="d-flex gap-3 mb-3">
+        <div class="flex-shrink-0">
+          <i class="bi bi-file-check text-info" style="font-size: 1.5rem;"></i>
+        </div>
+        <div>
+          <h5>100% Plagiarism-Free Guarantee</h5>
+          <p class="text-muted small mb-0">Every deliverable includes Turnitin verification scans. Originality is non-negotiable.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="d-flex gap-3 mb-3">
+        <div class="flex-shrink-0">
+          <i class="bi bi-clock-history text-warning" style="font-size: 1.5rem;"></i>
+        </div>
+        <div>
+          <h5>Fast Turnaround Available</h5>
+          <p class="text-muted small mb-0">Fixed-price quotes within minutes. Urgent support available for urgent deadlines without quality compromise.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="d-flex gap-3">
+        <div class="flex-shrink-0">
+          <i class="bi bi-globe text-danger" style="font-size: 1.5rem;"></i>
+        </div>
+        <div>
+          <h5>Global Reach, Local Expertise</h5>
+          <p class="text-muted small mb-0">Serving 700+ clients across 30+ countries with consistent, rigorous academic standards.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="d-flex gap-3">
+        <div class="flex-shrink-0">
+          <i class="bi bi-check-circle text-success" style="font-size: 1.5rem;"></i>
+        </div>
+        <div>
+          <h5>Structured Delivery Process</h5>
+          <p class="text-muted small mb-0">Every project follows: Requirement Assessment → Expert Allocation → Iterative Milestones → Quality Diagnostics.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
-<section class="mb-4">
-  <h2 class="section-title">Our Team</h2>
-  <p>Our writers are carefully selected professionals with expertise across disciplines:</p>
-  <ul>
-    <li>Business analysts who simplify complex data.</li>
-    <li>Programming specialists who deliver precise technical projects.</li>
-    <li>Humanities experts who craft essays with depth and originality.</li>
-  </ul>
-  <p>Each writer is vetted for academic background, writing skill, and commitment to student success.</p>
+
+<!-- Our Advisory Framework -->
+<section class="mb-5">
+  <h2 class="section-title mb-4">A Structured Blueprint to Execution</h2>
+  <p class="lead mb-4">Every project follows a rigorous, phased advisory framework designed for absolute precision and scholarly depth.</p>
+  
+  <div class="row g-4">
+    <div class="col-md-6 col-lg-3">
+      <div class="phase-box p-4 bg-light rounded-3 text-center">
+        <div class="phase-number bg-primary text-white rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;">1</div>
+        <h5>Requirement Assessment</h5>
+        <p class="text-muted small">Thoroughly dissect your rubrics, requirements, and project parameters. No detail left unparsed.</p>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+      <div class="phase-box p-4 bg-light rounded-3 text-center">
+        <div class="phase-number bg-success text-white rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;">2</div>
+        <h5>Expert Allocation</h5>
+        <p class="text-muted small">Your project assigned to verified subject-matter veteran with active Master's or Ph.D. credentials.</p>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+      <div class="phase-box p-4 bg-light rounded-3 text-center">
+        <div class="phase-number bg-info text-white rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;">3</div>
+        <h5>Iterative Milestones</h5>
+        <p class="text-muted small">Receive continuous updates — code branches, database schemas, or research sections — for absolute alignment.</p>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+      <div class="phase-box p-4 bg-light rounded-3 text-center">
+        <div class="phase-number bg-warning text-white rounded-circle mx-auto mb-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;">4</div>
+        <h5>Quality Diagnostics</h5>
+        <p class="text-muted small">Every deliverable undergoes rigorous quality checks, plagiarism diagnostics, and compilation tests.</p>
+      </div>
+    </div>
+  </div>
 </section>
-<section class="mb-4">
-  <h2 class="section-title">Why Choose AcademicPro</h2>
-  <ul>
-    <li>1200+ students supported worldwide</li>
-    <li>3500 papers delivered successfully</li>
-    <li>24/7 support for urgent deadlines</li>
-    <li>Secure, encrypted portal for payments and communication</li>
-  </ul>
+
+<!-- Impact Section -->
+<section class="mb-5">
+  <h2 class="section-title mb-4 text-center">Our Impact</h2>
+  <div class="row g-4 text-center">
+    <div class="col-md-4">
+      <div class="impact-stat">
+        <div class="impact-number">700+</div>
+        <div class="impact-label">Scholars Supported</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="impact-stat">
+        <div class="impact-number">30+</div>
+        <div class="impact-label">Countries Reached</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="impact-stat">
+        <div class="impact-number">5.0★</div>
+        <div class="impact-label">Average Client Rating</div>
+      </div>
+    </div>
+  </div>
 </section>
-<section class="mb-4">
-  <h2 class="section-title">Our Promise</h2>
-  <p>We do not just write papers - we help you learn, grow, and succeed. With AcademicPro, you can trust that your academic journey is in safe hands.</p>
+
+<!-- CTA -->
+<section class="text-center py-5 bg-primary text-white rounded-3">
+  <h2 class="mb-3">Ready to Work With a Specialist?</h2>
+  <p class="mb-4 lead">Submit your project details and connect with a verified expert in your field.</p>
+  <a href="{{ url_for('main.order') }}" class="btn btn-light btn-lg">Request Consultation</a>
 </section>
+
+<style>
+.value-card {
+  transition: all 0.3s ease;
+}
+
+.value-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.pillar-card {
+  transition: all 0.3s ease;
+}
+
+.pillar-card:hover {
+  transform: translateX(5px);
+  background-color: rgba(0,0,0,0.02);
+}
+
+.phase-box {
+  transition: all 0.3s ease;
+}
+
+.phase-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.impact-stat {
+  padding: 2rem 1rem;
+}
+
+.impact-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--bs-primary);
+  margin-bottom: 0.5rem;
+}
+
+.impact-label {
+  color: #6c757d;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+</style>
 {% endblock %}

@@ -1,13 +1,269 @@
 {% extends "base.html" %}
-{% block title %}Testimonials | AcademicPro{% endblock %}
+{% block title %}Testimonials | AcademicPro Consultancy{% endblock %}
 {% block content %}
-<section class="section-card p-4">
-  <h1 class="h4 mb-2">Testimonials</h1>
-  <p class="mb-2">This page is available and currently being refreshed with updated content.</p>
-  <p class="text-muted mb-3">Use the links below to continue.</p>
-  <div class="d-flex gap-2 flex-wrap">
-    <a class="btn btn-primary" href="{{ url_for('main.index') }}">Back to Home</a>
-    <a class="btn btn-outline-primary" href="{{ url_for('main.public_blogs') }}">Open Resource Hub</a>
+<section class="mb-5">
+  <div class="text-center mb-5">
+    <div class="section-kicker">Success Stories</div>
+    <h1 class="section-title">Verified Voices of Academic & Professional Success</h1>
+    <p class="lead">Real feedback from scholars, engineers, and professionals we have supported worldwide.</p>
+  </div>
+
+  <!-- Stats Banner -->
+  <div class="row g-3 mb-5 text-center">
+    <div class="col-md-4">
+      <div class="stat-box p-4 bg-light rounded-3">
+        <div class="stat-number text-primary">700+</div>
+        <div class="stat-label">Clients Supported</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-box p-4 bg-light rounded-3">
+        <div class="stat-number text-success">98%</div>
+        <div class="stat-label">Client Satisfaction</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-box p-4 bg-light rounded-3">
+        <div class="stat-number text-info">5.0★</div>
+        <div class="stat-label">Average Rating</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Testimonials Grid -->
+  <div class="row g-4 mb-5">
+    <!-- Testimonial 1 -->
+    <div class="col-lg-6">
+      <div class="testimonial-card p-4 bg-white border rounded-3 h-100 shadow-sm">
+        <div class="stars mb-3">
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+        </div>
+        <p class="testimonial-text mb-3"><strong>"Got my entire thesis structured, cited properly, and delivered 3 days early. The research guidance was genuinely insightful."</strong></p>
+        <div class="testimonial-meta">
+          <div class="fw-bold">Verified Client</div>
+          <div class="text-muted small">🇬🇧 United Kingdom · Graduate Research</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Testimonial 2 -->
+    <div class="col-lg-6">
+      <div class="testimonial-card p-4 bg-white border rounded-3 h-100 shadow-sm">
+        <div class="stars mb-3">
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+        </div>
+        <p class="testimonial-text mb-3"><strong>"Struggled with my dissertation methodology chapter. Got comprehensive feedback and a professionally polished version within my timeline."</strong></p>
+        <div class="testimonial-meta">
+          <div class="fw-bold">Verified Client</div>
+          <div class="text-muted small">🇦🇺 Australia · Masters Research</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Testimonial 3 -->
+    <div class="col-lg-6">
+      <div class="testimonial-card p-4 bg-white border rounded-3 h-100 shadow-sm">
+        <div class="stars mb-3">
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+        </div>
+        <p class="testimonial-text mb-3"><strong>"Completed my full-stack project with clean architecture and excellent documentation. The code walkthrough was extremely helpful."</strong></p>
+        <div class="testimonial-meta">
+          <div class="fw-bold">Verified Client</div>
+          <div class="text-muted small">🇺🇸 United States · Web Development</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Testimonial 4 -->
+    <div class="col-lg-6">
+      <div class="testimonial-card p-4 bg-white border rounded-3 h-100 shadow-sm">
+        <div class="stars mb-3">
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+        </div>
+        <p class="testimonial-text mb-3"><strong>"My React component library was delivered production-ready with full test coverage. Exactly what I needed."</strong></p>
+        <div class="testimonial-meta">
+          <div class="fw-bold">Verified Client</div>
+          <div class="text-muted small">🇨🇦 Canada · Frontend Development</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Testimonial 5 -->
+    <div class="col-lg-6">
+      <div class="testimonial-card p-4 bg-white border rounded-3 h-100 shadow-sm">
+        <div class="stars mb-3">
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+        </div>
+        <p class="testimonial-text mb-3"><strong>"Career coaching transformed my CV and LinkedIn profile. I landed interviews within 2 weeks of the overhaul."</strong></p>
+        <div class="testimonial-meta">
+          <div class="fw-bold">Verified Client</div>
+          <div class="text-muted small">🇳🇿 New Zealand · Career Transition</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Testimonial 6 -->
+    <div class="col-lg-6">
+      <div class="testimonial-card p-4 bg-white border rounded-3 h-100 shadow-sm">
+        <div class="stars mb-3">
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+          <i class="bi bi-star-fill text-warning"></i>
+        </div>
+        <p class="testimonial-text mb-3"><strong>"Repeat client for 3+ years. Always deliver on promises, quick turnarounds, and the communication is transparent from start to finish."</strong></p>
+        <div class="testimonial-meta">
+          <div class="fw-bold">Verified Client</div>
+          <div class="text-muted small">🇦🇪 UAE · Professional Services</div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
+
+<!-- Global Reach Section -->
+<section class="mb-5 bg-light p-5 rounded-3">
+  <h2 class="mb-4 text-center">Global Reach & Trusted Partnership</h2>
+  <p class="text-center mb-4 text-muted">Supporting scholars and professionals from top universities across 30+ countries</p>
+  <div class="row text-center mb-4">
+    <div class="col-md-3">
+      <small class="text-muted fw-bold">Oxford University</small>
+    </div>
+    <div class="col-md-3">
+      <small class="text-muted fw-bold">Stanford University</small>
+    </div>
+    <div class="col-md-3">
+      <small class="text-muted fw-bold">Cambridge University</small>
+    </div>
+    <div class="col-md-3">
+      <small class="text-muted fw-bold">MIT</small>
+    </div>
+  </div>
+  <div class="row text-center">
+    <div class="col-md-3">
+      <small class="text-muted fw-bold">University of Sydney</small>
+    </div>
+    <div class="col-md-3">
+      <small class="text-muted fw-bold">UC Berkeley</small>
+    </div>
+    <div class="col-md-3">
+      <small class="text-muted fw-bold">Monash University</small>
+    </div>
+    <div class="col-md-3">
+      <small class="text-muted fw-bold">And many more...</small>
+    </div>
+  </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section class="mb-5">
+  <h2 class="mb-4 text-center">Why Scholars Trust AcademicPro</h2>
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="trust-card p-4 border-start border-4 border-primary rounded">
+        <h5 class="mb-3"><i class="bi bi-shield-lock text-primary"></i> NDA-Protected Privacy</h5>
+        <p class="text-muted mb-0">Absolute confidentiality. Your research topics, data, and personal details are protected by binding NDAs.</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="trust-card p-4 border-start border-4 border-success rounded">
+        <h5 class="mb-3"><i class="bi bi-check-circle text-success"></i> Guaranteed Delivery</h5>
+        <p class="text-muted mb-0">Zero tolerance for delays. Iterative milestones ensure deliverables arrive precisely when planned.</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="trust-card p-4 border-start border-4 border-info rounded">
+        <h5 class="mb-3"><i class="bi bi-file-check text-info"></i> Plagiarism-Free Guarantee</h5>
+        <p class="text-muted mb-0">100% originality verification. Every deliverable includes complete plagiarism scans.</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="trust-card p-4 border-start border-4 border-warning rounded">
+        <h5 class="mb-3"><i class="bi bi-person-badge text-warning"></i> Expert-Led Service</h5>
+        <p class="text-muted mb-0">Verified specialists with active Master's or Ph.D. credentials ensure expert-level coordination.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="text-center py-5 bg-primary text-white rounded-3">
+  <h2 class="mb-3">Join 700+ Successful Clients</h2>
+  <p class="mb-4 lead">Submit your project and work directly with a specialist who has the expertise you need.</p>
+  <a href="{{ url_for('main.order') }}" class="btn btn-light btn-lg">Request Consultation</a>
+</section>
+
+<style>
+.stat-box {
+  border: 2px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.stat-box:hover {
+  border-color: var(--bs-primary);
+  transform: translateY(-5px);
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.testimonial-card {
+  transition: all 0.3s ease;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+}
+
+.testimonial-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #333;
+}
+
+.stars {
+  font-size: 0.9rem;
+}
+
+.trust-card {
+  transition: all 0.3s ease;
+}
+
+.trust-card:hover {
+  background-color: rgba(0,0,0,0.02);
+  transform: translateX(5px);
+}
+</style>
 {% endblock %}
