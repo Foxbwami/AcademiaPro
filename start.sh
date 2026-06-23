@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
+# Force redeploy
 echo "Installing dependencies..."
 pip install -r requirements.txt
 
