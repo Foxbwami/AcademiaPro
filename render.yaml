@@ -3,7 +3,7 @@ services:
     name: academia-pro
     runtime: python-3.10
     buildCommand: pip install --upgrade pip && pip install -r requirements.txt
-    startCommand: gunicorn run:app
+    startCommand: python -m gunicorn run:app
     envVars:
       - key: FLASK_ENV
         value: production
