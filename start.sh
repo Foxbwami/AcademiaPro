@@ -1,11 +1,5 @@
 #!/bin/bash
 set -e
 
-echo "Installing/upgrading pip..."
-pip install --upgrade pip
-
-echo "Installing requirements..."
-pip install -r requirements.txt
-
 echo "Starting gunicorn..."
-python -m gunicorn run:app
+exec python -m gunicorn --bind 0.0.0.0:${PORT:-8000} run:app
