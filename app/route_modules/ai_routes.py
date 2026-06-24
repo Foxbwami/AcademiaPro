@@ -31,10 +31,11 @@ def writer_content_help():
         grok = get_grok_service()
         system_prompt = get_system_prompt('writer_content_help')
         
+        # Increase max tokens to ensure complete responses
         response = grok.generate_content(
             prompt=prompt,
             system_prompt=system_prompt,
-            max_tokens=2000
+            max_tokens=3000  # Increased for comprehensive content
         )
         
         if response['success']:
@@ -101,7 +102,7 @@ def chat():
         response = grok.chat_message(
             messages=messages,
             system_prompt=system_prompt,
-            max_tokens=1500
+            max_tokens=2000  # Increased for complete responses
         )
         
         if response['success']:
@@ -162,7 +163,7 @@ Please provide relevant assistance based on the order details."""
         response = grok.generate_content(
             prompt=prompt,
             system_prompt=system_prompt,
-            max_tokens=1500
+            max_tokens=2500  # Increased for detailed order assistance
         )
         
         if response['success']:
@@ -254,7 +255,7 @@ Provide:
         response = grok.generate_content(
             prompt=prompt,
             system_prompt=system_prompt,
-            max_tokens=1500
+            max_tokens=2500  # Increased for complete content review
         )
         
         if response['success']:
@@ -309,7 +310,7 @@ Provide:
         response = grok.generate_content(
             prompt=prompt,
             system_prompt=system_prompt,
-            max_tokens=2000
+            max_tokens=3000  # Increased for comprehensive dispute analysis
         )
         
         if response['success']:

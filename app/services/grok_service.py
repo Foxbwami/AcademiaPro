@@ -148,20 +148,28 @@ class GrokService:
             Dict with analysis and recommendations
         """
         system_prompt = """You are an expert system administrator analyzing AcademiaPro platform performance.
-        Provide actionable insights and recommendations based on the metrics provided.
-        Keep responses concise and technical."""
+
+CRITICAL INSTRUCTIONS:
+1. Provide COMPLETE analysis of ALL metrics provided - analyze each one
+2. Do not abbreviate or skip any metrics
+3. Provide thorough assessment, not brief snippets
+4. Include detailed recommendations with full explanations
+5. Address each concern completely
+
+Provide actionable insights and recommendations based on ALL metrics provided.
+Be thorough and detailed in your analysis."""
         
-        prompt = f"""Analyze these system metrics and provide insights:
+        prompt = f"""Analyze EVERY system metric provided below and provide comprehensive insights:
         
 {json.dumps(metrics, indent=2)}
 
 Please provide:
-1. Performance assessment (Good/Fair/Poor)
-2. Key concerns
-3. Recommendations for improvement
-4. Priority actions"""
+1. Performance assessment (Good/Fair/Poor) with full explanation
+2. All key concerns identified (not just main ones)
+3. Detailed recommendations for improvement with explanations
+4. Priority actions with complete details"""
         
-        return self.generate_content(prompt, system_prompt, max_tokens=1500)
+        return self.generate_content(prompt, system_prompt, max_tokens=2500)
 
 
 # Singleton instance
