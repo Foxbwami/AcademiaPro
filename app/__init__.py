@@ -344,6 +344,8 @@ def create_app():
 
     # Register Blueprints
     from app.routes import main
+    from app.routes.ai_routes import ai_bp
     app.register_blueprint(main)
+    app.register_blueprint(ai_bp)
 
     return app  # ✅ this must be inside the create_app() function
