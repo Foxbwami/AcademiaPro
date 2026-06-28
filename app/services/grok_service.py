@@ -51,6 +51,12 @@ class GrokService:
         except requests.exceptions.HTTPError as e:
             status_code = e.response.status_code if e.response is not None else "unknown"
             body = e.response.text if e.response is not None else str(e)
+            current_app.logger.error(
+                "Groq HTTP error: endpoint=%s status=%s body=%s",
+                endpoint,
+                status_code,
+                body[:1000],
+            )
             return {
                 "error": f"Groq API HTTP {status_code}: {body}",
                 "success": False
@@ -224,5 +230,5 @@ def get_grok_service() -> GrokService:
         or _grok_service.api_key != api_key
         or _grok_service.model != model
     ):
-        _grok_service = GrokService()
+        _grok_service = GrokService(api_key=api_key)
     return _grok_service

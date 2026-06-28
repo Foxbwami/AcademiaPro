@@ -211,6 +211,17 @@ def create_app():
                 "ADMIN_BOOTSTRAP_EMAIL or ADMIN_BOOTSTRAP_PASSWORD is not configured; admin bootstrap skipped."
             )
 
+        app.logger.info(
+            "ADMIN_BOOTSTRAP_EMAIL present: %s | ADMIN_ONLY_MODE: %s",
+            bool(app.config.get("ADMIN_BOOTSTRAP_EMAIL")),
+            app.config.get("ADMIN_ONLY_MODE", False),
+        )
+        app.logger.info(
+            "GROQ_API_KEY present: %s | GROQ_MODEL: %s",
+            bool(app.config.get("GROQ_API_KEY")),
+            app.config.get("GROQ_MODEL"),
+        )
+
         if not app.config.get("GROQ_API_KEY"):
             app.logger.warning(
                 "GROQ_API_KEY is not configured; AI endpoints will fall back to unavailable provider behavior."
