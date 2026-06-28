@@ -1,5 +1,9 @@
 import os
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev_secret_key")
     SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///your.db")
@@ -14,11 +18,15 @@ class Config:
     ]
     ADMIN_BOOTSTRAP_EMAIL = os.environ.get("ADMIN_BOOTSTRAP_EMAIL", "").strip().lower()
     ADMIN_BOOTSTRAP_PASSWORD = os.environ.get("ADMIN_BOOTSTRAP_PASSWORD", "")
+    ADMIN_ONLY_MODE = os.environ.get("ADMIN_ONLY_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
     RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "").strip()
     RESEND_FROM_EMAIL = os.environ.get("RESEND_FROM_EMAIL", "").strip()
     EMAIL_OTP_ENABLED = os.environ.get("EMAIL_OTP_ENABLED", "false").strip().lower() in ("1", "true", "yes", "on")
     AUTO_ASSIGN_ADMIN_EMAILS = os.environ.get("AUTO_ASSIGN_ADMIN_EMAILS", "false").strip().lower() in ("1", "true", "yes", "on")
-    GROK_API_KEY = os.environ.get("GROK_API_KEY", "").strip()
+    GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "").strip()
+    GROQ_MODEL = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile").strip()
+    GROQ_TIMEOUT = int(os.environ.get("GROQ_TIMEOUT", "90"))
+    GROQ_MAX_TOKENS = int(os.environ.get("GROQ_MAX_TOKENS", "6000"))
 
 LOGIN_MESSAGE = "You must log in to access this page."
 LOGIN_MESSAGE_CATEGORY = "warning"

@@ -6,6 +6,41 @@
   <p class="text-center text-muted mb-4">Deep pillar guides, focused cluster topics, and practical student articles in one searchable knowledge base.</p>
 
   <div class="section-card mb-4">
+    <div class="row gy-3">
+      <div class="col-lg-4">
+        <h5 class="mb-3">Guide Topics</h5>
+        <ul class="list-unstyled small text-muted">
+          <li class="mb-2"><strong>Getting Started</strong>: create an account, place an order, and upload requirements.</li>
+          <li class="mb-2"><strong>Order Management</strong>: track orders, communicate with admin, and request revisions.</li>
+          <li class="mb-2"><strong>Pricing and Payment</strong>: understand pricing, payment options, and refund policies.</li>
+          <li class="mb-2"><strong>Deadline Management</strong>: set realistic deadlines, track progress, and request extensions.</li>
+          <li><strong>Account Management</strong>: update your profile, change passwords, and access order history.</li>
+        </ul>
+      </div>
+      <div class="col-lg-4">
+        <h5 class="mb-3">Resource Formats</h5>
+        <ul class="list-unstyled small text-muted">
+          <li class="mb-2">Step-by-step tutorials with examples and screenshots.</li>
+          <li class="mb-2">FAQs covering common questions and platform workflows.</li>
+          <li class="mb-2">Video guides that demonstrate platform actions.</li>
+          <li class="mb-2">Infographics for pricing, deadlines, and process flow.</li>
+          <li>Blog posts on academic writing tips and study strategies.</li>
+        </ul>
+      </div>
+      <div class="col-lg-4">
+        <h5 class="mb-3">Distribution Channels</h5>
+        <ul class="list-unstyled small text-muted">
+          <li class="mb-2">Email newsletters announcing new guides.</li>
+          <li class="mb-2">In-platform notifications for relevant help topics.</li>
+          <li class="mb-2">Social media posts to reach students quickly.</li>
+          <li class="mb-2">A centralized knowledge base for easy access.</li>
+          <li>Resources that reduce support requests and improve onboarding.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card mb-4">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
       <h5 class="mb-0">Pillar Guides</h5>
       <span class="small text-muted">Evergreen cornerstone resources</span>
@@ -14,7 +49,7 @@
       {% for p in pillars[:6] %}
       {% set pillar_post = featured_pillar_posts.get(p) %}
       <div class="col-md-4">
-        <div class="writer-card h-100 resource-card">
+        <div class="section-card h-100 resource-card">
           <div class="resource-icon"><i class="bi bi-book-half"></i></div>
           <h6>{{ p }}</h6>
           <p class="small text-muted mb-2">{{ pillar_post.excerpt if pillar_post and pillar_post.excerpt else "Long-form guide with actionable examples and academic best practices." }}</p>

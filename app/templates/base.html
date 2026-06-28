@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}AcademicPro{% endblock %}</title>
+  <title>{% block title %}AcademiaPro{% endblock %}</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -14,9 +14,9 @@
   <nav class="navbar navbar-expand-lg site-nav sticky-top" aria-label="Main navigation">
     <div class="container">
       <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="{{ url_for('main.index') }}">
-        <img src="{{ url_for('static', filename='img/logo-quill.jpg') }}" alt="AcademicPro Logo" class="logo-circle">
+        <img src="{{ url_for('static', filename='img/logo-quill.jpg') }}" alt="AcademiaPro Logo" class="logo-circle">
         <span>
-          AcademicPro
+          AcademiaPro
           <small class="d-block nav-tagline">Your Partner in Academic Excellence</small>
         </span>
       </a>
@@ -109,7 +109,7 @@
   <div id="globalAiPanel" class="ai-panel d-none" role="dialog" aria-label="AcademicPro AI Support">
     <div class="ai-panel-head">
       <div>
-        <div class="ai-title">AcademicPro AI</div>
+        <div class="ai-title">AcademiaPro AI</div>
         <div class="ai-sub">Smart assistant for orders, pricing, services, and deadlines</div>
       </div>
       <button type="button" class="btn-close btn-close-sm" id="globalAiClose" aria-label="Close"></button>
@@ -135,7 +135,11 @@
           </div>
         </div>
         <div class="col-md-3 small">
-          <div>Email: <a href="mailto:bwamistevenez001@gmail.com">bwamistevenez001@gmail.com</a></div>
+          <div>Email: <a href="mailto:jkwriters89@gmail.com">jkwriters89@gmail.com</a></div>
+          <div>
+            <i class="bi bi-whatsapp text-success me-1" aria-hidden="true"></i>
+            <a href="https://wa.me/447426105606" target="_blank">+44 7426 105606</a>
+          </div>
           <div class="d-flex gap-3 align-items-center mt-1">
             <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
             <a href="#" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
@@ -144,7 +148,7 @@
             <a href="#" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
           </div>
         </div>
-        <div class="col-md-3 small text-md-end">© 2026 AcademicPro - All Rights Reserved</div>
+        <div class="col-md-3 small text-md-end">© 2026 AcademiaPro - All Rights Reserved</div>
       </div>
     </div>
   </footer>
@@ -205,6 +209,25 @@
           .replace(/'/g, "&#039;");
       }
 
+      function formatAiContent(text) {
+        if (!text) return "";
+        const escaped = esc(text).replace(/\r\n/g, "\n");
+        return escaped
+          .split(/\n{2,}/)
+          .map((block) => {
+            if (/^(?:[-*+] .+(?:\n(?:[-*+] .+))*)$/.test(block.trim())) {
+              const items = block
+                .trim()
+                .split(/\n+/)
+                .map((line) => `<li>${line.replace(/^[*-+] /, "")}</li>`)
+                .join("");
+              return `<ul>${items}</ul>`;
+            }
+            return `<p>${block.replace(/\n/g, "<br>")}</p>`;
+          })
+          .join("");
+      }
+
       function autoGrow() {
         input.style.height = "auto";
         const next = Math.min(input.scrollHeight, 160);
@@ -215,7 +238,7 @@
         const mine = role === "user";
         const align = mine ? "ai-msg me" : "ai-msg bot";
         const ts = timestamp ? `<div class="ai-ts">${esc(timestamp)}</div>` : "";
-        return `<div class="${align}"><div class="ai-bubble">${esc(text)}</div>${ts}</div>`;
+        return `<div class="${align}"><div class="ai-bubble">${formatAiContent(text)}</div>${ts}</div>`;
       }
 
       async function loadHistory() {

@@ -1,27 +1,42 @@
 """
-Grok AI Service Integration
-Handles all interactions with the Grok API for content generation, chat support, and system monitoring
+Groq AI service integration.
+Handles chat completions for content generation, support chat, and system monitoring.
 """
 
 import requests
 import json
-import os
 from typing import Dict, List, Optional
 from flask import current_app
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 class GrokService:
-    """Service for interacting with Grok API"""
+    """Service for interacting with Groq's OpenAI-compatible API."""
     
-    BASE_URL = "https://api.x.ai/v1"
+    BASE_URL = "https://api.groq.com/openai/v1"
     
     def __init__(self, api_key: Optional[str] = None):
-        """Initialize Grok service with API key"""
-        self.api_key = api_key or current_app.config.get('GROK_API_KEY')
+        """Initialize Groq service with API key."""
+        self.api_key = api_key or current_app.config.get('GROQ_API_KEY')
+        self.model = current_app.config.get('GROQ_MODEL', 'llama-3.3-70b-versatile')
+        self.timeout = int(current_app.config.get('GROQ_TIMEOUT', 90))
         if not self.api_key:
-            raise ValueError("GROK_API_KEY not configured")
+            raise ValueError("GROQ_API_KEY not configured")
+
+        self.session = requests.Session()
+        retry_strategy = Retry(
+            total=3,
+            backoff_factor=1,
+            status_forcelist=[429, 502, 503, 504],
+            allowed_methods=["POST"],
+            raise_on_status=False,
+        )
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        self.session.mount("https://", adapter)
+        self.session.mount("http://", adapter)
     
     def _make_request(self, endpoint: str, payload: Dict) -> Dict:
-        """Make authenticated request to Grok API"""
+        """Make authenticated request to Groq API."""
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"
@@ -30,29 +45,46 @@ class GrokService:
         url = f"{self.BASE_URL}{endpoint}"
         
         try:
-            response = requests.post(url, json=payload, headers=headers, timeout=30)
+            response = self.session.post(url, json=payload, headers=headers, timeout=self.timeout)
             response.raise_for_status()
             return response.json()
+        except requests.exceptions.HTTPError as e:
+            status_code = e.response.status_code if e.response is not None else "unknown"
+            body = e.response.text if e.response is not None else str(e)
+            return {
+                "error": f"Groq API HTTP {status_code}: {body}",
+                "success": False
+            }
+        except requests.exceptions.ConnectionError as e:
+            return {
+                "error": f"Groq API connection failed: {str(e)}",
+                "success": False
+            }
+        except requests.exceptions.Timeout as e:
+            return {
+                "error": f"Groq API timeout: {str(e)}",
+                "success": False
+            }
         except requests.exceptions.RequestException as e:
             return {
-                "error": str(e),
+                "error": f"Groq API request failed: {str(e)}",
                 "success": False
             }
     
     def generate_content(self, prompt: str, system_prompt: str, max_tokens: int = 1000) -> Dict:
         """
-        Generate content using Grok
+        Generate content using Groq
         
         Args:
             prompt: User's content request
-            system_prompt: System instructions for Grok
+            system_prompt: System instructions for Groq
             max_tokens: Maximum tokens in response
         
         Returns:
             Dict with generated content or error
         """
         payload = {
-            "model": "grok-2",
+            "model": self.model,
             "messages": [
                 {
                     "role": "system",
@@ -64,7 +96,10 @@ class GrokService:
                 }
             ],
             "max_tokens": max_tokens,
-            "temperature": 0.7
+            "temperature": 0.2,
+            "top_p": 0.9,
+            "frequency_penalty": 0.0,
+            "presence_penalty": 0.0
         }
         
         response = self._make_request("/chat/completions", payload)
@@ -92,7 +127,7 @@ class GrokService:
     
     def chat_message(self, messages: List[Dict], system_prompt: str, max_tokens: int = 1000) -> Dict:
         """
-        Handle multi-turn conversation with Grok
+        Handle multi-turn conversation with Groq
         
         Args:
             messages: List of message dicts with 'role' and 'content'
@@ -103,7 +138,7 @@ class GrokService:
             Dict with response or error
         """
         payload = {
-            "model": "grok-2",
+            "model": self.model,
             "messages": [
                 {
                     "role": "system",
@@ -111,7 +146,10 @@ class GrokService:
                 }
             ] + messages,
             "max_tokens": max_tokens,
-            "temperature": 0.7
+            "temperature": 0.2,
+            "top_p": 0.9,
+            "frequency_penalty": 0.0,
+            "presence_penalty": 0.0
         }
         
         response = self._make_request("/chat/completions", payload)
@@ -169,15 +207,22 @@ Please provide:
 3. Detailed recommendations for improvement with explanations
 4. Priority actions with complete details"""
         
-        return self.generate_content(prompt, system_prompt, max_tokens=2500)
+        max_tokens = int(current_app.config.get('GROQ_MAX_TOKENS', 6000))
+        return self.generate_content(prompt, system_prompt, max_tokens=max_tokens)
 
 
 # Singleton instance
 _grok_service = None
 
 def get_grok_service() -> GrokService:
-    """Get or create Grok service instance"""
+    """Get or create Groq service instance."""
     global _grok_service
-    if _grok_service is None:
+    api_key = current_app.config.get('GROQ_API_KEY')
+    model = current_app.config.get('GROQ_MODEL', 'llama-3.3-70b-versatile')
+    if (
+        _grok_service is None
+        or _grok_service.api_key != api_key
+        or _grok_service.model != model
+    ):
         _grok_service = GrokService()
     return _grok_service

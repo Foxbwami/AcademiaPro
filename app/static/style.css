@@ -555,7 +555,7 @@ button {
 }
 .referral-card {
   background: var(--bg-soft);
-  border-radius: 12px;
+  border-radius: 8px;
   padding: .75rem;
 }
 .dash-card-link {
@@ -571,12 +571,104 @@ button {
 }
 .resource-thumb {
   height: 48px;
-  border-radius: 10px;
+  border-radius: 8px;
   display: grid;
   place-items: center;
   font-size: 1.25rem;
   color: #8a6a1a;
   background: linear-gradient(120deg, rgba(0,51,102,.08), rgba(197,153,56,.2));
+}
+
+.dashboard-wrap {
+  display: grid;
+  gap: 1rem;
+}
+
+.client-page-head,
+.client-panel-head,
+.client-metric-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: .75rem;
+}
+
+.client-head-actions {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.client-metric-card {
+  min-height: 116px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.client-panel {
+  border-radius: 8px;
+}
+
+.client-focus-block {
+  min-height: 96px;
+}
+
+.order-topic-cell {
+  max-width: 320px;
+  overflow-wrap: anywhere;
+}
+
+.client-action-stack {
+  display: grid;
+  gap: .35rem;
+  min-width: 138px;
+}
+
+.client-list-item {
+  border: 1px solid rgba(0,30,60,.12);
+  border-radius: 8px;
+  padding: .65rem .75rem;
+  background: rgba(255,255,255,.55);
+  overflow-wrap: anywhere;
+}
+
+.support-chat-log {
+  height: 200px;
+  overflow-y: auto;
+  border: 1px solid rgba(0,30,60,.12);
+  border-radius: 8px;
+  padding: .65rem;
+  background: var(--bg-soft);
+}
+
+:root[data-theme='dark'] .client-list-item,
+:root[data-theme='dark'] .support-chat-log {
+  background: #182338;
+  border-color: rgba(217,228,255,.16);
+}
+
+@media (max-width: 767px) {
+  .client-page-head,
+  .client-panel-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .client-head-actions .btn,
+  .client-panel-head .btn {
+    width: 100%;
+  }
+
+  .client-action-stack {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-wrap .table {
+    min-width: 760px;
+  }
 }
 
 .sticky-summary {
@@ -592,6 +684,25 @@ button {
   background: linear-gradient(120deg, #1f6bff, #27358f);
   color: #fff;
   border-radius: 14px;
+  padding: 2rem 1.5rem;
+}
+.cta-band .section-kicker {
+  color: rgba(255,255,255,.8);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-size: .85rem;
+  margin-bottom: .75rem;
+}
+.cta-band h2 {
+  margin-bottom: 1rem;
+}
+.cta-band p {
+  margin: 0 auto 1.25rem;
+  max-width: 680px;
+  color: rgba(255,255,255,.95);
+}
+.cta-band .btn {
+  min-width: 170px;
 }
 .writer-recruit-band {
   background:

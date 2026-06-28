@@ -9,6 +9,9 @@ __pycache__/
 venv/
 
 # Runtime data
+.env
+.env.*
+!.env.example
 instance/*.db
 instance/*.bak
 
