@@ -28,6 +28,7 @@ body.admin-shell {
   font-family: Inter, "Atkinson Hyperlegible", "Open Sans", Verdana, Arial, Tahoma, sans-serif;
   font-size: 1rem;
   line-height: 1.5;
+  min-height: 100vh;
 }
 
 .admin-shell h1,
@@ -80,8 +81,64 @@ body.admin-shell {
 .admin-card {
   background: var(--admin-card);
   border: 1px solid rgba(17,32,59,0.06);
-  border-radius: 1rem;
+  border-radius: 8px;
   box-shadow: 0 12px 28px rgba(17,32,59,0.08);
+}
+
+.admin-page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.admin-head-actions,
+.panel-actions,
+.series-controls {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.admin-panel,
+.metric-card,
+.mini-metric {
+  padding: 1rem;
+}
+
+.metric-card,
+.mini-metric {
+  min-height: 116px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.mini-metric {
+  min-height: 92px;
+}
+
+.metric-label {
+  color: var(--admin-muted);
+  font-size: .82rem;
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.mini-value {
+  font-size: 1.35rem;
+  font-weight: 750;
+  line-height: 1.1;
+  color: var(--admin-heading);
+}
+
+.panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: .75rem;
+  margin-bottom: .75rem;
 }
 
 :root[data-theme='dark'] .admin-card {
@@ -92,7 +149,8 @@ body.admin-shell {
 .chart-box {
   position: relative;
   width: 100%;
-  height: 280px;
+  min-height: 280px;
+  height: clamp(280px, 34vh, 360px);
 }
 
 .chart-box canvas {
@@ -103,6 +161,7 @@ body.admin-shell {
 .metric-delta {
   font-size: .8rem;
   margin-top: .35rem;
+  min-height: 1.2rem;
 }
 .metric-delta.positive {
   color: var(--admin-success);
@@ -135,6 +194,63 @@ body.admin-shell {
 .stat-value {
   font-size: 1.55rem;
   font-weight: 700;
+  line-height: 1.15;
+  color: var(--admin-heading);
+}
+
+.dashboard-alert {
+  padding: .65rem .75rem;
+  margin-bottom: .5rem;
+}
+
+.dashboard-task {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  padding: .65rem .75rem;
+  margin-bottom: 0;
+}
+
+.task-copy {
+  min-width: 0;
+}
+
+.task-copy .small:nth-child(2) {
+  overflow-wrap: anywhere;
+}
+
+.task-action {
+  flex: 0 0 auto;
+}
+
+.snapshot-list {
+  display: grid;
+  gap: .55rem;
+}
+
+.snapshot-list > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(17,32,59,.08);
+  padding-bottom: .45rem;
+}
+
+.snapshot-list > div:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.snapshot-list span {
+  color: var(--admin-muted);
+  font-size: .88rem;
+}
+
+.snapshot-list strong {
+  color: var(--admin-heading);
+  white-space: nowrap;
 }
 
 .tag-soft {
@@ -179,6 +295,19 @@ body.admin-shell {
 }
 
 @media (max-width: 767px) {
+  .admin-page-head,
+  .panel-head,
+  .dashboard-task {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-head-actions .btn,
+  .panel-actions .btn,
+  .task-action {
+    width: 100%;
+  }
+
   .admin-sidebar {
     min-height: auto;
     position: static;

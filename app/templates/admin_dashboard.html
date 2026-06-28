@@ -1,21 +1,27 @@
 {% extends "admin_base.html" %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h1 class="h3 mb-0">Overview & Analytics</h1>
-  <div class="small text-muted">Real-time operational snapshot</div>
+<div class="admin-page-head mb-3">
+  <div>
+    <h1 class="h3 mb-1">Overview & Analytics</h1>
+    <div class="small text-muted">Real-time operational snapshot</div>
+  </div>
+  <div class="admin-head-actions">
+    <a href="{{ url_for('main.admin_orders') }}" class="btn btn-sm btn-primary">Orders</a>
+    <a href="{{ url_for('main.admin_chat_grouped') }}" class="btn btn-sm btn-outline-primary">Messages</a>
+  </div>
 </div>
 
 <div class="row g-3 mb-3">
   <div class="col-xl-3 col-md-6">
-    <div class="admin-card p-3">
-      <div class="text-muted small">Total Revenue (proxy)</div>
+    <div class="admin-card metric-card">
+      <div class="metric-label">Payments</div>
       <div class="stat-value">{{ stats.payments }}</div>
       <div class="metric-delta positive">+{{ velocities.payments }}% vs last week</div>
     </div>
   </div>
   <div class="col-xl-3 col-md-6">
-    <div class="admin-card p-3">
-      <div class="text-muted small">Active Orders</div>
+    <div class="admin-card metric-card">
+      <div class="metric-label">Active Orders</div>
       <div class="stat-value">{{ stats.active_orders }}</div>
       <div class="metric-delta {% if velocities.orders >= 0 %}positive{% else %}negative{% endif %}">
         {{ velocities.orders }}% vs last week
@@ -23,8 +29,8 @@
     </div>
   </div>
   <div class="col-xl-3 col-md-6">
-    <div class="admin-card p-3">
-      <div class="text-muted small">Lead → Order</div>
+    <div class="admin-card metric-card">
+      <div class="metric-label">Lead To Order</div>
       <div class="stat-value">{{ stats.lead_to_order_rate }}%</div>
       <div class="metric-delta {% if velocities.leads >= 0 %}positive{% else %}negative{% endif %}">
         {{ velocities.leads }}% leads trend
@@ -32,8 +38,8 @@
     </div>
   </div>
   <div class="col-xl-3 col-md-6">
-    <div class="admin-card p-3">
-      <div class="text-muted small">Payment Success Rate</div>
+    <div class="admin-card metric-card">
+      <div class="metric-label">Payment Success</div>
       <div class="stat-value">{{ stats.payment_success_rate }}%</div>
       <div class="metric-delta {% if velocities.payments >= 0 %}positive{% else %}negative{% endif %}">
         {{ velocities.payments }}% payments trend
@@ -43,24 +49,24 @@
 </div>
 
 <div class="row g-3 mb-3">
-  <div class="col-xl-2 col-md-4">
-    <div class="admin-card p-3"><div class="text-muted small">Total Users</div><div class="stat-value">{{ stats.users }}</div></div>
+  <div class="col-xl-2 col-lg-4 col-sm-6">
+    <div class="admin-card mini-metric"><div class="metric-label">Total Users</div><div class="mini-value">{{ stats.users }}</div></div>
   </div>
-  <div class="col-xl-2 col-md-4">
-    <div class="admin-card p-3"><div class="text-muted small">Completed Orders</div><div class="stat-value">{{ stats.completed_orders }}</div></div>
+  <div class="col-xl-2 col-lg-4 col-sm-6">
+    <div class="admin-card mini-metric"><div class="metric-label">Completed Orders</div><div class="mini-value">{{ stats.completed_orders }}</div></div>
   </div>
-  <div class="col-xl-2 col-md-4">
-    <div class="admin-card p-3"><div class="text-muted small">Payments</div><div class="stat-value">{{ stats.payments }}</div></div>
+  <div class="col-xl-2 col-lg-4 col-sm-6">
+    <div class="admin-card mini-metric"><div class="metric-label">Payments</div><div class="mini-value">{{ stats.payments }}</div></div>
   </div>
-  <div class="col-xl-2 col-md-4">
-    <div class="admin-card p-3"><div class="text-muted small">Specialists</div><div class="stat-value">{{ stats.writers }}</div></div>
+  <div class="col-xl-2 col-lg-4 col-sm-6">
+    <div class="admin-card mini-metric"><div class="metric-label">Clients</div><div class="mini-value">{{ stats.users }}</div></div>
   </div>
-  <div class="col-xl-2 col-md-4">
-    <div class="admin-card p-3"><div class="text-muted small">On-time Rate</div><div class="stat-value">96%</div></div>
+  <div class="col-xl-2 col-lg-4 col-sm-6">
+    <div class="admin-card mini-metric"><div class="metric-label">On-Time Rate</div><div class="mini-value">96%</div></div>
   </div>
-  <div class="col-xl-2 col-md-4">
-    <div class="admin-card p-3">
-      <div class="text-muted small">System Status</div>
+  <div class="col-xl-2 col-lg-4 col-sm-6">
+    <div class="admin-card mini-metric">
+      <div class="metric-label">System Status</div>
       <div class="status-pill status-ok">Healthy</div>
     </div>
   </div>
@@ -68,10 +74,10 @@
 
 <div class="row g-3 mb-3">
   <div class="col-lg-8">
-    <div class="admin-card p-3">
-      <div class="d-flex justify-content-between align-items-center mb-2">
+    <div class="admin-card admin-panel">
+      <div class="panel-head">
         <h2 class="h6 mb-0">Trends (Orders, Leads, Payments)</h2>
-        <div class="d-flex gap-2">
+        <div class="series-controls">
           <label class="small text-muted"><input type="checkbox" class="series-toggle" data-series="0" checked> Orders</label>
           <label class="small text-muted"><input type="checkbox" class="series-toggle" data-series="1" checked> Leads</label>
           <label class="small text-muted"><input type="checkbox" class="series-toggle" data-series="2" checked> Payments</label>
@@ -83,13 +89,13 @@
     </div>
   </div>
   <div class="col-lg-4">
-    <div class="admin-card p-3 h-100">
+    <div class="admin-card admin-panel h-100">
       <h2 class="h6 mb-3">Actionable Notifications</h2>
       {% if alerts %}
         {% for alert in alerts %}
-          <div class="alert alert-{{ alert.level }} py-2 mb-2">
+          <div class="alert alert-{{ alert.level }} dashboard-alert">
             <div class="small fw-semibold">{{ alert.title }}</div>
-            <a href="{{ alert.action }}" class="small"> {{ alert.action_label }}</a>
+            <a href="{{ alert.action }}" class="small">{{ alert.action_label }}</a>
           </div>
         {% endfor %}
       {% else %}
@@ -113,48 +119,35 @@
 
 <div class="row g-3">
   <div class="col-xl-4">
-    <div class="admin-card p-3 h-100">
+    <div class="admin-card admin-panel h-100">
       <h2 class="h6 mb-2">Attention Needed</h2>
-      <div class="small text-muted mb-2">Priority accounts and pending approvals</div>
+      <div class="small text-muted mb-2">Recent client accounts</div>
       <ul class="list-group list-group-flush mb-3">
         {% for u in attention_users %}
           <li class="list-group-item px-0 small">
             {{ u.name }} ({{ u.email }})
-            <span class="badge bg-danger ms-1">High Priority</span>
+            <span class="badge bg-primary ms-1">{{ 'Admin' if u.is_admin else 'Client' }}</span>
           </li>
         {% else %}
           <li class="list-group-item px-0 small text-muted">No priority users.</li>
         {% endfor %}
       </ul>
-      <ul class="list-group list-group-flush">
-        {% for app in pending_apps %}
-          <li class="list-group-item px-0 small d-flex justify-content-between align-items-center">
-            <span>{{ app.name }} - {{ app.subject }}</span>
-            <span class="d-flex gap-1">
-              <a class="btn btn-outline-success btn-sm" href="{{ url_for('main.approve_application', id=app.id) }}">Approve</a>
-              <a class="btn btn-outline-danger btn-sm" href="{{ url_for('main.reject_application', id=app.id) }}">Reject</a>
-            </span>
-          </li>
-        {% else %}
-          <li class="list-group-item px-0 small text-muted">No pending specialist applications.</li>
-        {% endfor %}
-      </ul>
     </div>
   </div>
   <div class="col-xl-4">
-    <div class="admin-card p-3 h-100 mb-3">
+    <div class="admin-card admin-panel h-100">
       <h2 class="h6 mb-2">Incoming Unattended Tasks</h2>
       <div class="small text-muted mb-2">Direct links to unresolved operational items</div>
       {% if unattended_tasks %}
         <div class="d-flex flex-column gap-2">
           {% for task in unattended_tasks %}
-            <div class="alert alert-{{ task.level }} py-2 mb-0 d-flex justify-content-between align-items-center">
-              <div>
+            <div class="alert alert-{{ task.level }} dashboard-task">
+              <div class="task-copy">
                 <div class="small fw-semibold">{{ task.type }}</div>
                 <div class="small">{{ task.title }}</div>
                 <div class="small text-muted">{{ task.age }}</div>
               </div>
-              <a href="{{ task.action }}" class="btn btn-sm btn-outline-dark">{{ task.action_label }}</a>
+              <a href="{{ task.action }}" class="btn btn-sm btn-outline-dark task-action">{{ task.action_label }}</a>
             </div>
           {% endfor %}
         </div>
@@ -164,16 +157,19 @@
     </div>
   </div>
   <div class="col-xl-4">
-    <div class="admin-card p-3 h-100">
+    <div class="admin-card admin-panel h-100">
       <h2 class="h6 mb-2">Settlement Snapshot</h2>
-      <div class="small mb-2">Pending payouts: <strong>${{ settlement_snapshot.pending_amount }}</strong></div>
-      <div class="small mb-2">Projected payouts (week): <strong>${{ projected_payouts }}</strong></div>
-      <div class="small mb-2">Pending count: <strong>{{ settlement_snapshot.pending_count }}</strong></div>
-      <div class="small mb-2">Completed count: <strong>{{ settlement_snapshot.completed_count }}</strong></div>
-      <div class="small mb-2">Failed count: <strong>{{ settlement_snapshot.failed_count }}</strong></div>
-      <div class="small text-muted mb-2">Open items: <strong>{{ settlement_snapshot.pending_count }}</strong></div>
-      <a href="{{ url_for('main.admin_settlements') }}" class="btn btn-outline-primary btn-sm mt-2">Open Reconciliation</a>
-      <a href="{{ url_for('main.admin_disputes') }}" class="btn btn-outline-warning btn-sm mt-2">Open Dispute Center</a>
+      <div class="snapshot-list">
+        <div><span>Pending payouts</span><strong>${{ settlement_snapshot.pending_amount }}</strong></div>
+        <div><span>Projected week</span><strong>${{ projected_payouts }}</strong></div>
+        <div><span>Pending count</span><strong>{{ settlement_snapshot.pending_count }}</strong></div>
+        <div><span>Completed count</span><strong>{{ settlement_snapshot.completed_count }}</strong></div>
+        <div><span>Failed count</span><strong>{{ settlement_snapshot.failed_count }}</strong></div>
+      </div>
+      <div class="panel-actions mt-3">
+        <a href="{{ url_for('main.admin_settlements') }}" class="btn btn-outline-primary btn-sm">Open Reconciliation</a>
+        <a href="{{ url_for('main.admin_disputes') }}" class="btn btn-outline-warning btn-sm">Open Dispute Center</a>
+      </div>
     </div>
   </div>
 </div>

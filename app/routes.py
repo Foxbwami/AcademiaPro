@@ -30,10 +30,8 @@ SUPPORT_CHAT_TAG = "[Support]"
 SUPPORT_ATTACHMENT_TAG = "[SupportAttachment:"
 AI_THREAD_TAG = "ai_guest_thread_id"
 
-
 def _otp_enabled():
     return bool(current_app.config.get("EMAIL_OTP_ENABLED", False))
-
 
 def _get_guest_thread_id():
     thread_id = session.get("guest_thread_id")
@@ -42,7 +40,6 @@ def _get_guest_thread_id():
         session["guest_thread_id"] = thread_id
     return thread_id
 
-
 def _get_ai_guest_thread_id():
     thread_id = session.get(AI_THREAD_TAG)
     if not thread_id:
@@ -50,10 +47,8 @@ def _get_ai_guest_thread_id():
         session[AI_THREAD_TAG] = thread_id
     return thread_id
 
-
 def _guest_thread_prefix(thread_id):
     return f"{GUEST_THREAD_TAG}{thread_id}]"
-
 
 def _extract_guest_thread_id(content):
     match = re.search(r"\[GUEST_THREAD:([a-f0-9]{8,32})\]", content or "", re.IGNORECASE)
@@ -61,10 +56,8 @@ def _extract_guest_thread_id(content):
         return match.group(1).lower()
     return None
 
-
 def _strip_tag(content, tag_pattern):
     return re.sub(tag_pattern, "", content or "").strip()
-
 
 def _extract_support_attachment_tokens(content):
     return [
@@ -73,23 +66,19 @@ def _extract_support_attachment_tokens(content):
         if token and token.strip()
     ]
 
-
 def _strip_support_attachment_tokens(content):
     return re.sub(r"\[SupportAttachment:[^\]]+\]", "", content or "").strip()
 
-
 def _order_access_context(order):
-    # Writer ecosystem removed - orders now admin-only
     allowed_ids = {order.user_id}
     if current_user.is_admin:
         allowed_ids.add(current_user.id)
     return None, allowed_ids
 
-
 def _cleanup_taken_job_announcements():
     cutoff = datetime.utcnow() - timedelta(hours=JOB_TAKEN_ANNOUNCEMENT_TTL_HOURS)
     stale = Announcement.query.filter(
-        Announcement.category == "jobs_taken",
+        Announcement.category.in_(["jobs", "jobs_taken"]),
         Announcement.created_at < cutoff
     ).all()
     if stale:
@@ -97,20 +86,12 @@ def _cleanup_taken_job_announcements():
             db.session.delete(row)
         db.session.commit()
 
-
 def _job_id_from_announcement_title(title):
     match = re.match(r"^JOB#(\d+)\b", title or "")
     return int(match.group(1)) if match else None
 
-
-def _is_approved_writer(user):
-    # Writer ecosystem removed - always returns False
-    return False
-
-
 def _is_rejected_application(app_item):
     return bool(app_item and app_item.approved is False and "[REJECTED]" in (app_item.bio or ""))
-
 
 def _get_primary_admin():
     admin_emails = [e for e in current_app.config.get("ADMIN_EMAILS", []) if e]
@@ -119,6 +100,10 @@ def _get_primary_admin():
         if admin:
             return admin
     return User.query.filter_by(role="admin").order_by(User.id.asc()).first()
+
+
+def _can_manage_blog(user):
+    return bool(user and getattr(user, "is_authenticated", False) and getattr(user, "is_admin", False))
 
 
 def _send_mail_safely(message):
@@ -166,10 +151,8 @@ def _send_mail_safely(message):
         current_app.logger.exception("SMTP mail send failed.")
         return False
 
-
 def _generate_otp_code():
     return f"{random.randint(0, 999999):06d}"
-
 
 def _issue_otp(email, purpose, user_id=None, minutes=10):
     code = _generate_otp_code()
@@ -209,7 +192,6 @@ def _issue_otp(email, purpose, user_id=None, minutes=10):
         return None
     return otp
 
-
 def _issue_local_otp(email, purpose, user_id=None, minutes=10):
     code = _generate_otp_code()
     expires_at = datetime.utcnow() + timedelta(minutes=minutes)
@@ -230,7 +212,6 @@ def _issue_local_otp(email, purpose, user_id=None, minutes=10):
         current_app.logger.exception("Local OTP persistence failed.")
         return None
 
-
 def _verify_otp(email, purpose, code):
     row = OTPCode.query.filter_by(
         email=(email or "").strip().lower(),
@@ -246,73 +227,46 @@ def _verify_otp(email, purpose, code):
     db.session.commit()
     return True
 
-
-def _guest_ai_reply(question):
-    q = (question or "").strip().lower()
-    if not q:
-        return "Share your question and I will guide you on orders, writers, pricing, or deadlines."
-    if any(k in q for k in ["price", "cost", "how much", "budget"]):
-        return "Pricing depends on deadline, level, and word count. Use Place Order and submit details for an exact quote."
-    if any(k in q for k in ["deadline", "urgent", "time", "delivery"]):
-        return "Urgent orders are supported. Include your exact deadline in the order form so admin can prioritize assignment."
-    if any(k in q for k in ["writer", "expert", "subject", "nursing", "programming", "law"]):
-        return "You can review writer profiles on the Writers page. Admin assigns by expertise, ratings, and availability."
-    if any(k in q for k in ["revision", "change", "edit"]):
-        return "Revisions are handled through the order communication thread after draft submission."
-    if any(k in q for k in ["payment", "paypal", "card", "refund"]):
-        return "Client payments are verified by admin and tracked in your dashboard. Refunds are handled via support tickets."
-    if any(k in q for k in ["chat", "message", "support", "admin"]):
-        return "Use the message icon to contact admin directly. Sign in to unlock full order chat with writers."
-    return "Thanks. For account-specific help, send a message via the message icon or sign in to continue."
-
-
 def _ai_generate_reply(question, history, user):
     q = (question or "").strip()
-    ql = q.lower()
-    name = (user.name.split()[0] if user and user.is_authenticated and user.name else "there")
-
     if not q:
-        return "I am ready. Tell me your topic, deadline, level, and word count, and I will guide the next step."
+        return "I am ready. Tell me your topic, deadline, level, service type, and word count, and I will guide you step by step."
 
-    if any(k in ql for k in ["price", "cost", "quote", "budget"]):
-        return (
-            "Pricing is calculated from task type, level, word count, and deadline urgency. "
-            "Open Place Order and fill all fields for a live estimate. "
-            "If you share your details here, I can help you estimate before checkout."
-        )
-    if any(k in ql for k in ["deadline", "urgent", "hours", "days", "time"]):
-        return (
-            "For urgent work, submit exact date and time with timezone in Place Order. "
-            "After a writer is assigned, live client-writer chat opens for quick clarifications and draft updates."
-        )
-    if any(k in ql for k in ["writer", "expert", "niche", "subject"]):
-        return (
-            "You can filter writers by subject and ratings, then admin matches based on availability and expertise. "
-            "Share your subject now and I will suggest what profile to choose."
-        )
-    if any(k in ql for k in ["revision", "revise", "changes"]):
-        return (
-            "Revisions are managed inside the order workspace. "
-            "Use clear bullet points for change requests so the writer can close them fast."
-        )
-    if any(k in ql for k in ["plagiarism", "turnitin", "originality"]):
-        return (
-            "Each order follows originality checks before final delivery. "
-            "You can request citation style, source count, and final similarity-report guidance in instructions."
-        )
-    if any(k in ql for k in ["hello", "hi", "hey"]):
-        return f"Hi {name}. I can help with orders, pricing, deadlines, writers, and revisions. What do you need first?"
+    try:
+        from app.services import get_grok_service, get_system_prompt
 
-    if len(history) >= 2:
-        return (
-            "I understand. Based on our chat, next best step is: "
-            "1) confirm your exact requirements, 2) submit the order form, 3) keep updates in live order chat once assigned."
+        name = (user.name.split()[0] if user and user.is_authenticated and user.name else "there")
+        system_prompt = (
+            get_system_prompt("chat_support")
+            + "\n\nOperational context: The live website is student-client to admin support only. "
+            "Do not mention writers, bidding, writer profiles, or writer assignment. "
+            "Give complete, practical answers that help the student place an order, understand pricing, prepare requirements, track deadlines, or contact admin. "
+            f"Address the user as {name} when natural."
         )
+        messages = []
+        for item in history[-12:]:
+            role = item.get("role")
+            content = item.get("content")
+            if role in {"user", "assistant"} and content:
+                messages.append({"role": role, "content": content})
+        messages.append({"role": "user", "content": q})
+        max_tokens = int(current_app.config.get("GROQ_MAX_TOKENS", 6000))
+        response = get_grok_service().chat_message(
+            messages=messages,
+            system_prompt=system_prompt,
+            max_tokens=max_tokens,
+        )
+        if response.get("success") and response.get("content"):
+            return response["content"]
+        current_app.logger.error("AI provider response failed: %s", response.get("error"))
+    except Exception:
+        current_app.logger.exception("AI provider unavailable; returning fallback response.")
+
     return (
-        "I can help with this. Share these details and I will give a precise plan: "
-        "task type, academic level, word count, deadline, and citation style."
+        "I can help, but the live AI provider is not available right now. "
+        "Please share your task type, academic level, word count, deadline, citation style, and any files or rubric details, "
+        "then submit the order form so admin can review it directly."
     )
-
 
 def _cleanup_temporary_ai_history():
     cutoff = datetime.utcnow() - timedelta(days=2)
@@ -326,7 +280,6 @@ def _cleanup_temporary_ai_history():
         db.session.delete(row)
     db.session.commit()
 
-
 def _task_multiplier(task_type):
     mapping = {
         "Essay": 1.0,
@@ -338,64 +291,13 @@ def _task_multiplier(task_type):
     }
     return mapping.get(task_type or "Essay", 1.0)
 
-
 def _get_site_setting_value(key, default=""):
     row = SiteSetting.query.filter_by(key=key).first()
     return row.value if row and row.value is not None else default
 
-
 def _split_setting_lines(raw, fallback_lines):
     rows = [line.strip() for line in (raw or "").splitlines() if line.strip()]
     return rows if rows else list(fallback_lines)
-
-
-def _get_writer_recruitment_content():
-    defaults = {
-        "headline": "Want to Earn as a Writer? Join AcademicPro Today!",
-        "subtext": "Join our team of trusted academic experts and earn while helping students succeed.",
-        "cta_text": "Apply Now",
-        "benefits": [
-            "Flexible work schedule",
-            "Secure payments",
-            "Build your academic portfolio",
-            "Work with global clients",
-        ],
-        "steps": [
-            "Register an account",
-            "Take Grammar & Writing Test",
-            "Pass Evaluation & Quality Review",
-            "Start Writing and Earning",
-        ],
-        "considerations": [
-            "Strong English grammar and academic writing skills",
-            "Ability to produce original, plagiarism-free work",
-            "Proper citation discipline (APA, MLA, Chicago, etc.)",
-            "Reliable communication and deadline commitment",
-            "Willingness to accept feedback and revisions professionally",
-        ],
-        "testimonial": "AcademicPro gave me the chance to earn while helping students. The process is smooth and professional.",
-        "testimonial_author": "Steve Bwami",
-    }
-    return {
-        "headline": _get_site_setting_value("writer_recruit_headline", defaults["headline"]),
-        "subtext": _get_site_setting_value("writer_recruit_subtext", defaults["subtext"]),
-        "cta_text": _get_site_setting_value("writer_recruit_cta_text", defaults["cta_text"]),
-        "benefits": _split_setting_lines(
-            _get_site_setting_value("writer_recruit_benefits", "\n".join(defaults["benefits"])),
-            defaults["benefits"],
-        ),
-        "steps": _split_setting_lines(
-            _get_site_setting_value("writer_recruit_steps", "\n".join(defaults["steps"])),
-            defaults["steps"],
-        ),
-        "considerations": _split_setting_lines(
-            _get_site_setting_value("writer_recruit_considerations", "\n".join(defaults["considerations"])),
-            defaults["considerations"],
-        ),
-        "testimonial": _get_site_setting_value("writer_recruit_testimonial", defaults["testimonial"]),
-        "testimonial_author": _get_site_setting_value("writer_recruit_testimonial_author", defaults["testimonial_author"]),
-    }
-
 
 def admin_required(func):
     @wraps(func)
@@ -407,19 +309,24 @@ def admin_required(func):
         return func(*args, **kwargs)
     return wrapper
 
-
 @main.before_request
 def protect_admin_routes():
+    if current_app.config.get("ADMIN_ONLY_MODE"):
+        admin_only_allowed = (
+            request.path == "/staff-portal"
+            or request.path.startswith("/admin")
+            or request.path.startswith("/static/")
+        )
+        if not admin_only_allowed:
+            return redirect(url_for("main.admin_login"))
+
     # Centralized guard for all admin prefixed routes.
     if request.path.startswith("/admin"):
-        if request.endpoint == "main.admin_login":
-            return
         if not current_user.is_authenticated:
-            return redirect(url_for("main.admin_login", next=request.url))
+            abort(404)
         if not current_user.is_admin:
             logout_user()
-            flash("Admin access requires an admin account. Please sign in via Admin Login.", "warning")
-            return redirect(url_for("main.admin_login", next=request.url))
+            abort(404)
 
 @main.route("/")
 def index():
@@ -427,57 +334,37 @@ def index():
     page = request.args.get("page", 1, type=int)
     category = request.args.get("category", "public")
     announcements = Announcement.query.filter(
-        (Announcement.audience == category) |
-        (Announcement.category == "jobs") |
-        (Announcement.category == "jobs_taken")
+        Announcement.audience == category
     ).order_by(Announcement.created_at.desc()).paginate(page=page, per_page=5)
 
-    job_order_ids = []
-    open_jobs = set()
-    job_apply_map = {}
-    for a in announcements.items:
-        jid = _job_id_from_announcement_title(a.title)
-        if jid and jid in open_jobs:
-            job_apply_map[a.id] = jid
-
-    # Writer ecosystem removed - no longer showing writers
-    writers = []
     review_counts = {}
     posts = BlogPost.query.order_by(BlogPost.created_at.desc()).limit(3).all()
     fast_facts = {
         "students_supported": max(1200, User.query.count() * 45),
-        "writers": 0,
+
         "papers_delivered": max(3500, Order.query.count() * 7),
         "success_rate": 96,
     }
 
-    recruitment = _get_writer_recruitment_content()
+
  
     return render_template(
         "index.html",
         announcements=announcements,
         selected_category=category,
-        writers=writers,
         posts=posts,
         testimonials=Testimonial.query.order_by(Testimonial.created_at.desc()).limit(6).all(),
         reviews=SiteReview.query.order_by(SiteReview.id.desc()).limit(6).all(),
         review_counts=review_counts,
         files=[],
-        writer_can_apply_jobs=_is_approved_writer(current_user),
-        job_apply_map=job_apply_map,
+
+        job_apply_map={},
         fast_facts=fast_facts,
-        recruitment=recruitment,
+        recruitment=None,
         is_authenticated=bool(getattr(current_user, "is_authenticated", False)),
         is_admin=bool(getattr(current_user, "is_authenticated", False) and getattr(current_user, "is_admin", False)),
-        is_writer=bool(getattr(current_user, "is_authenticated", False) and _is_approved_writer(current_user)),
+
     )
-
-
-@main.route("/writers/learn-more")
-def writer_recruitment():
-    flash("Writer features have been disabled.", "info")
-    return redirect(url_for("main.index"))
-
 @main.route('/lead', methods=['POST'])
 def lead():
     topic = request.form.get('topic')
@@ -555,7 +442,6 @@ def register():
         return redirect(url_for("main.login"))
     return render_template('register.html', form=form)
 
-
 @main.route("/verify-email", methods=["GET", "POST"])
 def verify_email():
     if not _otp_enabled():
@@ -593,7 +479,6 @@ def verify_email():
         flash("Invalid or expired OTP.", "danger")
     return render_template("verify_email.html", email=user.email)
 
-
 @main.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
     if current_user.is_authenticated:
@@ -629,7 +514,6 @@ def forgot_password():
         return redirect(url_for("main.reset_password"))
 
     return render_template("forgot_password.html")
-
 
 @main.route("/reset-password", methods=["GET", "POST"])
 def reset_password():
@@ -719,7 +603,6 @@ def get_messages():
         } for m in messages
     ])
 
-
 @main.route("/support/chat/send", methods=["POST"])
 @login_required
 def support_chat_send():
@@ -741,7 +624,6 @@ def support_chat_send():
     ))
     db.session.commit()
     return jsonify({"ok": True})
-
 
 @main.route("/support/chat/upload", methods=["POST"])
 @login_required
@@ -772,7 +654,6 @@ def support_chat_upload():
         "url": url_for("main.support_chat_file", filename=saved_name),
     })
 
-
 @main.route("/support/chat/file/<path:filename>", methods=["GET"])
 @login_required
 def support_chat_file(filename):
@@ -794,7 +675,6 @@ def support_chat_file(filename):
     if not allowed:
         abort(403)
     return send_from_directory(SUPPORT_UPLOAD_FOLDER, filename, as_attachment=True)
-
 
 @main.route("/support/chat/messages", methods=["GET"])
 @login_required
@@ -852,8 +732,8 @@ def login():
                 flash("Please verify your email before signing in.", "warning")
                 return redirect(url_for("main.verify_email"))
             if user.is_admin:
-                flash("Admin account detected. Please use the Admin Login page.", "info")
-                return redirect(url_for("main.admin_login"))
+                flash("Invalid email or password", "danger")
+                return render_template("login.html", form=form)
             login_user(user)
             next_page = request.args.get("next")
             return redirect(next_page) if next_page else redirect(url_for("main.index"))
@@ -861,14 +741,16 @@ def login():
             flash("Invalid email or password", "danger")
     return render_template("login.html", form=form)
 
-
 @main.route("/admin/login", methods=["GET", "POST"])
+def hidden_legacy_admin_login():
+    abort(404)
+
+@main.route("/staff-portal", methods=["GET", "POST"])
 def admin_login():
     if current_user.is_authenticated and current_user.is_admin:
         return redirect(url_for("main.admin_dashboard"))
     if current_user.is_authenticated and not current_user.is_admin:
         logout_user()
-        flash("Use the user login page for non-admin accounts.", "warning")
         return redirect(url_for("main.login"))
 
     form = LoginForm()
@@ -888,13 +770,22 @@ def admin_login():
 def protected():
     return "You must be logged in to view this page."
 
+@main.route("/health")
+def health_check():
+    return jsonify({
+        "status": "ok",
+        "groq_api_key": bool(current_app.config.get("GROQ_API_KEY")),
+        "admin_bootstrap_email": bool(current_app.config.get("ADMIN_BOOTSTRAP_EMAIL")),
+        "admin_only_mode": current_app.config.get("ADMIN_ONLY_MODE", False),
+        "groq_model": current_app.config.get("GROQ_MODEL"),
+    })
+
 @main.route("/logout")
 @login_required
 def logout():
     logout_user()
     flash("Logged out successfully", "info")
     return redirect(url_for("main.login"))
-
 
 @main.route("/admin/logout")
 @login_required
@@ -911,11 +802,9 @@ def unauthorized_callback():
     flash("You must log in or sign up to access this page.", "warning")
     return redirect(url_for('main.login'))
 
-
 @main.route("/dashboard")
 @login_required
 def dashboard():
-    # Writer ecosystem removed - clients and admins only
     unread_count = Message.query.filter_by(receiver_id=current_user.id, is_read=False).count()
     my_orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.created_at.desc()).limit(8).all()
     
@@ -950,7 +839,6 @@ def dashboard():
     client_refunds = [p for p in client_payments if "refund" in (p.status or "").lower()]
     open_tickets = SupportTicket.query.filter_by(user_id=current_user.id, status="open").count()
 
-    assigned_writer_map = {}
     support_chat_enabled = _get_primary_admin() is not None
     admin_availability = "Online" if support_chat_enabled else "Offline"
     refunded_amount = round(sum((p.amount or 0) for p in client_refunds), 2)
@@ -988,7 +876,6 @@ def dashboard():
         refunded_amount=refunded_amount,
         open_tickets=open_tickets,
         ticket_status_counts=ticket_status_counts,
-        assigned_writer_map=assigned_writer_map,
         support_chat_enabled=support_chat_enabled,
         admin_availability=admin_availability,
         featured_samples=featured_samples,
@@ -996,13 +883,11 @@ def dashboard():
         referral_link=referral_link,
     )
 
-
 @main.route("/my-orders")
 @login_required
 def my_orders():
     orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.created_at.desc()).all()
     return render_template("my_orders.html", orders=orders)
-
 
 @main.route("/notifications")
 @login_required
@@ -1014,7 +899,6 @@ def notifications():
     if unread:
         db.session.commit()
     return render_template("notifications.html", notices=notices)
-
 
 @main.route("/support-tickets", methods=["GET", "POST"])
 @login_required
@@ -1050,7 +934,6 @@ def support_tickets():
     tickets = SupportTicket.query.filter_by(user_id=current_user.id).order_by(SupportTicket.created_at.desc()).all()
     my_order_choices = Order.query.filter_by(user_id=current_user.id).order_by(Order.created_at.desc()).limit(20).all()
     return render_template("support_tickets.html", tickets=tickets, my_order_choices=my_order_choices)
-
 
 @main.route("/profile", methods=["GET", "POST"])
 @login_required
@@ -1097,7 +980,6 @@ def profile():
         return redirect(url_for("main.profile"))
     return render_template("profile.html", form=form)
 
-
 @main.route("/settings", methods=["GET", "POST"])
 @login_required
 def settings():
@@ -1129,7 +1011,6 @@ def settings():
         current_user.preferred_channel = form.preferred_channel.data or "chat"
         current_user.layout_mode = form.layout_mode.data or "detailed"
         current_user.citation_style = form.citation_style.data or "APA"
-        current_user.favorite_writers = (form.favorite_writers.data or "").strip() or None
         current_user.marketing_opt_in = bool(form.marketing_opt_in.data)
         pending_password_hash = None
         if form.password.data:
@@ -1165,7 +1046,6 @@ def settings():
         return redirect(url_for("main.settings"))
     return render_template("settings.html", form=form)
 
-
 @main.route("/settings/export-data")
 @login_required
 def export_user_data():
@@ -1190,7 +1070,6 @@ def export_user_data():
     }
     return jsonify(payload)
 
-
 @main.route("/settings/request-delete", methods=["POST"])
 @login_required
 def request_delete_account():
@@ -1214,7 +1093,6 @@ def request_delete_account():
     session["pending_delete_user_id"] = current_user.id
     flash("OTP sent. Enter code to confirm account deletion request.", "warning")
     return redirect(url_for("main.verify_delete_account"))
-
 
 @main.route("/settings/verify-password-change", methods=["GET", "POST"])
 @login_required
@@ -1244,7 +1122,6 @@ def verify_password_change():
             return redirect(url_for("main.settings"))
         flash("Invalid or expired OTP.", "danger")
     return render_template("verify_action.html", title="Verify Password Change", email=current_user.email, action_route=url_for("main.verify_password_change"))
-
 
 @main.route("/settings/verify-delete-account", methods=["GET", "POST"])
 @login_required
@@ -1283,19 +1160,19 @@ def verify_delete_account():
         flash("Invalid or expired OTP.", "danger")
     return render_template("verify_action.html", title="Confirm Account Deletion", email=current_user.email, action_route=url_for("main.verify_delete_account"))
 
-
-@main.route("/writer/apply", methods=["GET", "POST"])
-@login_required
-def writer_apply():
-    flash("Writer features have been disabled in this version.", "info")
-    return redirect(url_for("main.dashboard"))
-
 @main.route('/admin/messages')
 def admin_messages():
     if not current_user.is_admin:
         abort(403)
     return render_template('admin_messages.html')
 
+@main.route("/admin/users")
+@login_required
+def admin_users():
+    if not current_user.is_admin:
+        abort(403)
+    users = User.query.order_by(User.created_at.desc(), User.id.desc()).all()
+    return render_template("admin_users.html", users=users)
 
 @main.route("/admin/support-tickets", methods=["GET", "POST"])
 @login_required
@@ -1320,16 +1197,6 @@ def admin_support_tickets():
     } if tickets else {}
     return render_template("admin_support_tickets.html", tickets=tickets, ticket_users=ticket_users)
 
-@main.route('/writers')
-def public_writers():
-    flash("Writer features have been disabled.", "info")
-    return redirect(url_for("main.index"))
-
-
-def _can_manage_blog(user):
-    return bool(user and user.is_authenticated and (user.is_admin or _is_approved_writer(user)))
-
-
 def _apply_blog_filters(base_query):
     q = (request.args.get("q") or "").strip()
     category = (request.args.get("category") or "").strip()
@@ -1352,7 +1219,6 @@ def _apply_blog_filters(base_query):
     if cluster:
         query = query.filter(BlogPost.cluster_topic == cluster)
     return query, q, category, pillar, cluster
-
 
 def _ensure_resource_hub_content():
     seed_items = [
@@ -1564,13 +1430,13 @@ def _ensure_resource_hub_content():
             "author_name": "AcademicPro Editorial Team",
         },
         {
-            "title": "Workflow Guide: Collaborating with Writers and Admins",
+            "title": "Workflow Guide: Collaborating With Admin Support",
             "excerpt": "How to communicate clearly, share references, and keep assignment progress visible.",
             "category": "Workflow",
             "pillar": "Thesis Writing",
             "cluster_topic": "Workflow",
             "content": (
-                "Workflow Guide: Collaborating with Writers and Admins\n\n"
+                "Workflow Guide: Collaborating With Admin Support\n\n"
                 "Kickoff checklist\n"
                 "- Share objective, rubric, and references in one package.\n"
                 "- Confirm citation style, academic level, and deadline timezone.\n\n"
@@ -1647,7 +1513,6 @@ def _ensure_resource_hub_content():
     if inserted or updated:
         db.session.commit()
 
-
 def _resource_hub_reference_links():
     pillar_links = {
         "Citation Mastery": "https://owl.purdue.edu/owl/research_and_citation/resources.html",
@@ -1673,7 +1538,6 @@ def _resource_hub_reference_links():
         "Calculus": "https://www.khanacademy.org/math/calculus-1",
     }
     return pillar_links, cluster_links, category_links
-
 
 @main.route("/Blog")
 def blog_list():
@@ -1845,9 +1709,9 @@ def admin_dashboard():
     if pending_orders:
         alerts.append({
             "level": "info",
-            "title": f"{pending_orders} orders awaiting assignment",
+            "title": f"{pending_orders} orders awaiting admin review",
             "action": url_for("main.admin_orders", status="Pending"),
-            "action_label": "Assign orders"
+            "action_label": "Review orders"
         })
 
     unattended_tasks = []
@@ -1919,7 +1783,6 @@ def admin_dashboard():
     grouped_chats = get_grouped_chats()
     announcements = Announcement.query.order_by(Announcement.created_at.desc()).limit(8).all()
     attention_users = User.query.order_by(User.created_at.desc()).limit(6).all()
-    pending_apps = []
 
     return render_template(
         "admin_dashboard.html",
@@ -1943,7 +1806,6 @@ def admin_dashboard():
         recent_users=recent_users,
         recent_orders=recent_orders,
         attention_users=attention_users,
-        pending_apps=pending_apps,
         settlement_snapshot=settlement_snapshot,
         projected_payouts=projected_payouts,
         unattended_tasks=unattended_tasks,
@@ -2047,13 +1909,6 @@ def admin_samples():
     samples = Sample.query.order_by(Sample.created_at.desc()).all()
     return render_template("admin_samples.html", samples=samples)
 
-
-@main.route("/writer/samples", methods=["GET", "POST"])
-@login_required
-def writer_samples():
-    flash("Writer features have been disabled.", "info")
-    return redirect(url_for("main.dashboard"))
-
 @main.route('/admin/samples/<int:id>/delete')
 @login_required
 def delete_samples(id):
@@ -2087,75 +1942,9 @@ def delete_review(id):
     db.session.commit()
     return redirect(url_for('main.admin_reviews'))
 
-@main.route('/admin/writers')
-@login_required
-def admin_writers():
-    if not current_user.is_admin:
-        abort(403)
-    flash("Writer features have been disabled.", "info")
-    return render_template('admin_writers.html', writers=[], applications=[], writer_ratings={}, writer_completed_orders={})
-
-
-@main.route('/admin/application/<int:id>/approve')
-@login_required
-def approve_application(id):
-    if not current_user.is_admin:
-        abort(403)
-    flash("Writer features have been disabled.", "info")
-    return redirect(url_for('main.admin_writers'))
-
-
-@main.route('/admin/application/<int:id>/reject')
-@login_required
-def reject_application(id):
-    if not current_user.is_admin:
-        abort(403)
-    flash("Writer features have been disabled.", "info")
-    return redirect(url_for('main.admin_writers'))
-
-@main.route('/admin/writer/<int:id>/approve')
-@login_required
-def approve_writer(id):
-    if not current_user.is_admin:
-        abort(403)
-    flash("Writer features have been disabled.", "info")
-    return redirect(url_for('main.admin_writers'))
-
-@main.route('/admin/writer/<int:id>/suspend')
-@login_required
-def suspend_writer(id):
-    if not current_user.is_admin:
-        abort(403)
-    flash("Writer features have been disabled.", "info")
-    return redirect(url_for('main.admin_writers'))
-
-@main.route('/admin/writer/<int:id>/delete')
-@login_required
-def delete_writer(id):
-    if not current_user.is_admin:
-        abort(403)
-    flash("Writer features have been disabled.", "info")
-    return redirect(url_for('main.admin_writers'))
-
-@main.route('/writer/thanks')
-def writer_thank_you():
-    flash("Writer features have been disabled.", "info")
-    return redirect(url_for('main.index'))
-
-@main.route('/admin/writer/add', methods=['GET', 'POST'])
-@login_required
-def add_writer():
-    if not current_user.is_admin:
-        abort(403)
-    flash("Writer features have been disabled.", "info")
-    return redirect(url_for('main.admin_writers'))
-
 @main.route("/order", methods=["GET", "POST"])
 @login_required
 def order():
-    if _is_approved_writer(current_user):
-        flash("Approved writers are routed to the writer dashboard for jobs and assignments.", "info")
-        return redirect(url_for("main.dashboard"))
     form = OrderForm()
     if request.method == "GET":
         form.name.data = current_user.name
@@ -2183,7 +1972,6 @@ def order():
             level=level,
             price=final_price,
             status="Pending Review",
-            job_posted=False,
             user_id=current_user.id
         )
         db.session.add(order)
@@ -2253,7 +2041,6 @@ def _audit_admin_action(title, detail):
         )
     )
 
-
 @main.route("/admin/orders")
 @login_required
 def admin_orders():
@@ -2293,14 +2080,10 @@ def admin_orders():
 
     orders = query.order_by(Order.created_at.desc()).all()
 
-    applications_by_order = {}
-    writer_users = {}
     files = OrderFile.query.filter(OrderFile.order_id.in_([o.id for o in orders])).order_by(OrderFile.uploaded_at.desc()).all() if orders else []
     files_by_order = {}
     for f in files:
         files_by_order.setdefault(f.order_id, []).append(f)
-    writer_profiles = {}
-    writer_ratings = {}
     now_utc = datetime.utcnow()
     deadline_alerts = [o for o in orders if o.deadline and 0 < (o.deadline - now_utc).total_seconds() <= 86400 and (o.status or "").lower() != "completed"]
     order_alerts = []
@@ -2317,11 +2100,7 @@ def admin_orders():
     return render_template(
         "admin_orders.html",
         orders=orders,
-        applications_by_order=applications_by_order,
-        writer_users=writer_users,
         files_by_order=files_by_order,
-        writer_profiles=writer_profiles,
-        writer_ratings=writer_ratings,
         order_alerts=order_alerts,
         audit_logs=audit_logs,
         q=q,
@@ -2345,76 +2124,6 @@ def update_order(id):
         return redirect(url_for('main.admin_orders'))
     return render_template('admin_orders.html', order=order)
 
-
-@main.route("/admin/order/<int:id>/publish-job", methods=["POST"])
-@login_required
-def publish_order_job(id):
-    if not current_user.is_admin:
-        abort(403)
-    order = Order.query.get_or_404(id)
-    if order.job_posted:
-        flash("Job is already published to writers.", "info")
-        return redirect(url_for("main.admin_orders"))
-    order.status = "Open"
-    order.job_posted = True
-    db.session.add(
-        Announcement(
-            title=f"JOB#{order.id} | {order.topic}",
-            body=(
-                f"New task published. Type: {order.service_track or 'writing'}, "
-                f"Words: {order.word_count}, Budget: ${order.price or 0}, "
-                f"Deadline: {order.deadline.strftime('%Y-%m-%d') if order.deadline else 'N/A'}."
-            ),
-            audience="writers",
-            category="jobs",
-        )
-    )
-    db.session.commit()
-    flash("Task published to all writers announcements.", "success")
-    return redirect(url_for("main.admin_orders"))
-
-
-@main.route("/jobs")
-@login_required
-def jobs():
-    flash("Writer features have been disabled.", "info")
-    return redirect(url_for("main.dashboard"))
-
-
-@main.route("/jobs/<int:order_id>/apply", methods=["POST"])
-@login_required
-def apply_job(order_id):
-    flash("Writer features have been disabled.", "info")
-    return redirect(url_for("main.dashboard"))
-
-
-@main.route("/admin/job-applications/<int:application_id>/approve", methods=["POST"])
-@login_required
-def approve_job_application(application_id):
-    if not current_user.is_admin:
-        abort(403)
-    flash("Writer features have been disabled.", "info")
-    return redirect(url_for("main.admin_orders"))
-
-
-@main.route("/admin/job-applications/<int:application_id>/reject", methods=["POST"])
-@login_required
-def reject_job_application(application_id):
-    if not current_user.is_admin:
-        abort(403)
-    flash("Writer features have been disabled.", "info")
-    return redirect(url_for("main.admin_orders"))
-
-
-@main.route("/admin/job-applications/<int:application_id>/clarify", methods=["POST"])
-@login_required
-def clarify_job_application(application_id):
-    if not current_user.is_admin:
-        abort(403)
-    flash("Job applications have been disabled.", "info")
-    return redirect(url_for("main.admin_orders"))
-
-
 @main.route("/admin/orders/bulk", methods=["POST"])
 @login_required
 def admin_orders_bulk():
@@ -2437,12 +2146,8 @@ def admin_orders_bulk():
         db.session.commit()
         flash(f"Updated {len(orders)} orders.", "success")
         return redirect(url_for("main.admin_orders"))
-    if action == "approve_first_pending":
-        flash("Job applications have been disabled.", "info")
-        return redirect(url_for("main.admin_orders"))
     flash("Unknown bulk action selected.", "warning")
     return redirect(url_for("main.admin_orders"))
-
 
 @main.route("/admin/orders/export")
 @login_required
@@ -2466,19 +2171,17 @@ def admin_orders_export():
         headers={"Content-Disposition": f"attachment; filename=orders_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.csv"},
     )
 
-
 @main.route("/orders/<int:order_id>/chat", methods=["GET", "POST"])
 @login_required
 def order_chat(order_id):
     order = Order.query.get_or_404(order_id)
-    approved_app, allowed_ids = _order_access_context(order)
+    _approved_app, allowed_ids = _order_access_context(order)
     if current_user.id not in allowed_ids and not current_user.is_admin:
         abort(403)
     admin_view = current_user.is_admin
 
     status_lower = (order.status or "").lower()
-    # Chat is active for admin-client conversations (no writer features)
-    chat_active = status_lower in ("open", "in progress", "revision", "completed")
+    chat_active = status_lower not in ("cancelled",)
     if request.method == "POST":
         if admin_view:
             flash("Admin order monitoring is read-only on this page.", "info")
@@ -2504,12 +2207,8 @@ def order_chat(order_id):
             flash("Please keep communication respectful. Insulting language is not allowed.", "danger")
             return redirect(url_for("main.order_chat", order_id=order.id))
         if raw:
-            if current_user.id == order.user_id and approved_app:
-                receiver_id = approved_app.writer_user_id
-            elif approved_app and current_user.id == approved_app.writer_user_id:
-                receiver_id = order.user_id
-            else:
-                receiver_id = order.user_id
+            admin = _get_primary_admin()
+            receiver_id = admin.id if admin else order.user_id
             db.session.add(Message(
                 sender_id=current_user.id,
                 receiver_id=receiver_id,
@@ -2543,9 +2242,6 @@ def order_chat(order_id):
             msg.is_read = True
     db.session.commit()
     order_files = OrderFile.query.filter_by(order_id=order.id).order_by(OrderFile.uploaded_at.desc()).all()
-    # Writer features removed - no writer user or profile
-    writer_user = None
-    writer_profile = None
     existing_review = None
     milestones = [
         {"label": "Order Received", "done": order.status is not None},
@@ -2568,8 +2264,6 @@ def order_chat(order_id):
             category = "Final Deliverables"
         elif "draft" in name_lower:
             category = "Drafts"
-        elif writer_user and f.uploader == writer_user.name:
-            category = "Drafts"
         elif f.uploader == order.user.name:
             category = "Reference Materials"
         file_groups[category].append({"file": f, "version": version})
@@ -2589,9 +2283,6 @@ def order_chat(order_id):
     if current_user.is_admin:
         back_url = url_for("main.admin_orders")
         back_label = "Back to Admin Orders"
-    elif approved_app and current_user.id == approved_app.writer_user_id:
-        back_url = url_for("main.jobs")
-        back_label = "Back to Jobs"
     else:
         back_url = url_for("main.dashboard")
         back_label = "Back to Dashboard"
@@ -2601,7 +2292,7 @@ def order_chat(order_id):
     admin_quality = {}
     admin_time_tracker = {}
     attachment_checklist = {}
-    admin_status_choices = ["Open", "Assigned", "In Progress", "Draft Submitted", "Revision", "Completed", "Cancelled", "Pending Review"]
+    admin_status_choices = ["Pending Review", "Open", "In Progress", "Draft Submitted", "Revision", "Completed", "Cancelled"]
     if admin_view:
         now_utc = datetime.utcnow()
         deadline_text = "No deadline"
@@ -2630,7 +2321,6 @@ def order_chat(order_id):
             "references": any(("ref" in n) or ("source" in n) for n in file_names_lower),
         }
 
-        writer_msgs = [m for m in messages if writer_user and m.sender_id == writer_user.id]
         msg_text = " ".join((m.content or "").lower() for m in messages)
         has_research = ("research" in status_lower) or ("research" in msg_text) or ("in progress" in status_lower) or ("draft" in status_lower)
         has_draft_progress = ("in progress" in status_lower) or ("draft in progress" in status_lower) or ("draft" in msg_text)
@@ -2639,7 +2329,7 @@ def order_chat(order_id):
         has_completed = ("completed" in status_lower)
 
         stage_defs = [
-            ("Writer Assigned", bool(approved_app)),
+            ("Order Reviewed", status_lower not in ("pending", "pending review", "")),
             ("Instructions Received", bool(order.description)),
             ("Research Started", has_research),
             ("Draft in Progress", has_draft_progress and not has_draft_done),
@@ -2676,23 +2366,14 @@ def order_chat(order_id):
             },
         }
 
-        if writer_msgs:
-            first_ts = writer_msgs[0].timestamp
-            last_ts = writer_msgs[-1].timestamp
-            span_hours = round(max(0.0, ((last_ts - first_ts).total_seconds() / 3600.0)), 2) if first_ts and last_ts else 0.0
-            admin_time_tracker = {
-                "first_update": first_ts.strftime("%Y-%m-%d %H:%M") if first_ts else "N/A",
-                "last_update": last_ts.strftime("%Y-%m-%d %H:%M") if last_ts else "N/A",
-                "logged_hours": span_hours,
-                "updates_count": len(writer_msgs),
-            }
-        else:
-            admin_time_tracker = {
-                "first_update": "N/A",
-                "last_update": "N/A",
-                "logged_hours": 0.0,
-                "updates_count": 0,
-            }
+        first_ts = messages[0].timestamp if messages else None
+        last_ts = messages[-1].timestamp if messages else None
+        admin_time_tracker = {
+            "first_update": first_ts.strftime("%Y-%m-%d %H:%M") if first_ts else "N/A",
+            "last_update": last_ts.strftime("%Y-%m-%d %H:%M") if last_ts else "N/A",
+            "logged_hours": 0.0,
+            "updates_count": len(messages),
+        }
 
         admin_overview = {
             "order_id": order.id,
@@ -2701,9 +2382,6 @@ def order_chat(order_id):
             "client_email": order.user.email if order.user else "Unknown",
             "deadline_text": deadline_text,
             "deadline_state": deadline_state,
-            "writer_name": writer_user.name if writer_user else "Unassigned",
-            "writer_rating": writer_profile.rating if writer_profile and writer_profile.rating else None,
-            "writer_expertise": writer_profile.subject if writer_profile and writer_profile.subject else "General Academic",
             "status": order.status or "N/A",
         }
     else:
@@ -2713,10 +2391,8 @@ def order_chat(order_id):
         "order_chat.html",
         order=order,
         messages=messages,
-        approved_app=approved_app,
         order_files=order_files,
-        writer_user=writer_user,
-        writer_profile=writer_profile,
+        approved_app=None,
         milestones=milestones,
         progress_percent=progress_percent,
         file_groups=file_group_list,
@@ -2736,17 +2412,16 @@ def order_chat(order_id):
         admin_status_choices=admin_status_choices,
     )
 
-
 @main.route("/orders/<int:order_id>/chat/messages", methods=["GET"])
 @login_required
 def order_chat_messages(order_id):
     order = Order.query.get_or_404(order_id)
-    approved_app, allowed_ids = _order_access_context(order)
+    _approved_app, allowed_ids = _order_access_context(order)
     if current_user.id not in allowed_ids and not current_user.is_admin:
         abort(403)
 
     status_lower = (order.status or "").lower()
-    chat_active = status_lower in ("open", "in progress", "revision") and approved_app is not None
+    chat_active = status_lower not in ("cancelled",)
     thread = Message.query.filter(
         Message.content.like(f"[Order #{order.id}]%")
     ).order_by(Message.timestamp.asc()).all()
@@ -2765,12 +2440,11 @@ def order_chat_messages(order_id):
     } for m in thread]
     return jsonify({"ok": True, "chat_active": chat_active, "messages": payload})
 
-
 @main.route("/orders/<int:order_id>/admin/messages", methods=["GET"])
 @login_required
 def order_admin_messages(order_id):
     order = Order.query.get_or_404(order_id)
-    approved_app, allowed_ids = _order_access_context(order)
+    _approved_app, allowed_ids = _order_access_context(order)
     if current_user.id not in allowed_ids and not current_user.is_admin:
         abort(403)
     admin = _get_primary_admin()
@@ -2799,13 +2473,11 @@ def order_admin_messages(order_id):
     } for m in thread]
     return jsonify({"ok": True, "messages": payload})
 
-
 @main.route("/orders/<int:order_id>/review", methods=["POST"])
 @login_required
 def submit_order_review(order_id):
     flash("Reviews are not available.", "info")
     return redirect(url_for("main.dashboard"))
-
 
 @main.route("/orders/<int:order_id>/admin-message", methods=["POST"])
 @login_required
@@ -2835,7 +2507,6 @@ def order_admin_message(order_id):
     flash("Admin message sent.", "success")
     return redirect(url_for("main.order_chat", order_id=order.id))
 
-
 @main.route("/orders/files/<path:filename>")
 @login_required
 def download_order_file(filename):
@@ -2849,7 +2520,10 @@ def download_order_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename, as_attachment=True)
 
 @main.route("/admin/order/delete/<int:id>")
+@login_required
 def delete_order(id):
+    if not current_user.is_admin:
+        abort(403)
     order = Order.query.get_or_404(id)
     db.session.delete(order)
     db.session.commit()
@@ -2874,7 +2548,6 @@ def contact():
     db.session.add(new_msg)
     db.session.commit()
     return redirect(url_for('main.index', success=True))
-
 
 @main.route("/guest/chat/send", methods=["POST"])
 def guest_chat_send():
@@ -2903,7 +2576,6 @@ def guest_chat_send():
     db.session.commit()
     return jsonify({"ok": True, "message": "Message sent. Admin can reply here live."})
 
-
 @main.route("/guest/chat/messages", methods=["GET"])
 def guest_chat_messages():
     thread_id = _get_guest_thread_id()
@@ -2928,13 +2600,11 @@ def guest_chat_messages():
     } for m in messages]
     return jsonify({"ok": True, "messages": payload})
 
-
 @main.route("/guest/ai/ask", methods=["POST"])
 def guest_ai_ask():
     payload = request.get_json(silent=True) or {}
     question = (payload.get("question") or "").strip()
-    return jsonify({"ok": True, "answer": _guest_ai_reply(question)})
-
+    return jsonify({"ok": True, "answer": _ai_generate_reply(question, [], None)})
 
 @main.route("/ai/chat/history", methods=["GET"])
 def ai_chat_history():
@@ -2951,7 +2621,6 @@ def ai_chat_history():
         "timestamp": r.created_at.strftime("%Y-%m-%d %H:%M") if r.created_at else ""
     } for r in rows]
     return jsonify({"ok": True, "messages": payload})
-
 
 @main.route("/ai/chat/send", methods=["POST"])
 def ai_chat_send():
@@ -2988,7 +2657,6 @@ def ai_chat_send():
     db.session.commit()
     return jsonify({"ok": True, "answer": answer})
 
-
 @main.route("/pricing/estimate", methods=["POST"])
 def pricing_estimate():
     payload = request.get_json(silent=True) or {}
@@ -3022,20 +2690,14 @@ def admin_chat_grouped():
     partner_ids = [pid for pid in grouped_chats.keys() if isinstance(pid, int) and pid > 0]
     users = {u.id: u for u in User.query.filter(User.id.in_(partner_ids)).all()} if partner_ids else {}
 
-    # Preload writer references and ratings for quick admin context.
-    writer_profiles = {}
-    approved_writer_emails = set()
-    review_rows = []
-    ratings_by_writer = {int(r[0]): {"avg": round(float(r[1] or 0), 1), "count": int(r[2] or 0)} for r in review_rows}
-
     search_q = (request.args.get("q") or "").strip().lower()
-    active_tab = (request.args.get("tab") or "writers").strip().lower()
-    if active_tab not in {"writers", "clients", "guests"}:
-        active_tab = "writers"
+    active_tab = (request.args.get("tab") or "clients").strip().lower()
+    if active_tab not in {"clients", "guests"}:
+        active_tab = "clients"
     selected_partner = (request.args.get("partner") or "").strip()
 
     status_cutoff = datetime.utcnow() - timedelta(minutes=15)
-    grouped_payload = {"writers": [], "clients": [], "guests": []}
+    grouped_payload = {"clients": [], "guests": []}
 
     active_statuses = {"Open", "Assigned", "In Progress", "Draft Submitted", "Revision", "Pending Review"}
     active_orders_by_client = {}
@@ -3071,18 +2733,9 @@ def admin_chat_grouped():
         user = users.get(partner_id)
         if not user:
             continue
-        writer_profile = writer_profiles.get(user.name)
-        is_writer = user.is_writer or (user.email or "").strip().lower() in approved_writer_emails or writer_profile is not None
-        category = "writers" if is_writer else "clients"
+        category = "clients"
         latest_ts = max([m.timestamp for m in messages if m.timestamp] or [None])
         online = bool(latest_ts and latest_ts >= status_cutoff)
-        rating = None
-        if writer_profile:
-            if writer_profile.rating is not None:
-                rating = f"{round(float(writer_profile.rating), 1)}/5"
-            elif writer_profile.id in ratings_by_writer:
-                rr = ratings_by_writer[writer_profile.id]
-                rating = f"{rr['avg']}/5 ({rr['count']})"
 
         record = {
             "partner_key": str(partner_id),
@@ -3090,8 +2743,7 @@ def admin_chat_grouped():
             "name": user.name,
             "email": user.email,
             "status": "Online" if online else "Offline",
-            "rating": rating,
-            "active_orders": active_orders_by_client.get(user.id, 0) if category == "clients" else None,
+            "active_orders": active_orders_by_client.get(user.id, 0),
             "messages": messages,
             "unread_count": len([m for m in messages if m.receiver_id == current_user.id and not m.is_read]),
         }
@@ -3124,7 +2776,7 @@ def reply_to_user():
     message = (request.form.get('message') or "").strip()
     if not message:
         flash("Message cannot be empty.", "warning")
-        return redirect(url_for('main.admin_chat_grouped', tab=(request.form.get("tab") or "writers"), q=(request.form.get("q") or "").strip()))
+        return redirect(url_for('main.admin_chat_grouped', tab=(request.form.get("tab") or "clients"), q=(request.form.get("q") or "").strip()))
 
     if guest_thread_id:
         msg = Message(
@@ -3144,7 +2796,7 @@ def reply_to_user():
         )
     db.session.add(msg)
     db.session.commit()
-    return redirect(url_for('main.admin_chat_grouped', tab=(request.form.get("tab") or "writers"), q=(request.form.get("q") or "").strip()))
+    return redirect(url_for('main.admin_chat_grouped', tab=(request.form.get("tab") or "clients"), q=(request.form.get("q") or "").strip()))
 
 @main.route('/chat/messages')
 @login_required
@@ -3255,7 +2907,6 @@ def Samples():
         categories=categories,
     )
 
-
 @main.route("/samples/<int:sample_id>")
 def sample_detail(sample_id):
     sample = Sample.query.get_or_404(sample_id)
@@ -3263,9 +2914,6 @@ def sample_detail(sample_id):
     if source == "admin":
         back_url = url_for("main.admin_samples")
         back_label = "Back to Admin Samples"
-    elif source == "writer":
-        back_url = url_for("main.writer_samples")
-        back_label = "Back to Writer Samples"
     else:
         back_url = url_for("main.Samples")
         back_label = "Back to Samples"
@@ -3304,7 +2952,6 @@ def admin_announcements():
                            pagination=pagination,
                            selected_category=category)
 
-
 @main.route('/admin/settlements')
 def admin_settlements():
     payments = Payment.query.order_by(Payment.created_at.desc()).all()
@@ -3316,7 +2963,6 @@ def admin_settlements():
     }
     return render_template("admin_settlements.html", payments=payments, summary=summary)
 
-
 @main.route('/admin/disputes')
 def admin_disputes():
     # Dispute center MVP: highlights overdue/in-progress items as candidates.
@@ -3326,7 +2972,6 @@ def admin_disputes():
         Order.deadline < now
     ).order_by(Order.deadline.asc()).all()
     return render_template("admin_disputes.html", disputes=queue)
-
 
 @main.route('/admin/activity-logs')
 def admin_activity_logs():
@@ -3339,7 +2984,6 @@ def admin_activity_logs():
         recent_orders=recent_orders,
         recent_announcements=recent_announcements
     )
-
 
 @main.route('/admin/marketing')
 def admin_marketing():
@@ -3356,7 +3000,6 @@ def admin_marketing():
         order_count=order_count,
         conversion=conversion
     )
-
 
 @main.route('/admin/roles')
 def admin_roles():
@@ -3405,59 +3048,6 @@ def admin_settings():
             flash("Platform settings updated.", "success")
             return redirect(url_for("main.admin_settings"))
 
-        if form_type == "writer_recruitment":
-            headline = (request.form.get("writer_recruit_headline") or "").strip()
-            subtext = (request.form.get("writer_recruit_subtext") or "").strip()
-            cta_text = (request.form.get("writer_recruit_cta_text") or "").strip() or "Apply Now"
-            benefits = (request.form.get("writer_recruit_benefits") or "").strip()
-            steps = (request.form.get("writer_recruit_steps") or "").strip()
-            considerations = (request.form.get("writer_recruit_considerations") or "").strip()
-            testimonial = (request.form.get("writer_recruit_testimonial") or "").strip()
-            testimonial_author = (request.form.get("writer_recruit_testimonial_author") or "").strip()
-
-            if not headline or not subtext:
-                flash("Headline and subtext are required for recruitment section.", "danger")
-                return redirect(url_for("main.admin_settings"))
-
-            upsert_setting("writer_recruit_headline", headline)
-            upsert_setting("writer_recruit_subtext", subtext)
-            upsert_setting("writer_recruit_cta_text", cta_text)
-            upsert_setting("writer_recruit_benefits", benefits)
-            upsert_setting("writer_recruit_steps", steps)
-            upsert_setting("writer_recruit_considerations", considerations)
-            upsert_setting("writer_recruit_testimonial", testimonial)
-            upsert_setting("writer_recruit_testimonial_author", testimonial_author)
-            db.session.commit()
-            flash("Writer recruitment homepage section updated.", "success")
-            return redirect(url_for("main.admin_settings"))
-
-        if form_type == "writer_quiz":
-            pass_mark_raw = (request.form.get("writer_quiz_pass_mark") or "").strip()
-            quiz_items = (request.form.get("writer_quiz_items") or "").strip()
-            try:
-                pass_mark = int(float(pass_mark_raw))
-            except (TypeError, ValueError):
-                flash("Quiz pass mark must be a valid number.", "danger")
-                return redirect(url_for("main.admin_settings"))
-            if pass_mark < 1 or pass_mark > 100:
-                flash("Quiz pass mark must be between 1 and 100.", "danger")
-                return redirect(url_for("main.admin_settings"))
-
-            valid_rows = 0
-            for raw in [line.strip() for line in quiz_items.splitlines() if line.strip()]:
-                parts = [part.strip() for part in raw.split("|")]
-                if len(parts) >= 5 and (parts[4] or "").strip().lower() in {"a", "b", "c"}:
-                    valid_rows += 1
-            if valid_rows < 2:
-                flash("Provide at least 2 valid quiz rows in format: Question|Option A|Option B|Option C|correct_letter(a/b/c).", "danger")
-                return redirect(url_for("main.admin_settings"))
-
-            upsert_setting("writer_quiz_pass_mark", str(pass_mark))
-            upsert_setting("writer_quiz_items", quiz_items)
-            db.session.commit()
-            flash("Writer screening quiz settings updated.", "success")
-            return redirect(url_for("main.admin_settings"))
-
         if form_type == "password":
             current_password = request.form.get("current_password") or ""
             new_password = request.form.get("new_password") or ""
@@ -3489,31 +3079,6 @@ def admin_settings():
             "refund_policy",
             "Refund requests are reviewed by admin based on work status and evidence.",
         ),
-        "writer_recruit_headline": get_setting("writer_recruit_headline", "Want to Earn as a Writer? Join AcademicPro Today!"),
-        "writer_recruit_subtext": get_setting("writer_recruit_subtext", "Apply now to become part of our trusted team of academic experts. Flexible work, fair pay, and global reach."),
-        "writer_recruit_cta_text": get_setting("writer_recruit_cta_text", "Apply Now"),
-        "writer_recruit_benefits": get_setting(
-            "writer_recruit_benefits",
-            "Work with students worldwide\nGet paid securely and on time\nBuild your academic portfolio\nFlexible deadlines and subjects",
-        ),
-        "writer_recruit_steps": get_setting(
-            "writer_recruit_steps",
-            "Register\nTake Grammar Test\nPass Evaluation\nStart Writing",
-        ),
-        "writer_recruit_considerations": get_setting(
-            "writer_recruit_considerations",
-            "Strong English grammar and academic writing structure are required.\nOriginal writing and citation discipline are mandatory.\nReliable communication and deadline commitment are non-negotiable.\nWriters must accept quality reviews and revision requests professionally.",
-        ),
-        "writer_recruit_testimonial": get_setting("writer_recruit_testimonial", "AcademicPro gave me the chance to earn while helping students. The process is smooth and professional."),
-        "writer_recruit_testimonial_author": get_setting("writer_recruit_testimonial_author", "Steve Bwami"),
-        "writer_quiz_pass_mark": get_setting("writer_quiz_pass_mark", "75"),
-        "writer_quiz_items": get_setting(
-            "writer_quiz_items",
-            "Choose the grammatically correct sentence.|The writer have submitted the draft yesterday.|The writer has submitted the draft yesterday.|The writer had submitted the draft yesterday.|c\n"
-            "Which option has correct punctuation?|However the findings were clear.|However, the findings were clear.|However the findings, were clear.|b\n"
-            "APA in-text citation for one author is:|(Smith, 2020)|[Smith:2020]|{Smith 2020}|a\n"
-            "What is the best practice for academic integrity?|Paraphrase and cite all borrowed ideas.|Reuse internet paragraphs if edited slightly.|Skip citations for common online content.|a",
-        ),
     }
     return render_template('admin_settings.html', settings=settings)
 
@@ -3540,9 +3105,7 @@ def blog_detail(id):
 def blog_manage():
     if not _can_manage_blog(current_user):
         abort(403)
-    scope = (request.args.get("scope") or "").strip().lower()
-    if scope not in {"admin", "writer"}:
-        scope = "admin" if current_user.is_admin else "writer"
+    scope = "admin"
     if request.method == 'POST':
         title = (request.form.get('title') or "").strip()
         excerpt = (request.form.get('excerpt') or "").strip() or None
@@ -3572,12 +3135,8 @@ def blog_manage():
         flash("Blog post published.", "success")
         return redirect(url_for('main.blog_manage', scope=scope))
 
-    posts_query = BlogPost.query
-    if scope == "writer" and not current_user.is_admin:
-        posts_query = posts_query.filter(BlogPost.author_id == current_user.id)
-    posts = posts_query.order_by(BlogPost.created_at.desc()).all()
+    posts = BlogPost.query.order_by(BlogPost.created_at.desc()).all()
     return render_template('blog_manage.html', posts=posts, manage_scope=scope)
-
 
 @main.route('/admin/Blog', methods=['GET', 'POST'])
 @login_required
@@ -3593,19 +3152,13 @@ def admin_blog_manage():
         abort(403)
     return redirect(url_for("main.blog_manage", scope="admin"))
 
-@main.route('/writer/blog/manage', methods=['GET', 'POST'])
-@login_required
-def writer_blog_manage():
-    flash("Writer features have been disabled.", "info")
-    return redirect(url_for("main.dashboard"))
-
 @main.route('/admin/blog/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit_blog(id):
     if not _can_manage_blog(current_user):
         abort(403)
     post = BlogPost.query.get_or_404(id)
-    if not current_user.is_admin and post.author_id != current_user.id:
+    if not current_user.is_admin:
         abort(403)
     if request.method == 'POST':
         post.title = (request.form.get('title') or "").strip()
@@ -3621,14 +3174,8 @@ def edit_blog(id):
             return redirect(url_for('main.edit_blog', id=post.id))
         db.session.commit()
         flash('Blog post updated!', 'success')
-        scope = (request.args.get("scope") or ("admin" if current_user.is_admin else "writer")).strip().lower()
-        if scope not in {"admin", "writer"}:
-            scope = "admin" if current_user.is_admin else "writer"
-        return redirect(url_for('main.blog_manage', scope=scope))
-    scope = (request.args.get("scope") or ("admin" if current_user.is_admin else "writer")).strip().lower()
-    if scope not in {"admin", "writer"}:
-        scope = "admin" if current_user.is_admin else "writer"
-    return render_template('edit_blog.html', post=post, manage_scope=scope)
+        return redirect(url_for('main.blog_manage', scope="admin"))
+    return render_template('edit_blog.html', post=post, manage_scope="admin")
 
 @main.route('/admin/blog/<int:id>/delete')
 @login_required
@@ -3636,29 +3183,12 @@ def delete_blog(id):
     if not _can_manage_blog(current_user):
         abort(403)
     post = BlogPost.query.get_or_404(id)
-    if not current_user.is_admin and post.author_id != current_user.id:
+    if not current_user.is_admin:
         abort(403)
     db.session.delete(post)
     db.session.commit()
     flash('Blog post deleted.', 'info')
-    scope = (request.args.get("scope") or ("admin" if current_user.is_admin else "writer")).strip().lower()
-    if scope not in {"admin", "writer"}:
-        scope = "admin" if current_user.is_admin else "writer"
-    return redirect(url_for('main.blog_manage', scope=scope))
-
-
-@main.route('/writer/blog/<int:id>/edit', methods=['GET', 'POST'])
-@login_required
-def writer_edit_blog(id):
-    flash("Writer features have been disabled.", "info")
-    return redirect(url_for("main.dashboard"))
-
-
-@main.route('/writer/blog/<int:id>/delete')
-@login_required
-def writer_delete_blog(id):
-    flash("Writer features have been disabled.", "info")
-    return redirect(url_for("main.dashboard"))
+    return redirect(url_for('main.blog_manage', scope="admin"))
 
 @main.route('/admin/messages/json', methods=['GET'])
 @login_required
@@ -3682,7 +3212,6 @@ def admin_view_all():
 @main.route('/about')
 def about():
     return render_template('about.html')
-
 
 @main.route('/services')
 def services_page():
@@ -3789,7 +3318,7 @@ def inject_now():
     from datetime import datetime
     payload = {'current_year': datetime.now().year}
     try:
-        payload["writer_enabled"] = bool(current_user.is_authenticated and _is_approved_writer(current_user))
+
         if current_user.is_authenticated and current_user.is_admin:
             payload["admin_unread_messages_count"] = Message.query.filter_by(
                 receiver_id=current_user.id,
@@ -3798,9 +3327,6 @@ def inject_now():
         else:
             payload["admin_unread_messages_count"] = 0
     except Exception:
-        payload["writer_enabled"] = False
         payload["admin_unread_messages_count"] = 0
     return payload
-
-
 

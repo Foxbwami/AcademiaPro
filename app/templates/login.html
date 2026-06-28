@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Sign In | AcademicPro{% endblock %}
+{% block title %}Sign In | AcademiaPro{% endblock %}
 {% block content %}
 <div class="auth-wrap">
   <div class="auth-card">
@@ -26,7 +26,6 @@
       <span>New here?</span>
       <a href="{{ url_for('main.register') }}">Create account</a>
     </div>
-    <p class="small mt-2 mb-0">Admin? <a href="{{ url_for('main.admin_login') }}">Go to Admin Login</a></p>
   </div>
 </div>
 {% endblock %}

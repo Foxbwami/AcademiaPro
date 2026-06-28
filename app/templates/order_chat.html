@@ -13,44 +13,17 @@
   <div class="row g-3 mb-3">
     <div class="col-lg-7">
       <div class="section-card h-100">
-        <h5 class="mb-3">Instructions</h5>
+        <h5 class="mb-3">Student Instructions</h5>
         <div class="small mb-1"><strong>Topic:</strong> {{ order.topic }}</div>
         <div class="small mb-1"><strong>Deadline:</strong> {{ order.deadline.strftime('%Y-%m-%d') if order.deadline else 'N/A' }}</div>
         <div class="small mb-1"><strong>Length:</strong> {{ order.word_count }} words</div>
         <div class="small mb-1"><strong>Academic Level:</strong> {{ order.level }}</div>
-        <div class="small mb-1"><strong>Formatting Style:</strong> As provided in order details</div>
+        <div class="small mb-1"><strong>Citation Style:</strong> {{ order.citation_style or 'N/A' }}</div>
         <div class="small mt-2"><strong>Description:</strong> {{ order.description }}</div>
-        <hr>
-        <div class="small fw-semibold mb-2">Client Checklist</div>
-        <div class="small text-muted mb-1"><input type="checkbox"> Rubric / grading criteria attached</div>
-        <div class="small text-muted mb-1"><input type="checkbox"> Required sources or readings included</div>
-        <div class="small text-muted mb-1"><input type="checkbox"> Preferred citation style confirmed</div>
-        <div class="small text-muted mb-1"><input type="checkbox"> Examples or prior drafts uploaded</div>
       </div>
     </div>
     <div class="col-lg-5">
-      <div class="section-card mb-3">
-        <h5 class="mb-3">Assigned Specialist</h5>
-        {% if writer_user %}
-          <div class="small mb-1"><strong>Name:</strong> {{ writer_user.name }}</div>
-          <div class="small mb-1"><strong>Rating:</strong> {{ writer_profile.rating if writer_profile and writer_profile.rating else 'New' }}</div>
-          <div class="small mb-1"><strong>Expertise:</strong> {{ writer_profile.subject if writer_profile else 'General Academic' }}</div>
-          <div class="small mb-1"><strong>Degree:</strong> {{ writer_profile.degree if writer_profile and writer_profile.degree else 'Not listed' }}</div>
-          <div class="small mb-2"><strong>Experience:</strong> {{ writer_profile.years_experience if writer_profile and writer_profile.years_experience else 'N/A' }} years</div>
-          {% if writer_profile and writer_profile.portfolio_url %}
-            <a class="btn btn-outline-primary btn-sm" href="{{ writer_profile.portfolio_url }}" target="_blank">View Past Work</a>
-          {% endif %}
-          {% if writer_profile and writer_profile.portfolio_file %}
-            <a class="btn btn-outline-secondary btn-sm mt-2" href="{{ url_for('static', filename='uploads/' ~ writer_profile.portfolio_file) }}" target="_blank">View Portfolio</a>
-          {% endif %}
-          {% if writer_profile and writer_profile.resume_file %}
-            <a class="btn btn-outline-secondary btn-sm mt-2" href="{{ url_for('static', filename='uploads/' ~ writer_profile.resume_file) }}" target="_blank">View Resume</a>
-          {% endif %}
-        {% else %}
-          <div class="text-muted small">Specialist not assigned yet.</div>
-        {% endif %}
-      </div>
-      <div class="section-card">
+      <div class="section-card h-100">
         <h5 class="mb-3">Progress Tracker</h5>
         <div class="progress mb-2" style="height: 10px;">
           <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress_percent }}%;" aria-valuenow="{{ progress_percent }}" aria-valuemin="0" aria-valuemax="100"></div>
@@ -81,10 +54,7 @@
         <div class="small fw-semibold mb-2">Order Overview</div>
         <div class="small mb-1"><strong>Order ID:</strong> #{{ admin_overview.order_id }}</div>
         <div class="small mb-1"><strong>Topic:</strong> {{ admin_overview.topic }}</div>
-        <div class="small mb-1"><strong>Client:</strong> {{ admin_overview.client_name }} ({{ admin_overview.client_email }})</div>
-        <div class="small mb-1"><strong>Specialist:</strong> {{ admin_overview.writer_name }}</div>
-        <div class="small mb-1"><strong>Specialist Rating:</strong> {{ admin_overview.writer_rating if admin_overview.writer_rating else 'New' }}</div>
-        <div class="small mb-1"><strong>Expertise:</strong> {{ admin_overview.writer_expertise }}</div>
+        <div class="small mb-1"><strong>Student:</strong> {{ admin_overview.client_name }} ({{ admin_overview.client_email }})</div>
         <div class="small mb-2"><strong>Status:</strong> {{ admin_overview.status }}</div>
         <div class="small fw-semibold mb-1">Attachment Checklist</div>
         <div class="small {% if attachment_checklist.rubric %}text-success{% else %}text-danger{% endif %}">Rubric: {{ 'Yes' if attachment_checklist.rubric else 'Missing' }}</div>
@@ -119,25 +89,18 @@
             </select>
           </div>
           <div class="col-4 d-grid">
-            <button class="btn btn-sm btn-outline-primary" type="submit">Override</button>
+            <button class="btn btn-sm btn-outline-primary" type="submit">Update</button>
           </div>
         </form>
       </div>
       <div class="col-lg-4">
-        <div class="small fw-semibold mb-2">Quality Tools Oversight</div>
+        <div class="small fw-semibold mb-2">Quality Notes</div>
         <div class="small mb-1"><strong>Plagiarism:</strong> {{ admin_quality.plagiarism }}</div>
         <div class="small mb-1"><strong>AI Detection:</strong> {{ admin_quality.ai_detection }}</div>
-        <div class="small fw-semibold mt-2 mb-1">Self-Editing Checklist</div>
-        <div class="small {% if admin_quality.self_editing.transitions %}text-success{% else %}text-muted{% endif %}">Transitions</div>
-        <div class="small {% if admin_quality.self_editing.thesis %}text-success{% else %}text-muted{% endif %}">Thesis</div>
-        <div class="small {% if admin_quality.self_editing.grammar %}text-success{% else %}text-muted{% endif %}">Grammar</div>
-        <div class="small {% if admin_quality.self_editing.formatting %}text-success{% else %}text-muted{% endif %}">Formatting</div>
-        <div class="small {% if admin_quality.self_editing.instructions %}text-success{% else %}text-muted{% endif %}">Instruction Compliance</div>
-        <div class="small fw-semibold mt-2 mb-1">Time Tracker</div>
+        <div class="small fw-semibold mt-2 mb-1">Thread Activity</div>
         <div class="small">First Update: {{ admin_time_tracker.first_update }}</div>
         <div class="small">Last Update: {{ admin_time_tracker.last_update }}</div>
-        <div class="small">Logged Hours: {{ admin_time_tracker.logged_hours }}</div>
-        <div class="small">Specialist Updates: {{ admin_time_tracker.updates_count }}</div>
+        <div class="small">Messages: {{ admin_time_tracker.updates_count }}</div>
       </div>
     </div>
     {% if admin_alerts %}
@@ -156,23 +119,12 @@
     <div class="col-lg-7">
       <div class="card mb-3">
         <div id="orderThreadBox" class="card-body" style="max-height: 420px; overflow-y: auto;">
+          <h5 class="mb-3">{% if admin_view %}Student Order Thread{% else %}Message Admin{% endif %}</h5>
           {% if admin_view %}
-          <h5 class="mb-3">Client Project Thread (Admin Monitor)</h5>
-          <div class="alert alert-info small">
-            Admin view is read-only. This page is for progress monitoring and quality oversight.
-          </div>
-          {% else %}
-          <h5 class="mb-3">Client Project Thread</h5>
+          <div class="alert alert-info small">Use the admin communication hub to reply directly to the student.</div>
           {% endif %}
           {% if not chat_active %}
-            <div class="alert alert-warning small">
-              Project chat is inactive. You can view history, but new messages are disabled. Use admin support for follow-ups.
-            </div>
-          {% endif %}
-          {% if not approved_app %}
-            <div class="alert alert-info small">
-              Specialist not assigned yet. This thread will activate once admin approves the project workflow.
-            </div>
+            <div class="alert alert-warning small">This order thread is inactive. Use support tickets for follow-up questions.</div>
           {% endif %}
           {% for msg in messages %}
           <div class="mb-2 {% if msg.sender_id == current_user.id %}text-end{% endif %}">
@@ -189,17 +141,7 @@
 
       {% if chat_active and not admin_view %}
       <form method="POST" enctype="multipart/form-data" class="section-card" id="orderChatForm">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <h6 class="mb-0">Send Update</h6>
-          <select class="form-select form-select-sm w-auto" id="cannedResponses">
-            <option value="">Canned responses</option>
-            <option value="Got it, starting now.">Got it, starting now.</option>
-            <option value="Draft in progress. I will update you soon.">Draft in progress. I will update you soon.</option>
-            <option value="Outline ready for your approval.">Outline ready for your approval.</option>
-            <option value="Revised draft uploaded. Please review.">Revised draft uploaded. Please review.</option>
-            <option value="Final deliverable uploaded.">Final deliverable uploaded.</option>
-          </select>
-        </div>
+        <h6 class="mb-2">Send Message To Admin</h6>
         <div class="mb-2">
           <label class="form-label small">Comment on file (optional)</label>
           <select class="form-select" id="fileCommentTarget">
@@ -210,7 +152,7 @@
           </select>
         </div>
         <div class="mb-2">
-          <input name="message" class="form-control" placeholder="Type a message for the project team or admin">
+          <input name="message" class="form-control" placeholder="Type your message for admin">
         </div>
         <div class="mb-2">
           <label class="form-label small">Upload reference/draft file</label>
@@ -220,60 +162,15 @@
       </form>
       {% elif admin_view %}
       <div class="section-card">
-        <h6 class="mb-2">Admin Monitoring Mode</h6>
-        <div class="small text-muted mb-2">Message and file upload actions are disabled here for admins.</div>
-        <a href="{{ url_for('main.admin_chat_grouped') }}" class="btn btn-outline-primary btn-sm">Open Admin Communication Hub</a>
+        <h6 class="mb-2">Admin Reply</h6>
+        <div class="small text-muted mb-2">Reply to students from the communication hub so all direct messages stay in one place.</div>
+        <a href="{{ url_for('main.admin_chat_grouped', tab='clients') }}" class="btn btn-outline-primary btn-sm">Open Client Messages</a>
       </div>
       {% else %}
       <div class="section-card">
         <h6 class="mb-2">Chat Disabled</h6>
         <div class="small text-muted mb-2">This order is closed. Contact admin for follow-up questions.</div>
         <a href="{{ url_for('main.support_tickets') }}" class="btn btn-outline-primary btn-sm">Contact Admin Support</a>
-      </div>
-      {% endif %}
-
-      {% if chat_active and approved_app and current_user.id == approved_app.writer_user_id %}
-      <div class="section-card mt-3">
-        <h6 class="mb-2">Specialist Tools</h6>
-        <div class="mb-2 small text-muted">One-click status updates</div>
-        <div class="d-flex flex-wrap gap-2 mb-3">
-          <button type="button" class="btn btn-outline-primary btn-sm status-btn" data-message="Reviewing instructions now.">Reviewing instructions</button>
-          <button type="button" class="btn btn-outline-primary btn-sm status-btn" data-message="Researching sources and outlining key points.">Researching</button>
-          <button type="button" class="btn btn-outline-primary btn-sm status-btn" data-message="Draft in progress. Next update soon.">Drafting</button>
-          <button type="button" class="btn btn-outline-primary btn-sm status-btn" data-message="Running plagiarism and AI checks before submission.">Final checks</button>
-        </div>
-
-        <div class="mb-2 small text-muted">Request clarifications</div>
-        <div class="d-flex flex-wrap gap-2 mb-3">
-          <button type="button" class="btn btn-outline-secondary btn-sm status-btn" data-message="Please confirm the citation style and reference format.">Citation style</button>
-          <button type="button" class="btn btn-outline-secondary btn-sm status-btn" data-message="Could you clarify the expected word count or page length?">Word count</button>
-          <button type="button" class="btn btn-outline-secondary btn-sm status-btn" data-message="Do you have a rubric or grading criteria for this task?">Rubric</button>
-          <button type="button" class="btn btn-outline-secondary btn-sm status-btn" data-message="Please share any required sources or materials.">Required sources</button>
-        </div>
-
-        <div class="row g-3">
-          <div class="col-md-6">
-            <div class="small fw-semibold mb-2">Self-Editing Checklist</div>
-            <div class="small text-muted mb-1"><input type="checkbox"> Thesis/claim is clear and focused</div>
-            <div class="small text-muted mb-1"><input type="checkbox"> Sources are credible and cited</div>
-            <div class="small text-muted mb-1"><input type="checkbox"> Grammar and spelling checked</div>
-            <div class="small text-muted mb-1"><input type="checkbox"> Formatting follows required style</div>
-            <div class="small text-muted mb-1"><input type="checkbox"> Plagiarism/AI check completed</div>
-          </div>
-          <div class="col-md-6">
-            <div class="small fw-semibold mb-2">Time Tracker</div>
-            <div class="timer-box mb-2">
-              <div class="timer-display" id="writerTimer">00:00:00</div>
-              <div class="d-flex gap-2 mt-2">
-                <button type="button" class="btn btn-sm btn-outline-primary" id="timerStart">Start</button>
-                <button type="button" class="btn btn-sm btn-outline-secondary" id="timerPause">Pause</button>
-                <button type="button" class="btn btn-sm btn-outline-danger" id="timerReset">Reset</button>
-              </div>
-            </div>
-            <div class="small fw-semibold mb-2">Quality Tools</div>
-            <div class="small text-muted">Plagiarism and AI detection are recommended before submission.</div>
-          </div>
-        </div>
       </div>
       {% endif %}
     </div>
@@ -291,13 +188,7 @@
                     <div class="small">{{ item.file.filename }} {% if item.version %}<span class="badge bg-light text-dark">{{ item.version }}</span>{% endif %}</div>
                     <div class="small text-muted">By {{ item.file.uploader }} | {{ item.file.uploaded_at.strftime('%Y-%m-%d %H:%M') if item.file.uploaded_at else '' }}</div>
                   </div>
-                  <div class="d-flex gap-1">
-                    <a href="{{ url_for('main.download_order_file', filename=item.file.filename) }}" class="btn btn-outline-primary btn-sm">Download</a>
-                    {% if admin_view %}
-                      <a href="{{ url_for('main.admin_chat_grouped') }}" class="btn btn-outline-success btn-sm">Approve</a>
-                      <a href="{{ url_for('main.admin_chat_grouped') }}" class="btn btn-outline-warning btn-sm">Re-upload</a>
-                    {% endif %}
-                  </div>
+                  <a href="{{ url_for('main.download_order_file', filename=item.file.filename) }}" class="btn btn-outline-primary btn-sm">Download</a>
                 </li>
               {% endfor %}
             </ul>
@@ -309,7 +200,7 @@
 
       {% if not admin_view %}
       <div class="section-card mt-3">
-        <h5 class="mb-3">Admin Support Chat</h5>
+        <h5 class="mb-3">Direct Admin Support</h5>
         <div id="orderAdminThreadBox" class="admin-chat-box mb-3">
           {% if admin_messages %}
             {% for msg in admin_messages %}
@@ -332,55 +223,13 @@
         </form>
       </div>
       {% endif %}
-
-      {% if existing_review is not none %}
-        <div class="section-card mt-3">
-          <h5 class="mb-2">Your Review</h5>
-          <div class="small text-muted">Rating: {{ existing_review.rating }}/5</div>
-          {% if existing_review.comment %}
-            <div class="small mt-2">{{ existing_review.comment }}</div>
-          {% endif %}
-        </div>
-      {% elif writer_user and (order.status or '').lower() == 'completed' and current_user.id == order.user_id %}
-        <div class="section-card mt-3">
-          <h5 class="mb-2">Leave a Rating</h5>
-          <form method="POST" action="{{ url_for('main.submit_order_review', order_id=order.id) }}">
-            <div class="mb-2">
-              <label class="form-label small">Rating (1-5)</label>
-              <select name="rating" class="form-select">
-                <option value="">Select rating</option>
-                <option value="5">5 - Excellent</option>
-                <option value="4">4 - Good</option>
-                <option value="3">3 - Fair</option>
-                <option value="2">2 - Poor</option>
-                <option value="1">1 - Bad</option>
-              </select>
-            </div>
-            <div class="mb-2">
-              <label class="form-label small">Comment (optional)</label>
-              <textarea name="comment" class="form-control" rows="3" placeholder="Share your experience"></textarea>
-            </div>
-            <button class="btn btn-primary btn-sm" type="submit">Submit Review</button>
-          </form>
-        </div>
-      {% endif %}
     </div>
   </div>
 </div>
 
 <script>
-  const canned = document.getElementById("cannedResponses");
   const fileTarget = document.getElementById("fileCommentTarget");
   const messageInput = document.querySelector("input[name='message']");
-  const statusBtns = document.querySelectorAll(".status-btn");
-  const form = document.getElementById("orderChatForm");
-  if (canned && messageInput) {
-    canned.addEventListener("change", () => {
-      if (canned.value) {
-        messageInput.value = canned.value;
-      }
-    });
-  }
   if (fileTarget && messageInput) {
     fileTarget.addEventListener("change", () => {
       if (fileTarget.value) {
@@ -391,120 +240,5 @@
       }
     });
   }
-  if (statusBtns && messageInput && form) {
-    statusBtns.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const msg = btn.getAttribute("data-message") || "";
-        if (msg) {
-          messageInput.value = msg;
-          form.submit();
-        }
-      });
-    });
-  }
-
-  const timerDisplay = document.getElementById("writerTimer");
-  const timerStart = document.getElementById("timerStart");
-  const timerPause = document.getElementById("timerPause");
-  const timerReset = document.getElementById("timerReset");
-  let timerSeconds = 0;
-  let timerHandle = null;
-  function renderTimer() {
-    if (!timerDisplay) return;
-    const hrs = String(Math.floor(timerSeconds / 3600)).padStart(2, "0");
-    const mins = String(Math.floor((timerSeconds % 3600) / 60)).padStart(2, "0");
-    const secs = String(timerSeconds % 60).padStart(2, "0");
-    timerDisplay.textContent = `${hrs}:${mins}:${secs}`;
-  }
-  if (timerStart) {
-    timerStart.addEventListener("click", () => {
-      if (timerHandle) return;
-      timerHandle = setInterval(() => {
-        timerSeconds += 1;
-        renderTimer();
-      }, 1000);
-    });
-  }
-  if (timerPause) {
-    timerPause.addEventListener("click", () => {
-      if (timerHandle) {
-        clearInterval(timerHandle);
-        timerHandle = null;
-      }
-    });
-  }
-  if (timerReset) {
-    timerReset.addEventListener("click", () => {
-      timerSeconds = 0;
-      renderTimer();
-    });
-  }
-  renderTimer();
-
-  const orderThreadBox = document.getElementById("orderThreadBox");
-  const orderAdminThreadBox = document.getElementById("orderAdminThreadBox");
-  function esc(v) {
-    return String(v || "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/\"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
-
-  async function refreshOrderThread() {
-    if (!orderThreadBox) return;
-    try {
-      const res = await fetch("{{ url_for('main.order_chat_messages', order_id=order.id) }}", { cache: "no-store" });
-      const data = await res.json();
-      if (!res.ok || !data.ok) return;
-      let html = {% if admin_view %}
-        '<h5 class="mb-3">Client Project Thread (Admin Monitor)</h5><div class="alert alert-info small">Admin view is read-only. This page is for progress monitoring and quality oversight.</div>';
-      {% else %}
-        '<h5 class="mb-3">Client Project Thread</h5>';
-      {% endif %}
-      if (!data.chat_active) {
-        html += '<div class="alert alert-warning small">Project chat is inactive. You can view history, but new messages are disabled. Use admin support for follow-ups.</div>';
-      }
-      const rows = data.messages || [];
-      if (!rows.length) {
-        html += '<p class="text-muted">No messages yet.</p>';
-      } else {
-        html += rows.map((m) => {
-          const align = m.mine ? "text-end" : "";
-          const cls = m.mine ? "bg-primary" : "bg-secondary";
-          return `<div class="mb-2 ${align}"><span class="badge ${cls} p-2">${esc(m.content)}</span><div class="small text-muted">${esc(m.timestamp)}</div></div>`;
-        }).join("");
-      }
-      orderThreadBox.innerHTML = html;
-      orderThreadBox.scrollTop = orderThreadBox.scrollHeight;
-    } catch (_e) {}
-  }
-
-  async function refreshOrderAdminThread() {
-    if (!orderAdminThreadBox) return;
-    try {
-      const res = await fetch("{{ url_for('main.order_admin_messages', order_id=order.id) }}", { cache: "no-store" });
-      const data = await res.json();
-      if (!res.ok || !data.ok) return;
-      const rows = data.messages || [];
-      if (!rows.length) {
-        orderAdminThreadBox.innerHTML = '<div class="text-muted small">No admin messages yet.</div>';
-        return;
-      }
-      orderAdminThreadBox.innerHTML = rows.map((m) => {
-        const align = m.mine ? "text-end" : "";
-        const cls = m.mine ? "bg-dark" : "bg-info";
-        return `<div class="mb-2 ${align}"><span class="badge ${cls} p-2">${esc(m.content)}</span><div class="small text-muted">${esc(m.timestamp)}</div></div>`;
-      }).join("");
-      orderAdminThreadBox.scrollTop = orderAdminThreadBox.scrollHeight;
-    } catch (_e) {}
-  }
-
-  refreshOrderThread();
-  refreshOrderAdminThread();
-  setInterval(refreshOrderThread, 5000);
-  setInterval(refreshOrderAdminThread, 5000);
 </script>
 {% endblock %}
-

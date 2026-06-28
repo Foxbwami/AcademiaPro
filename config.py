@@ -10,7 +10,10 @@ if load_dotenv is not None:
 
 class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev_secret_key")
-    SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///your.db")
+    DATABASE_URL = os.environ.get("SQLALCHEMY_DATABASE_URI") or os.environ.get("DATABASE_URL") or "sqlite:///your.db"
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    SQLALCHEMY_DATABASE_URI = DATABASE_URL
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     ADMIN_EMAILS = [
         e.strip().lower()

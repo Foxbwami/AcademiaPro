@@ -8,3 +8,21 @@ services:
         value: production
       - key: SECRET_KEY
         generateValue: true
+      - key: SQLALCHEMY_DATABASE_URI
+        sync: false
+      - key: ADMIN_BOOTSTRAP_EMAIL
+        sync: false
+      - key: ADMIN_BOOTSTRAP_PASSWORD
+        sync: false
+      - key: ADMIN_EMAILS
+        sync: false
+      - key: ADMIN_ONLY_MODE
+        value: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile
+      - key: GROQ_TIMEOUT
+        value: 90
+      - key: GROQ_MAX_TOKENS
+        value: 6000

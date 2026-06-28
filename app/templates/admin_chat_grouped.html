@@ -1,7 +1,7 @@
 {% extends "admin_base.html" %}
 {% block content %}
 <div class="container-fluid py-4">
-  <h2 class="mb-3 fw-bold text-primary">Grouped User Chats</h2>
+  <h2 class="mb-3 fw-bold text-primary">Client Messages</h2>
 
   <form method="GET" class="admin-card p-3 mb-3">
     <div class="row g-2 align-items-end">
@@ -12,7 +12,6 @@
       <div class="col-md-2">
         <label class="form-label">Category</label>
         <select name="tab" class="form-select">
-          <option value="writers" {% if active_tab == 'writers' %}selected{% endif %}>Specialists</option>
           <option value="clients" {% if active_tab == 'clients' %}selected{% endif %}>Clients</option>
           <option value="guests" {% if active_tab == 'guests' %}selected{% endif %}>Guests</option>
         </select>
@@ -25,11 +24,6 @@
   </form>
 
   <ul class="nav nav-tabs mb-3" role="tablist">
-    <li class="nav-item" role="presentation">
-      <button class="nav-link {% if active_tab == 'writers' %}active{% endif %}" data-bs-toggle="tab" data-bs-target="#writersTab" type="button">
-        <i class="bi bi-pen-fill text-primary"></i> Specialists ({{ grouped.writers|length }})
-      </button>
-    </li>
     <li class="nav-item" role="presentation">
       <button class="nav-link {% if active_tab == 'clients' %}active{% endif %}" data-bs-toggle="tab" data-bs-target="#clientsTab" type="button">
         <i class="bi bi-person-fill text-success"></i> Clients ({{ grouped.clients|length }})
@@ -44,7 +38,6 @@
 
   <div class="tab-content">
     {% for tab_key, title, icon_class, border_class, badge_class in [
-      ('writers', 'Specialists', 'bi-pen-fill', 'border-primary', 'bg-primary'),
       ('clients', 'Clients', 'bi-person-fill', 'border-success', 'bg-success'),
       ('guests', 'Guests', 'bi-globe2', 'border-secondary', 'bg-secondary')
     ] %}
@@ -69,9 +62,7 @@
                 </div>
                 <div class="text-end small">
                   <div><span class="badge {{ badge_class }}">{{ row.status }}</span></div>
-                  {% if tab_key == 'writers' %}
-                  <div class="text-muted">Rating: {{ row.rating or "N/A" }}</div>
-                  {% elif tab_key == 'clients' %}
+                  {% if tab_key == 'clients' %}
                   <div class="text-muted">Active Orders: {{ row.active_orders if row.active_orders is not none else 0 }}</div>
                   {% endif %}
                 </div>
@@ -108,7 +99,7 @@
                 <input type="text" name="message" class="form-control" placeholder="Reply to guest thread..." required>
                 {% else %}
                 <input type="hidden" name="user_id" value="{{ row.partner_key }}">
-                <input type="text" name="message" class="form-control" placeholder="Reply..." required>
+                <input type="text" name="message" class="form-control" placeholder="Reply to client..." required>
                 {% endif %}
                 <button type="submit" class="btn btn-success">Send</button>
               </form>

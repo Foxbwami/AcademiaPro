@@ -1,10 +1,10 @@
 {% extends "admin_base.html" %}
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-  <h1 class="h3 mb-0">Orders & Job Applications</h1>
+  <h1 class="h3 mb-0">Student Orders</h1>
   <div class="d-flex gap-2">
     <a href="{{ url_for('main.admin_orders_export') }}" class="btn btn-outline-primary btn-sm">Export Reports</a>
-    <a href="{{ url_for('main.admin_chat_grouped') }}" class="btn btn-outline-secondary btn-sm">Communication Hub</a>
+    <a href="{{ url_for('main.admin_chat_grouped') }}" class="btn btn-outline-secondary btn-sm">Client Messages</a>
   </div>
 </div>
 
@@ -25,14 +25,14 @@
 <div class="admin-card p-3 mb-3">
   <form method="GET" class="row g-2 align-items-end">
     <div class="col-lg-4 col-md-6">
-      <label class="form-label">Global Search</label>
-      <input type="text" name="q" class="form-control" placeholder="Topic, client, writer, description" value="{{ q }}">
+      <label class="form-label">Search</label>
+      <input type="text" name="q" class="form-control" placeholder="Topic, student, email, description" value="{{ q }}">
     </div>
     <div class="col-lg-2 col-md-3">
       <label class="form-label">Status</label>
       <select name="status" class="form-select">
         <option value="">All</option>
-        {% for s in ['Open', 'Assigned', 'In Progress', 'Draft Submitted', 'Revision', 'Completed', 'Cancelled', 'Pending Review'] %}
+        {% for s in ['Pending Review', 'Open', 'In Progress', 'Draft Submitted', 'Revision', 'Completed', 'Cancelled'] %}
         <option value="{{ s }}" {% if status == s %}selected{% endif %}>{{ s }}</option>
         {% endfor %}
       </select>
@@ -40,12 +40,18 @@
     <div class="col-lg-2 col-md-3">
       <label class="form-label">Date Type</label>
       <select name="date_field" class="form-select">
-        <option value="posted" {% if date_field == 'posted' %}selected{% endif %}>Posting Date</option>
+        <option value="posted" {% if date_field == 'posted' %}selected{% endif %}>Order Date</option>
         <option value="deadline" {% if date_field == 'deadline' %}selected{% endif %}>Deadline</option>
       </select>
     </div>
-    <div class="col-lg-2 col-md-6"><label class="form-label">Date From</label><input type="date" name="date_from" class="form-control" value="{{ date_from }}"></div>
-    <div class="col-lg-2 col-md-6"><label class="form-label">Date To</label><input type="date" name="date_to" class="form-control" value="{{ date_to }}"></div>
+    <div class="col-lg-2 col-md-6">
+      <label class="form-label">Date From</label>
+      <input type="date" name="date_from" class="form-control" value="{{ date_from }}">
+    </div>
+    <div class="col-lg-2 col-md-6">
+      <label class="form-label">Date To</label>
+      <input type="date" name="date_to" class="form-control" value="{{ date_to }}">
+    </div>
     <div class="col-12 d-flex gap-2 justify-content-end">
       <button class="btn btn-primary btn-sm" type="submit">Filter</button>
       <a href="{{ url_for('main.admin_orders') }}" class="btn btn-outline-secondary btn-sm">Reset</a>
@@ -58,14 +64,13 @@
     <div class="col-md-4">
       <label class="form-label">Bulk Action</label>
       <select name="bulk_action" class="form-select">
-        <option value="set_status">Update statuses in batch</option>
-        <option value="approve_first_pending">Approve first pending application</option>
+        <option value="set_status">Update selected statuses</option>
       </select>
     </div>
     <div class="col-md-4">
       <label class="form-label">Bulk Status</label>
       <select name="bulk_status" class="form-select">
-        {% for s in ['Open', 'Assigned', 'In Progress', 'Draft Submitted', 'Revision', 'Completed', 'Cancelled'] %}
+        {% for s in ['Pending Review', 'Open', 'In Progress', 'Draft Submitted', 'Revision', 'Completed', 'Cancelled'] %}
         <option value="{{ s }}">{{ s }}</option>
         {% endfor %}
       </select>
@@ -82,25 +87,25 @@
           <th><input class="form-check-input" type="checkbox" id="selectAllOrders"></th>
           <th>ID</th>
           <th>Topic</th>
-          <th>Description</th>
-          <th>Client</th>
+          <th>Student</th>
           <th>Status</th>
           <th>Deadline</th>
           <th>Price</th>
-          <th>Applications</th>
+          <th>Files</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
       {% for order in orders %}
-        {% set apps = applications_by_order.get(order.id, []) %}
         {% set urgent = order.deadline and ((order.deadline - now_utc).total_seconds() <= 86400) and ((order.deadline - now_utc).total_seconds() > 0) and (order.status|lower != 'completed') %}
         {% set status_key = (order.status or '')|lower %}
-        <tr id="order-{{ order.id }}" class="{% if urgent %}table-danger{% elif 'completed' in status_key %}table-success{% elif 'progress' in status_key or 'assigned' in status_key or 'draft' in status_key or 'revision' in status_key %}table-warning{% endif %}">
+        <tr id="order-{{ order.id }}" class="{% if urgent %}table-danger{% elif 'completed' in status_key %}table-success{% elif 'progress' in status_key or 'draft' in status_key or 'revision' in status_key %}table-warning{% endif %}">
           <td><input class="form-check-input order-check" type="checkbox" name="order_ids" value="{{ order.id }}"></td>
           <td>#{{ order.id }}</td>
-          <td class="fw-semibold">{{ order.topic }}</td>
-          <td class="small">{{ order.description[:90] }}{% if order.description|length > 90 %}...{% endif %}</td>
+          <td>
+            <div class="fw-semibold">{{ order.topic }}</div>
+            <div class="small text-muted">{{ order.description[:110] }}{% if order.description|length > 110 %}...{% endif %}</div>
+          </td>
           <td>
             <div>{{ order.user.name if order.user else 'Unknown' }}</div>
             <div class="small text-muted">{{ order.user.email if order.user else '' }}</div>
@@ -108,7 +113,7 @@
           <td>
             <form method="POST" action="{{ url_for('main.update_order', id=order.id) }}" class="d-flex gap-1">
               <select name="status" class="form-select form-select-sm">
-                {% for s in ['Open', 'Assigned', 'In Progress', 'Draft Submitted', 'Revision', 'Completed', 'Cancelled', 'Pending Review'] %}
+                {% for s in ['Pending Review', 'Open', 'In Progress', 'Draft Submitted', 'Revision', 'Completed', 'Cancelled'] %}
                 <option value="{{ s }}" {% if order.status == s %}selected{% endif %}>{{ s }}</option>
                 {% endfor %}
               </select>
@@ -121,29 +126,15 @@
             <div class="small {% if urgent %}text-danger fw-semibold{% else %}text-muted{% endif %} order-countdown" data-deadline="{{ order.deadline.isoformat() }}">--</div>
             {% endif %}
           </td>
-          <td>${{ '%.2f'|format(order.price or 0) }}</td>
+          <td>{{ order.currency or 'USD' }} {{ '%.2f'|format(order.price or 0) }}</td>
           <td>
-            {% if apps %}
-              {% for app in apps %}
-              <div class="small mb-1">
-                {% set writer_user = writer_users.get(app.writer_user_id) %}
-                <strong>{{ writer_user.name if writer_user else ('User #' ~ app.writer_user_id) }}</strong>
-                <span class="badge bg-secondary">{{ app.status }}</span>
-              </div>
-              {% endfor %}
-            {% else %}
-              <span class="small text-muted">No applications</span>
-            {% endif %}
+            {% set order_files = files_by_order.get(order.id, []) %}
+            <span class="badge bg-light text-dark">{{ order_files|length }}</span>
           </td>
           <td>
             <div class="d-grid gap-1">
               <button type="button" class="btn btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#orderDetailsModal{{ order.id }}">Details</button>
-              <a href="{{ url_for('main.order_chat', order_id=order.id) }}" class="btn btn-sm btn-outline-primary">Chat</a>
-              {% if not order.job_posted %}
-              <form method="POST" action="{{ url_for('main.publish_order_job', id=order.id) }}">
-                <button class="btn btn-sm btn-success w-100" type="submit">Assign Writer Pool</button>
-              </form>
-              {% endif %}
+              <a href="{{ url_for('main.order_chat', order_id=order.id) }}" class="btn btn-sm btn-outline-primary">Order Thread</a>
               <a href="{{ url_for('main.delete_order', id=order.id) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this order?')">Delete</a>
             </div>
           </td>
@@ -160,13 +151,18 @@
                 <div class="row g-3">
                   <div class="col-md-8">
                     <div class="admin-card p-3 h-100">
-                      <h6 class="mb-2">Full Instructions</h6>
+                      <h6 class="mb-2">Student Instructions</h6>
                       <div class="small mb-1"><strong>Topic:</strong> {{ order.topic }}</div>
+                      <div class="small mb-1"><strong>Service Track:</strong> {{ order.service_track or 'writing' }}</div>
+                      <div class="small mb-1"><strong>Task Type:</strong> {{ order.task_type or 'N/A' }}</div>
                       <div class="small mb-1"><strong>Word Count:</strong> {{ order.word_count or 'N/A' }}</div>
                       <div class="small mb-1"><strong>Citation Style:</strong> {{ order.citation_style or 'N/A' }}</div>
                       <div class="small mb-2"><strong>Sources:</strong> {{ order.sources_count or 'N/A' }}</div>
                       <div class="small"><strong>Description:</strong><br>{{ order.description }}</div>
-                      <hr>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="admin-card p-3 h-100">
                       <h6 class="mb-2">Attached Files</h6>
                       {% set order_files = files_by_order.get(order.id, []) %}
                       {% if order_files %}
@@ -180,58 +176,19 @@
                       <div class="small text-muted">No attachments.</div>
                       {% endif %}
                       <hr>
-                      <h6 class="mb-2">Client Notes</h6>
-                      <div class="small">{{ order.description }}</div>
-                    </div>
-                  </div>
-                  <div class="col-md-4">
-                    <div class="admin-card p-3 h-100">
-                      <h6 class="mb-2">Specialist Assignment Requests</h6>
-                      {% if apps %}
-                        {% for app in apps %}
-                        {% set writer_user = writer_users.get(app.writer_user_id) %}
-                        {% set writer_profile = writer_profiles.get(writer_user.name) if writer_user else None %}
-                        {% set rating_meta = writer_ratings.get(writer_profile.id) if writer_profile else None %}
-                        <div class="border rounded p-2 mb-2">
-                          <div class="d-flex justify-content-between align-items-center">
-                            <strong class="small">{{ writer_user.name if writer_user else ('User #' ~ app.writer_user_id) }}</strong>
-                            <span class="badge bg-secondary">{{ app.status }}</span>
-                          </div>
-                          <div class="small text-muted">Profile: {{ writer_profile.subject if writer_profile and writer_profile.subject else 'General' }}</div>
-                          <div class="small">Rating: {{ rating_meta.avg if rating_meta else 0 }}/5 ({{ rating_meta.count if rating_meta else 0 }} reviews)</div>
-                          <div class="small text-muted">{{ app.cover_note or "No cover note submitted." }}</div>
-                          <div class="d-grid gap-1 mt-2">
-                            {% if app.status == 'pending' %}
-                            <form method="POST" action="{{ url_for('main.approve_job_application', application_id=app.id) }}">
-                            <button class="btn btn-sm btn-success w-100">Approve Specialist</button>
-                            </form>
-                            <form method="POST" action="{{ url_for('main.reject_job_application', application_id=app.id) }}">
-                              <button class="btn btn-sm btn-outline-danger w-100">Reject</button>
-                            </form>
-                            <form method="POST" action="{{ url_for('main.clarify_job_application', application_id=app.id) }}">
-                              <input name="clarification" class="form-control form-control-sm mb-1" placeholder="Request clarification...">
-                              <button class="btn btn-sm btn-outline-primary w-100">Request Clarification</button>
-                            </form>
-                            {% endif %}
-                          </div>
-                        </div>
-                        {% endfor %}
-                      {% else %}
-                      <div class="small text-muted">No specialist requests yet.</div>
-                      {% endif %}
+                      <a href="{{ url_for('main.order_chat', order_id=order.id) }}" class="btn btn-outline-primary btn-sm w-100">Open Student Thread</a>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="modal-footer">
-                <a href="{{ url_for('main.order_chat', order_id=order.id) }}" class="btn btn-outline-primary">Open Order Chat</a>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
               </div>
             </div>
           </div>
         </div>
       {% else %}
-        <tr><td colspan="10" class="text-center text-muted">No matching orders found.</td></tr>
+        <tr><td colspan="9" class="text-center text-muted">No matching orders found.</td></tr>
       {% endfor %}
       </tbody>
     </table>

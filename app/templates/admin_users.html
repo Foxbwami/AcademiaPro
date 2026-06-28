@@ -1,0 +1,36 @@
+{% extends "admin_base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <h1 class="h3 mb-0">Client Management</h1>
+  <a href="{{ url_for('main.admin_chat_grouped', tab='clients') }}" class="btn btn-outline-primary btn-sm">Open Client Messages</a>
+</div>
+
+<div class="admin-card p-3">
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Verified</th>
+          <th>Joined</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td>{{ user.name }}</td>
+          <td>{{ user.email }}</td>
+          <td><span class="badge bg-light text-dark">{{ 'Admin' if user.is_admin else 'Client' }}</span></td>
+          <td>{{ 'Yes' if user.email_verified else 'No' }}</td>
+          <td>{{ user.created_at.strftime('%Y-%m-%d') if user.created_at else 'N/A' }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="text-center text-muted">No users found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

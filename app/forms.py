@@ -1,9 +1,6 @@
-from wtforms.validators import DataRequired, Email, Length, EqualTo, Optional, InputRequired
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, DateField, PasswordField, SubmitField, IntegerField, SelectField, BooleanField, SelectMultipleField
-from wtforms.validators import DataRequired, Email, EqualTo, Length
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Email, Optional
+from wtforms import BooleanField, DateField, IntegerField, PasswordField, SelectField, StringField, SubmitField, TextAreaField
+from wtforms.validators import DataRequired, Email, EqualTo, InputRequired, Length, Optional
 from flask_wtf.file import FileField, FileAllowed
 
 class RegistrationForm(FlaskForm):
@@ -15,7 +12,6 @@ class RegistrationForm(FlaskForm):
     accept_privacy = BooleanField('I agree to the Privacy Policy', validators=[InputRequired()])
     submit = SubmitField('Register')
 
-from wtforms.validators import ValidationError
 from app.models import User
 
 class LoginForm(FlaskForm):
@@ -142,18 +138,7 @@ class SettingForm(FlaskForm):
         choices=[("APA", "APA"), ("MLA", "MLA"), ("Chicago", "Chicago"), ("Harvard", "Harvard")],
         validators=[Optional()],
     )
-    favorite_writers = StringField("Preferred Service Notes", validators=[Optional()])
     marketing_opt_in = BooleanField("Receive marketing/newsletter emails")
     photo = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
     submit = SubmitField("Save changes")
-    years_experience = IntegerField("Years of Experience", validators=[Optional()])
-    writing_styles = SelectMultipleField(
-        "Writing Styles",
-        choices=[("APA", "APA"), ("MLA", "MLA"), ("Chicago", "Chicago"), ("Harvard", "Harvard")],
-        validators=[Optional()],
-    )
-    portfolio = FileField("Upload CV / Samples", validators=[FileAllowed(['pdf', 'doc', 'docx'], 'Documents only!')])
-    bio = TextAreaField("Short Bio", validators=[DataRequired(), Length(max=500)])
-    accept_terms = BooleanField("I agree to the Terms and Privacy Policy", validators=[InputRequired()])
-    submit = SubmitField("Apply")
     

@@ -36,16 +36,11 @@ def create_app():
         inspector = inspect(db.engine)
         if "order" in inspector.get_table_names():
             order_columns = {col["name"] for col in inspector.get_columns("order")}
-            if "assigned_at" not in order_columns:
-                db.session.execute(text("ALTER TABLE \"order\" ADD COLUMN assigned_at DATETIME"))
-                db.session.commit()
-            if "task_type" not in order_columns:
-                db.session.execute(text("ALTER TABLE \"order\" ADD COLUMN task_type VARCHAR(60)"))
-                db.session.commit()
-            if "price" not in order_columns:
-                db.session.execute(text("ALTER TABLE \"order\" ADD COLUMN price FLOAT"))
-                db.session.commit()
             order_additions = [
+                ("assigned_at", "ALTER TABLE \"order\" ADD COLUMN assigned_at DATETIME"),
+                ("task_type", "ALTER TABLE \"order\" ADD COLUMN task_type VARCHAR(60)"),
+                ("price", "ALTER TABLE \"order\" ADD COLUMN price FLOAT"),
+                ("service_track", "ALTER TABLE \"order\" ADD COLUMN service_track VARCHAR(50) DEFAULT 'writing'"),
                 ("citation_style", "ALTER TABLE \"order\" ADD COLUMN citation_style VARCHAR(30)"),
                 ("sources_count", "ALTER TABLE \"order\" ADD COLUMN sources_count INTEGER"),
                 ("currency", "ALTER TABLE \"order\" ADD COLUMN currency VARCHAR(10)"),
@@ -157,6 +152,22 @@ def create_app():
                 db.session.commit()
             except Exception:
                 db.session.rollback()
+        else:
+            ai_columns = {col["name"] for col in inspector.get_columns("ai_conversation_message")}
+            ai_additions = [
+                ("user_id", "ALTER TABLE ai_conversation_message ADD COLUMN user_id INTEGER"),
+                ("guest_thread_id", "ALTER TABLE ai_conversation_message ADD COLUMN guest_thread_id VARCHAR(64)"),
+                ("role", "ALTER TABLE ai_conversation_message ADD COLUMN role VARCHAR(20) DEFAULT 'assistant' NOT NULL"),
+                ("content", "ALTER TABLE ai_conversation_message ADD COLUMN content TEXT DEFAULT '' NOT NULL"),
+                ("created_at", "ALTER TABLE ai_conversation_message ADD COLUMN created_at DATETIME"),
+            ]
+            for col_name, sql in ai_additions:
+                if col_name not in ai_columns:
+                    try:
+                        db.session.execute(text(sql))
+                        db.session.commit()
+                    except Exception:
+                        db.session.rollback()
         if "otp_code" not in inspector.get_table_names():
             try:
                 db.session.execute(text(
@@ -187,12 +198,23 @@ def create_app():
         if bootstrap_email and bootstrap_password:
             admin = User.query.filter_by(email=bootstrap_email).first()
             if not admin:
+                app.logger.info("Bootstrapping admin user for %s", bootstrap_email)
                 admin = User(email=bootstrap_email, name="Admin", password_hash=generate_password_hash(bootstrap_password), role="admin")
                 db.session.add(admin)
             else:
+                app.logger.info("Updating bootstrap admin credentials for %s", bootstrap_email)
                 admin.password_hash = generate_password_hash(bootstrap_password)
                 admin.role = "admin"
             db.session.commit()
+        else:
+            app.logger.warning(
+                "ADMIN_BOOTSTRAP_EMAIL or ADMIN_BOOTSTRAP_PASSWORD is not configured; admin bootstrap skipped."
+            )
+
+        if not app.config.get("GROQ_API_KEY"):
+            app.logger.warning(
+                "GROQ_API_KEY is not configured; AI endpoints will fall back to unavailable provider behavior."
+            )
 
         if BlogPost.query.count() == 0:
             seed_posts = [
@@ -330,13 +352,12 @@ def create_app():
     @app.context_processor
     def inject_user():
         unread_count = 0
-        writer_enabled = False
         if getattr(current_user, "is_authenticated", False):
             try:
                 unread_count = Message.query.filter_by(receiver_id=current_user.id, is_read=False).count()
             except Exception:
                 unread_count = 0
-        return dict(current_user=current_user, unread_count=unread_count, writer_enabled=writer_enabled)
+        return dict(current_user=current_user, unread_count=unread_count)
 
     @login_manager.user_loader
     def load_user(user_id):
