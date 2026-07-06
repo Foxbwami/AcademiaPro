@@ -3313,6 +3313,30 @@ def literature_reviews():
 def book_reports():
     return render_template('services/book_reports.html')
 
+@main.route('/services/academic-writing')
+def academic_writing():
+    return render_template('services/academic_writing.html')
+
+@main.route('/services/research-dissertation')
+def research_dissertation():
+    return render_template('services/research_dissertation.html')
+
+@main.route('/services/programming')
+def programming():
+    return render_template('services/programming.html')
+
+@main.route('/services/statistics')
+def statistics():
+    return render_template('services/statistics.html')
+
+@main.route('/services/business-finance')
+def business_finance():
+    return render_template('services/business_finance.html')
+
+@main.route('/services/editing-proofreading')
+def editing_proofreading():
+    return render_template('services/editing_proofreading.html')
+
 @main.context_processor
 def inject_now():
     from datetime import datetime

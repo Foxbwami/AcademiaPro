@@ -1,7 +1,29 @@
 {% extends "base.html" %}
 {% block title %}Dashboard | AcademiaPro{% endblock %}
 {% block content %}
-<div class="dashboard-wrap">
+<div class="dashboard-shell">
+  <aside class="dashboard-sidebar d-none d-lg-block">
+    <div class="sidebar-brand">
+      <div class="sidebar-avatar">{{ current_user.name.split(' ')[0][0] if current_user.name else current_user.email.split('@')[0][0] }}</div>
+      <div>
+        <div class="fw-semibold">{{ current_user.name.split(' ')[0] if current_user.name else current_user.email.split('@')[0] }}</div>
+        <div class="small text-muted">Gold Member</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="{{ url_for('main.dashboard') }}" class="active"><span class="icon"><i class="bi bi-house-door-fill"></i></span> Dashboard</a>
+      <a href="{{ url_for('main.my_orders') }}"><span class="icon"><i class="bi bi-bag-fill"></i></span> My Orders</a>
+      <a href="{{ url_for('main.order') }}"><span class="icon"><i class="bi bi-plus-circle"></i></span> Place Order</a>
+      <a href="{{ url_for('main.notifications') }}"><span class="icon"><i class="bi bi-chat-dots"></i></span> Messages <span class="badge bg-danger ms-auto">{{ unread_count or 0 }}</span></a>
+      <a href="{{ url_for('main.Samples') }}"><span class="icon"><i class="bi bi-file-earmark-text"></i></span> Samples</a>
+      <a href="{{ url_for('main.Samples') }}"><span class="icon"><i class="bi bi-wallet2"></i></span> Wallet</a>
+      <a href="{{ url_for('main.settings') }}"><span class="icon"><i class="bi bi-gear-fill"></i></span> Settings</a>
+      <a href="{{ url_for('main.logout') }}"><span class="icon"><i class="bi bi-box-arrow-right"></i></span> Logout</a>
+    </nav>
+  </aside>
+
+  <div class="dashboard-main">
+    <div class="dashboard-wrap">
   <div class="dashboard-hero mb-4">
     <div class="dashboard-hero-card p-4 row g-3 align-items-center">
       <div class="col-lg-8">
@@ -245,6 +267,8 @@
         </div>
       </div>
     </div>
+  </div>
+  </div>
   </div>
 </div>
 

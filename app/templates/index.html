@@ -1,192 +1,704 @@
 {% extends "base.html" %}
 {% block title %}AcademicPro - Academic & Technical Consultancy{% endblock %}
 {% block content %}
-<section class="consult-hero mb-4">
-  <div class="row g-4 align-items-center">
-    <div class="col-lg-7">
-      <div class="eyebrow">Scholarly & Technical Consultancy</div>
-      <h1 class="display-5 fw-bold mb-3">From Research to Code, Excellence Delivered.</h1>
-      <p class="lead mb-3">Academic research, programming projects, career guidance, exam preparation, and technical consulting for students and professionals worldwide.</p>
-      <div class="d-flex flex-wrap gap-2 mb-4">
-        <span class="hero-chip">Research</span>
-        <span class="hero-chip">Programming</span>
-        <span class="hero-chip">AI & ML</span>
-        <span class="hero-chip">Career Growth</span>
-      </div>
-      <div class="d-flex flex-wrap gap-2">
-        {% if is_admin %}
-          <a href="{{ url_for('main.admin_dashboard') }}" class="btn btn-warning btn-lg">Open Admin Dashboard</a>
-          <a href="{{ url_for('main.admin_orders') }}" class="btn btn-outline-light btn-lg">Monitor Orders</a>
-        {% elif is_authenticated %}
-          <a href="{{ url_for('main.dashboard') }}" class="btn btn-warning btn-lg">Open Client Dashboard</a>
-          <a href="{{ url_for('main.order') }}" class="btn btn-outline-light btn-lg">Request Consultation</a>
-        {% else %}
-          <a href="{{ url_for('main.order') }}" class="btn btn-warning btn-lg">Request Consultation</a>
-          <a href="{{ url_for('main.services_page') }}" class="btn btn-outline-light btn-lg">Explore Services</a>
-        {% endif %}
-      </div>
-    </div>
-    <div class="col-lg-5">
-      <div class="hero-console">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <span class="small text-uppercase fw-semibold">Project Desk</span>
-          <span class="badge text-bg-success">Online</span>
+<!-- ================= HERO SECTION ================= -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+
+            <!-- LEFT -->
+            <div class="col-lg-7">
+
+                <span class="hero-badge">
+                    <i class="bi bi-stars"></i>
+                    Trusted Academic Support Platform
+                </span>
+
+                <h1 class="hero-title">
+                    Professional Academic Support
+                    <span>for Every Stage of Your Education.</span>
+                </h1>
+
+                <p class="hero-description">
+                    AcademiaPro helps students and professionals complete
+                    assignments, research projects, programming tasks,
+                    dissertations, data analysis and editing with quality,
+                    confidentiality and timely delivery.
+                </p>
+
+                <div class="hero-buttons">
+                    <a href="{{ url_for('main.order') }}" class="btn btn-primary hero-btn">
+                        Place Order
+                    </a>
+
+                    <a href="#services" class="btn btn-outline-primary hero-btn-outline">
+                        Explore Services
+                    </a>
+                </div>
+
+                <div class="hero-stats">
+
+                    <div class="stat-item">
+                        <h3>700+</h3>
+                        <span>Projects</span>
+                    </div>
+
+                    <div class="stat-item">
+                        <h3>98%</h3>
+                        <span>Satisfaction</span>
+                    </div>
+
+                    <div class="stat-item">
+                        <h3>30+</h3>
+                        <span>Countries</span>
+                    </div>
+
+                    <div class="stat-item">
+                        <h3>24/7</h3>
+                        <span>Support</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- RIGHT -->
+            <div class="col-lg-5">
+
+                <div class="hero-visual">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+
+                        <div>
+                            <h5>Experienced Academic Team</h5>
+                            <p>Dedicated professionals committed to quality work.</p>
+                        </div>
+
+                    </div>
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon">
+                            <i class="bi bi-shield-lock-fill"></i>
+                        </div>
+
+                        <div>
+                            <h5>100% Confidential</h5>
+                            <p>Your information and documents remain secure.</p>
+                        </div>
+
+                    </div>
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+
+                        <div>
+                            <h5>On-Time Delivery</h5>
+                            <p>Deadlines are respected without compromising quality.</p>
+                        </div>
+
+                    </div>
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon">
+                            <i class="bi bi-patch-check-fill"></i>
+                        </div>
+
+                        <div>
+                            <h5>Quality Assured</h5>
+                            <p>Every project undergoes internal quality review.</p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
-        <div class="console-row"><span>Manuscript</span><strong>Originality review</strong></div>
-        <div class="console-row"><span>Codebase</span><strong>Python / React / SQL</strong></div>
-        <div class="console-row"><span>Career</span><strong>CV + LinkedIn optimization</strong></div>
-        <div class="console-row"><span>Response</span><strong>Within 2 hours</strong></div>
-      </div>
     </div>
-  </div>
 </section>
 
-<section class="mb-5">
-  <div class="row g-3 text-center">
-    <div class="col-md-3"><div class="tile-soft"><div class="metric-value">700+</div><div class="metric-label">Clients Supported</div></div></div>
-    <div class="col-md-3"><div class="tile-soft"><div class="metric-value">30+</div><div class="metric-label">Countries Reached</div></div></div>
-    <div class="col-md-3"><div class="tile-soft"><div class="metric-value">5.0</div><div class="metric-label">Client Rating</div></div></div>
-    <div class="col-md-3"><div class="tile-soft text-start small"><div>SSL Secure Portal</div><div>NDA Protected</div><div>Fast Turnaround Available</div></div></div>
-  </div>
-</section>
-
-<section class="home-structured-block mb-5" id="services">
-  <div class="home-structured-shell">
-    <div class="section-kicker">Our Focus Areas</div>
-    <h2 class="section-title mb-2">Elite Solutions Tailored for Academic Success</h2>
-    <p class="text-muted mb-4">A single consultancy desk for research, technical builds, exam readiness, and career documents.</p>
-    <div class="row g-3">
-      <div class="col-md-6 col-xl-3">
-        <article class="service-card h-100">
-          <div class="service-icon"><i class="bi bi-journal-text"></i></div>
-          <h5>Academic & Research Writing</h5>
-          <p>Literature reviews, dissertations, methodology support, quantitative studies, research papers, and publication-ready editing.</p>
-          <ul class="small mb-0"><li>APA, Harvard, IEEE, Chicago</li><li>Abstracts and literature maps</li></ul>
-        </article>
-      </div>
-      <div class="col-md-6 col-xl-3">
-        <article class="service-card h-100">
-          <div class="service-icon"><i class="bi bi-code-slash"></i></div>
-          <h5>Programming & Technical</h5>
-          <p>Full-stack apps, database designs, algorithms, Python, Java, R, SQL, machine learning, AI integrations, and debugging.</p>
-          <ul class="small mb-0"><li>Documented repositories</li><li>Implementation guidance</li></ul>
-        </article>
-      </div>
-      <div class="col-md-6 col-xl-3">
-        <article class="service-card h-100">
-          <div class="service-icon"><i class="bi bi-mortarboard"></i></div>
-          <h5>Exam Preparation</h5>
-          <p>Custom study maps, mock exams, concept breakdowns, flashcards, timed practice, and diagnostic review loops.</p>
-          <ul class="small mb-0"><li>Subject timelines</li><li>Step-by-step logic sheets</li></ul>
-        </article>
-      </div>
-      <div class="col-md-6 col-xl-3">
-        <article class="service-card h-100">
-          <div class="service-icon"><i class="bi bi-briefcase"></i></div>
-          <h5>Career & Resume</h5>
-          <p>CV revamping, LinkedIn optimization, personal statements, cover letters, job applications, and interview coaching.</p>
-          <ul class="small mb-0"><li>ATS-aware formatting</li><li>Recruiter-aligned language</li></ul>
-        </article>
-      </div>
+<!-- ===================== SERVICES ===================== -->
+<section id="services" class="services-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-badge">
+                Our Services
+            </span>
+            <h2 class="section-title">
+                Comprehensive Academic Support
+            </h2>
+            <p class="section-description">
+                Explore our professional academic services designed to support
+                students, researchers and professionals across different fields.
+            </p>
+        </div>
+        <div class="row g-4">
+            <!-- Academic Writing -->
+            <div class="col-lg-4 col-md-6">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="bi bi-journal-text"></i>
+                    </div>
+                    <h4>Academic Writing</h4>
+                    <p>
+                        Professional support for assignments,
+                        essays, reports and coursework.
+                    </p>
+                    <ul>
+                        <li>Assignments</li>
+                        <li>Essays</li>
+                        <li>Reports</li>
+                        <li>Coursework</li>
+                        <li>Case Studies</li>
+                    </ul>
+                    <a href="{{ url_for('main.academic_writing') }}" class="service-link">
+                        Explore
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <!-- Research -->
+            <div class="col-lg-4 col-md-6">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="bi bi-search"></i>
+                    </div>
+                    <h4>Research & Dissertation</h4>
+                    <p>
+                        High-quality academic research
+                        and dissertation assistance.
+                    </p>
+                    <ul>
+                        <li>Research Proposal</li>
+                        <li>Dissertation</li>
+                        <li>Thesis</li>
+                        <li>Literature Review</li>
+                        <li>Methodology</li>
+                    </ul>
+                    <a href="{{ url_for('main.research_dissertation') }}" class="service-link">
+                        Explore
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <!-- Programming -->
+            <div class="col-lg-4 col-md-6">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="bi bi-code-slash"></i>
+                    </div>
+                    <h4>Programming</h4>
+                    <p>
+                        Software development and
+                        technical academic projects.
+                    </p>
+                    <ul>
+                        <li>Python</li>
+                        <li>Java</li>
+                        <li>C Programming</li>
+                        <li>Web Development</li>
+                        <li>Databases</li>
+                    </ul>
+                    <a href="{{ url_for('main.programming') }}" class="service-link">
+                        Explore
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <!-- Statistics -->
+            <div class="col-lg-4 col-md-6">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="bi bi-bar-chart"></i>
+                    </div>
+                    <h4>Statistics & Analysis</h4>
+                    <p>
+                        Data analysis for academic
+                        research and business projects.
+                    </p>
+                    <ul>
+                        <li>SPSS</li>
+                        <li>Excel</li>
+                        <li>Power BI</li>
+                        <li>R Programming</li>
+                        <li>Python Analysis</li>
+                    </ul>
+                    <a href="{{ url_for('main.statistics') }}" class="service-link">
+                        Explore
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <!-- Business -->
+            <div class="col-lg-4 col-md-6">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="bi bi-briefcase"></i>
+                    </div>
+                    <h4>Business & Finance</h4>
+                    <p>
+                        Accounting, finance,
+                        economics and marketing.
+                    </p>
+                    <ul>
+                        <li>Accounting</li>
+                        <li>Finance</li>
+                        <li>Economics</li>
+                        <li>Marketing</li>
+                        <li>HRM</li>
+                    </ul>
+                    <a href="{{ url_for('main.business_finance') }}" class="service-link">
+                        Explore
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <!-- Editing -->
+            <div class="col-lg-4 col-md-6">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="bi bi-pencil-square"></i>
+                    </div>
+                    <h4>Editing & Proofreading</h4>
+                    <p>
+                        Improve quality,
+                        grammar and formatting.
+                    </p>
+                    <ul>
+                        <li>Grammar</li>
+                        <li>Formatting</li>
+                        <li>APA</li>
+                        <li>Harvard</li>
+                        <li>MLA</li>
+                    </ul>
+                    <a href="{{ url_for('main.editing_proofreading') }}" class="service-link">
+                        Explore
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </section>
 
-<section class="home-structured-block home-structured-block-alt mb-5">
-  <div class="home-structured-shell">
-    <div class="section-kicker">Capabilities & Outcomes</div>
-    <h2 class="section-title mb-3">Proven Project Outcomes</h2>
-    <div class="row g-3">
-      <div class="col-md-6">
-        <article class="outcome-card h-100">
-          <span class="pill">Originality Reviewed</span>
-          <h5>Academic & Thesis Consultancy</h5>
-          <p>Methodology support, literature review development, dissertation structuring, and academic writing guidance aligned with university-level expectations.</p>
-          <strong>Key Outcome:</strong> Originality-focused delivery with plagiarism checks available where applicable.
-        </article>
-      </div>
-      <div class="col-md-6">
-        <article class="outcome-card h-100">
-          <span class="pill">Implementation Ready</span>
-          <h5>Coding, AI & ML Project Support</h5>
-          <p>Machine learning pipelines, full-stack development, database systems, API integration, and technical documentation.</p>
-          <strong>Key Outcome:</strong> Clean, documented, and structured implementation support.
-        </article>
-      </div>
-      <div class="col-md-6">
-        <article class="outcome-card h-100">
-          <span class="pill">Career Ready</span>
-          <h5>CV, LinkedIn & ATS Optimization</h5>
-          <p>CV restructuring, keyword optimization, LinkedIn profile improvement, and application support for students and professionals.</p>
-          <strong>Key Outcome:</strong> Documents designed for stronger recruiter readability.
-        </article>
-      </div>
-      <div class="col-md-6">
-        <article class="outcome-card h-100">
-          <span class="pill">Performance Focused</span>
-          <h5>Systems Design & Architecture</h5>
-          <p>Database design, system planning, debugging, scalability review, and technical consultation for complex programming projects.</p>
-          <strong>Key Outcome:</strong> Structured technical guidance for maintainable solutions.
-        </article>
-      </div>
+<!-- ================= WHY CHOOSE US ================= -->
+<section class="why-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <!-- LEFT -->
+            <div class="col-lg-6">
+                <span class="section-badge">
+                    Why AcademiaPro
+                </span>
+                <h2 class="section-title">
+                    Built Around Quality,
+                    Trust & Student Success
+                </h2>
+                <p class="section-description">
+                    We combine academic expertise,
+                    professional project management
+                    and rigorous quality assurance
+                    to deliver reliable academic support
+                    you can depend on.
+                </p>
+                <div class="why-features">
+                    <div class="why-item">
+                        <div class="why-icon">
+                            <i class="bi bi-patch-check-fill"></i>
+                        </div>
+                        <div>
+                            <h5>Experienced Academic Team</h5>
+                            <p>
+                                Skilled professionals across multiple academic disciplines.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="why-item">
+                        <div class="why-icon">
+                            <i class="bi bi-shield-lock-fill"></i>
+                        </div>
+                        <div>
+                            <h5>Confidential & Secure</h5>
+                            <p>
+                                Your documents and personal information remain protected.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="why-item">
+                        <div class="why-icon">
+                            <i class="bi bi-award-fill"></i>
+                        </div>
+                        <div>
+                            <h5>Multi-Stage Quality Assurance</h5>
+                            <p>
+                                Every project undergoes thorough review before delivery.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="why-item">
+                        <div class="why-icon">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                        <div>
+                            <h5>On-Time Delivery</h5>
+                            <p>
+                                Timely completion without compromising quality.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- RIGHT -->
+            <div class="col-lg-6">
+                <div class="why-card">
+                    <h4>
+                        Our Commitment
+                    </h4>
+                    <div class="progress-box">
+                        <div class="progress-head">
+                            <span>Project Success</span>
+                            <span>98%</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar w-100"></div>
+                        </div>
+                    </div>
+                    <div class="progress-box">
+                        <div class="progress-head">
+                            <span>On-Time Delivery</span>
+                            <span>99%</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar w-100"></div>
+                        </div>
+                    </div>
+                    <div class="progress-box">
+                        <div class="progress-head">
+                            <span>Client Satisfaction</span>
+                            <span>98%</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar w-100"></div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="mini-stats">
+                        <div>
+                            <h3>700+</h3>
+                            <small>Projects</small>
+                        </div>
+                        <div>
+                            <h3>30+</h3>
+                            <small>Countries</small>
+                        </div>
+                        <div>
+                            <h3>24/7</h3>
+                            <small>Support</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </section>
 
-<section class="home-structured-block mb-5">
-  <div class="home-structured-shell">
-    <div class="section-kicker">Transparent Pricing</div>
-    <h2 class="section-title mb-3">Transparent Investments in Excellence</h2>
-    <div class="row g-3">
-      <div class="col-md-6 col-xl-3"><div class="pricing-card h-100"><h5>Academic Research</h5><div class="price">$12/page</div><p>Bespoke drafting, advisory, editing, citations, and literature synthesis.</p><a href="{{ url_for('main.order') }}" class="btn btn-outline-primary btn-sm">Inquire</a></div></div>
-      <div class="col-md-6 col-xl-3"><div class="pricing-card featured h-100"><div class="badge text-bg-warning mb-2">Most Popular</div><h5>Programming</h5><div class="price">$20+</div><p>Documented coding solutions, databases, scripts, AI/ML, and custom builds. Technical orders start at $20.</p><a href="{{ url_for('main.order') }}" class="btn btn-primary btn-sm">Inquire</a></div></div>
-      <div class="col-md-6 col-xl-3"><div class="pricing-card h-100"><h5>Exam Prep</h5><div class="price">$30/session</div><p>Study mapping, conceptual coaching, mock exams, and revision plans.</p><a href="{{ url_for('main.order') }}" class="btn btn-outline-primary btn-sm">Inquire</a></div></div>
-      <div class="col-md-6 col-xl-3"><div class="pricing-card h-100"><h5>Career Services</h5><div class="price">$45/review</div><p>CV polishing, personal statements, cover letters, LinkedIn, and applications.</p><a href="{{ url_for('main.order') }}" class="btn btn-outline-primary btn-sm">Inquire</a></div></div>
+<!-- ================= HOW IT WORKS ================= -->
+<section class="process-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-badge">
+                How It Works
+            </span>
+            <h2 class="section-title">
+                From Order to Delivery in Five Simple Steps
+            </h2>
+            <p class="section-description mx-auto">
+                Our streamlined workflow ensures every project is handled professionally,
+                reviewed thoroughly and delivered on time.
+            </p>
+        </div>
+        <div class="process-wrapper">
+            <div class="process-line"></div>
+            <!-- STEP 1 -->
+            <div class="process-item">
+                <div class="step-number">
+                    1
+                </div>
+                <div class="process-card">
+                    <i class="bi bi-cart-check process-icon"></i>
+                    <h5>Submit Your Order</h5>
+                    <p>
+                        Fill in the order form,
+                        upload instructions and
+                        specify your deadline.
+                    </p>
+                </div>
+            </div>
+            <!-- STEP 2 -->
+            <div class="process-item">
+                <div class="step-number">
+                    2
+                </div>
+                <div class="process-card">
+                    <i class="bi bi-search process-icon"></i>
+                    <h5>Project Review</h5>
+                    <p>
+                        Our academic team reviews
+                        your instructions and
+                        prepares the project.
+                    </p>
+                </div>
+            </div>
+            <!-- STEP 3 -->
+            <div class="process-item">
+                <div class="step-number">
+                    3
+                </div>
+                <div class="process-card">
+                    <i class="bi bi-pencil-square process-icon"></i>
+                    <h5>Development</h5>
+                    <p>
+                        Experienced professionals
+                        complete your project while
+                        following your requirements.
+                    </p>
+                </div>
+            </div>
+            <!-- STEP 4 -->
+            <div class="process-item">
+                <div class="step-number">
+                    4
+                </div>
+                <div class="process-card">
+                    <i class="bi bi-patch-check process-icon"></i>
+                    <h5>Quality Review</h5>
+                    <p>
+                        Every project undergoes
+                        editing and quality
+                        assurance checks.
+                    </p>
+                </div>
+            </div>
+            <!-- STEP 5 -->
+            <div class="process-item">
+                <div class="step-number">
+                    5
+                </div>
+                <div class="process-card">
+                    <i class="bi bi-send-check process-icon"></i>
+                    <h5>Delivery</h5>
+                    <p>
+                        Download your completed
+                        project securely from
+                        your dashboard.
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </section>
 
-<section class="home-structured-block home-structured-block-alt mb-5">
-  <div class="home-structured-shell">
-    <div class="section-kicker">Our Advisory Framework</div>
-    <h2 class="section-title text-center mb-4">A Structured Blueprint to Execution</h2>
-    <div class="how-timeline">
-      <article class="how-step-card"><div class="how-step-icon"><i class="bi bi-search"></i></div><h5>Requirement Assessment</h5><p>We review rubrics, code requirements, datasets, citations, deadlines, and success criteria.</p></article>
-      <article class="how-step-card"><div class="how-step-icon"><i class="bi bi-person-check"></i></div><h5>Admin Review</h5><p>The admin desk reviews your order, confirms scope, and keeps the work moving from kickoff to delivery.</p></article>
-      <article class="how-step-card"><div class="how-step-icon"><i class="bi bi-layers"></i></div><h5>Milestone Updates</h5><p>You receive structured progress updates, drafts, code modules, or review checkpoints.</p></article>
-      <article class="how-step-card"><div class="how-step-icon"><i class="bi bi-shield-check"></i></div><h5>Quality Diagnostics</h5><p>Deliverables are checked for instructions, formatting, originality, and technical function.</p></article>
-      <article class="how-step-card"><div class="how-step-icon"><i class="bi bi-check-circle"></i></div><h5>Delivery & Support</h5><p>Final files are delivered through your client dashboard with revision and support options.</p></article>
+<!-- ================= TESTIMONIALS ================= -->
+<section class="testimonials-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-badge">
+                Success Stories
+            </span>
+            <h2 class="section-title">
+                Trusted by Students Worldwide
+            </h2>
+            <p class="section-description mx-auto">
+                We are proud to support students and professionals with reliable,
+                confidential and high-quality academic assistance.
+            </p>
+        </div>
+        <div class="row g-4">
+            <!-- CARD -->
+            <div class="col-lg-4">
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">
+                        <span class="single-star"><i class="bi bi-star-fill text-warning"></i> 4.7</span>
+                    </div>
+                    <p class="testimonial-text">
+                        AcademiaPro exceeded my expectations.
+                        My programming assignment was delivered
+                        before the deadline and every requirement
+                        was followed perfectly.
+                    </p>
+                    <div class="testimonial-footer">
+                        <div class="avatar">
+                            JM
+                        </div>
+                        <div>
+                            <h6>Computer Science Student</h6>
+                            <small>Kenya</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- CARD -->
+            <div class="col-lg-4">
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">
+                        <span class="single-star"><i class="bi bi-star-fill text-warning"></i> 4.6</span>
+                    </div>
+                    <p class="testimonial-text">
+                        Excellent dissertation support.
+                        Communication was professional
+                        and the quality review gave me
+                        confidence before submission.
+                    </p>
+                    <div class="testimonial-footer">
+                        <div class="avatar">
+                            AN
+                        </div>
+                        <div>
+                            <h6>Business Student</h6>
+                            <small>United Kingdom</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- CARD -->
+            <div class="col-lg-4">
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">
+                        <span class="single-star"><i class="bi bi-star-fill text-warning"></i> 4.8</span>
+                    </div>
+                    <p class="testimonial-text">
+                        Fast delivery, professional formatting
+                        and excellent statistical analysis.
+                        I highly recommend AcademiaPro.
+                    </p>
+                    <div class="testimonial-footer">
+                        <div class="avatar">
+                            RK
+                        </div>
+                        <div>
+                            <h6>Engineering Student</h6>
+                            <small>Australia</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </section>
 
-<section class="mb-5">
-  <div class="row g-3">
-    <div class="col-lg-4"><div class="trust-panel h-100"><h5>NDA-Protected Privacy</h5><p>Your files, identity, research topics, formulas, and project details remain confidential.</p></div></div>
-    <div class="col-lg-4"><div class="trust-panel h-100"><h5>Dedicated Admin Support</h5><p>Client communication is managed through the admin desk for clarity, accountability, and fast response.</p></div></div>
-    <div class="col-lg-4"><div class="trust-panel h-100"><h5>Global Academic Standards</h5><p>Support is aligned to international rubrics, citation rules, software practices, and professional expectations.</p></div></div>
-  </div>
-</section>
-
-<section class="home-structured-block mb-5">
-  <div class="home-structured-shell">
-    <div class="section-kicker">Client Testimonials</div>
-    <h2 class="section-title mb-3">Verified Voices of Academic Success</h2>
-    <div class="row g-3">
-      <div class="col-md-4"><article class="testimonial-card h-100"><div class="stars">★★★★★</div><p>"Outstanding support on my machine learning project. Clean, documented code delivered ahead of deadline."</p><div class="small text-muted">Verified Client - Computer Science</div></article></div>
-      <div class="col-md-4"><article class="testimonial-card h-100"><div class="stars">★★★★★</div><p>"The dissertation was properly structured, cited, and delivered with excellent attention to supervisor feedback."</p><div class="small text-muted">Verified Client - Nursing</div></article></div>
-      <div class="col-md-4"><article class="testimonial-card h-100"><div class="stars">★★★★★</div><p>"My CV and LinkedIn profile were rebuilt clearly. The application package looked much more professional."</p><div class="small text-muted">Verified Client - Career Support</div></article></div>
+<!-- ================= FINAL CTA ================= -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-wrapper">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <span class="section-badge">
+                        Ready to Get Started?
+                    </span>
+                    <h2 class="cta-title">
+                        Let AcademiaPro Support Your
+                        Next Academic Project
+                    </h2>
+                    <p class="cta-text">
+                        Whether you need help with assignments,
+                        programming, research, data analysis,
+                        editing or dissertations, our academic
+                        team is ready to assist you professionally.
+                    </p>
+                    <div class="cta-features">
+                        <span><i class="bi bi-check-circle-fill"></i> Confidential Service</span>
+                        <span><i class="bi bi-check-circle-fill"></i> Quality Assured</span>
+                        <span><i class="bi bi-check-circle-fill"></i> 24/7 Support</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-lg-end text-center mt-4 mt-lg-0">
+                    <a href="{{ url_for('main.order') }}" class="btn cta-btn">
+                        Place Your Order
+                        <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </section>
 
-<section class="cta-band text-center py-4 mb-3">
-  <div class="section-kicker">Get In Touch</div>
-  <h2 class="h3 fw-bold">Connect With AcademicPro</h2>
-  <div class="mx-auto" style="max-width: 720px;">
-    <p class="mb-3">Share your deadline, topic, files, and preferred service. The admin desk will respond with the next step.</p>
-    <div class="d-flex justify-content-center gap-2 flex-wrap">
-      <a href="{{ url_for('main.order') }}" class="btn btn-warning btn-lg">Start a Project</a>
+<section class="faq-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-badge">Frequently Asked Questions</span>
+            <h2 class="section-title">Everything you need to know before you place an order</h2>
+            <p class="section-description mx-auto">
+                Clear answers to the questions most students ask before starting a project with us.
+            </p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="faq-card">
+                    <h5>Is my information confidential?</h5>
+                    <p>Yes. All project details and personal information are treated with strict confidentiality throughout the order process.</p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="faq-card">
+                    <h5>How do I place an order?</h5>
+                    <p>Click the button above, fill out your project brief, upload files, and submit your requirements through the secure order form.</p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="faq-card">
+                    <h5>Can I request revisions?</h5>
+                    <p>Absolutely. You can request revisions after delivery to ensure the final work meets your instructions.</p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="faq-card">
+                    <h5>What payment methods do you accept?</h5>
+                    <p>We accept secure payment through the checkout process. Accepted methods are shown during order submission.</p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="faq-card">
+                    <h5>How long does delivery take?</h5>
+                    <p>Delivery depends on your deadline and project complexity. We provide a timeline during order review to match your schedule.</p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="faq-card">
+                    <h5>How do I communicate with AcademiaPro?</h5>
+                    <p>You can message the admin desk directly from the site once logged in, or use the guest support tools if you are not yet registered.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="print-summary" class="print-summary mb-5">
+  <div class="print-summary-shell p-4 rounded-4 border">
+    <h2 class="print-summary-title mb-3">AcademicPro Landing Page Summary</h2>
+    <p>AcademicPro is a public consultancy platform for academic research, programming and technical projects, exam preparation, and career development.</p>
+    <ul class="print-summary-list mb-3">
+      <li>Research and dissertation support, editing, and publication-ready writing.</li>
+      <li>Programming, AI/ML, databases, and technical implementation assistance.</li>
+      <li>Exam readiness coaching, mock exams, study plans, and concept guidance.</li>
+      <li>CV and LinkedIn optimisation, application support, and career consultation.</li>
+    </ul>
+    <p class="mb-3">Free public contact is available without login. Contact admin via WhatsApp or email from the homepage.</p>
+    <div class="print-summary-qr d-flex align-items-center gap-3">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data={{ url_for('main.index', _external=True)|urlencode }}" alt="AcademicPro website QR code">
+      <div>
+        <div class="small text-muted">Visit our site:</div>
+        <div>{{ url_for('main.index', _external=True) }}</div>
+      </div>
     </div>
   </div>
 </section>
@@ -213,7 +725,7 @@
   <div class="guest-panel-foot"><button id="guestMsgSendBtn" class="btn btn-primary btn-sm w-100" type="button">Send Message</button></div>
 </div>
 
-<div class="position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+<div class="guest-toast-shell">
   <div id="guestWelcomeToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="toast-header">
       <strong class="me-auto">Welcome to AcademicPro</strong>
@@ -229,6 +741,7 @@
   </div>
 </div>
 {% endif %}
+
 {% endblock %}
 
 {% block scripts %}
@@ -236,16 +749,35 @@
   (function () {
     const msgFab = document.getElementById("guestMsgFab");
     const msgPanel = document.getElementById("guestMsgPanel");
+    let guestMsgPollTimer = null;
+
+    function startGuestMessagePolling() {
+      refreshGuestMessages();
+      if (!guestMsgPollTimer) guestMsgPollTimer = setInterval(refreshGuestMessages, 5000);
+    }
+
+    function stopGuestMessagePolling() {
+      if (!guestMsgPollTimer) return;
+      clearInterval(guestMsgPollTimer);
+      guestMsgPollTimer = null;
+    }
+
     function togglePanel(panel) { panel.classList.toggle("d-none"); }
-    if (msgFab && msgPanel) msgFab.addEventListener("click", function () { togglePanel(msgPanel); });
+    if (msgFab && msgPanel) {
+      msgFab.addEventListener("click", function () {
+        togglePanel(msgPanel);
+        if (msgPanel.classList.contains("d-none")) {
+          stopGuestMessagePolling();
+        } else {
+          startGuestMessagePolling();
+        }
+      });
+    }
     document.querySelectorAll("[data-close]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         const panel = document.getElementById(btn.getAttribute("data-close"));
         if (panel) panel.classList.add("d-none");
-        if (guestMsgPollTimer) {
-          clearInterval(guestMsgPollTimer);
-          guestMsgPollTimer = null;
-        }
+        stopGuestMessagePolling();
       });
     });
 
@@ -254,7 +786,6 @@
     const msgEmail = document.getElementById("guestMsgEmail");
     const msgStatus = document.getElementById("guestMsgStatus");
     const msgThread = document.getElementById("guestMsgThread");
-    let guestMsgPollTimer = null;
 
     function escapeHtml(value) {
       return String(value || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#039;");
@@ -308,17 +839,61 @@
         }
       });
     }
-    if (msgFab && msgPanel) {
-      msgFab.addEventListener("click", function () {
-        if (!msgPanel.classList.contains("d-none")) {
-          refreshGuestMessages();
-          if (!guestMsgPollTimer) guestMsgPollTimer = setInterval(refreshGuestMessages, 5000);
-        } else if (guestMsgPollTimer) {
-          clearInterval(guestMsgPollTimer);
-          guestMsgPollTimer = null;
-        }
+    const serviceSearch = document.getElementById("serviceSearch");
+    const serviceCards = Array.from(document.querySelectorAll(".service-card"));
+    const serviceSearchEmpty = document.getElementById("serviceSearchEmpty");
+
+    function filterServiceCards() {
+      if (!serviceSearch) return;
+      const query = serviceSearch.value.trim().toLowerCase();
+      let visibleCount = 0;
+      serviceCards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        const isVisible = !query || text.includes(query);
+        card.closest(".col-md-6, .col-lg-4, .col-xl-4, .col-12")?.classList.toggle("d-none", !isVisible);
+        if (isVisible) visibleCount += 1;
       });
+      if (serviceSearchEmpty) {
+        serviceSearchEmpty.classList.toggle("visually-hidden", visibleCount > 0);
+      }
     }
+    if (serviceSearch) {
+      serviceSearch.addEventListener("input", filterServiceCards);
+    }
+
+    const estimateService = document.querySelector(".estimate-service");
+    const estimatePages = document.querySelector(".estimate-pages");
+    const estimateDeadline = document.querySelector(".estimate-deadline");
+    const estimateLevel = document.querySelector(".estimate-level");
+    const estimatePrice = document.querySelector(".price-value");
+
+    function calculateEstimate() {
+      if (!estimatePrice) return;
+      const baseRates = {
+        "Academic Writing": 9,
+        "Research & Dissertation": 12,
+        "Programming": 14,
+        "Data Analysis": 13,
+        "Exam Prep": 8,
+        "Career Services": 10
+      };
+      const service = estimateService ? estimateService.value : "Academic Writing";
+      const pages = Math.max(1, Number(estimatePages?.value || 1));
+      const deadline = estimateDeadline ? estimateDeadline.value : "Standard (3-5 days)";
+      const level = estimateLevel ? estimateLevel.value : "Bachelor's";
+      let price = baseRates[service] || 9;
+      price *= pages;
+      if (deadline.includes("Rush")) price *= 1.45;
+      else if (deadline.includes("Relaxed")) price *= 0.88;
+      if (level.includes("Master")) price *= 1.15;
+      else if (level.includes("PhD")) price *= 1.3;
+      estimatePrice.textContent = Math.round(price);
+    }
+    [estimateService, estimatePages, estimateDeadline, estimateLevel].forEach(field => {
+      if (field) field.addEventListener("change", calculateEstimate);
+    });
+    calculateEstimate();
+
     const guestToast = document.getElementById("guestWelcomeToast");
     if (guestToast && !sessionStorage.getItem("guest_welcome_seen")) {
       const toast = new bootstrap.Toast(guestToast, { delay: 9000 });

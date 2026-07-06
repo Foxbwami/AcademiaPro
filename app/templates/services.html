@@ -10,12 +10,13 @@
 <section class="home-structured-block mb-4">
   <div class="home-structured-shell">
     <div class="row g-3">
-      <div class="col-md-6">
+      <div id="academic-writing" class="col-md-6">
         <article class="service-card h-100">
           <div class="service-icon"><i class="bi bi-journal-text"></i></div>
           <h2 class="h5">Academic & Research Writing</h2>
           <p>Support for essays, research papers, proposals, literature reviews, dissertations, theses, reports, case studies, and publication preparation.</p>
           <ul><li>APA, MLA, Harvard, Chicago, IEEE, and custom formatting</li><li>Literature maps, abstracts, methodology guidance, and editing</li><li>Originality-focused delivery with confidentiality</li></ul>
+          <div class="mt-3"><a class="btn btn-sm btn-primary" href="{{ url_for('main.academic_writing') }}">Learn more</a></div>
         </article>
       </div>
       <div class="col-md-6">
@@ -24,22 +25,25 @@
           <h2 class="h5">Programming & Technical Projects</h2>
           <p>Structured help for full-stack development, databases, APIs, algorithms, AI, machine learning, R, Python, Java, JavaScript, SQL, and debugging.</p>
           <ul><li>Documented codebases and implementation notes</li><li>Database design, architecture review, and project setup</li><li>Testing, debugging, and technical walkthrough support</li></ul>
+          <div class="mt-3"><a class="btn btn-sm btn-primary" href="{{ url_for('main.programming') }}">Learn more</a></div>
         </article>
       </div>
       <div class="col-md-6">
-        <article class="service-card h-100">
+        <article id="exam-prep" class="service-card h-100">
           <div class="service-icon"><i class="bi bi-mortarboard"></i></div>
           <h2 class="h5">Exam Preparation</h2>
           <p>Personalized study planning for academic, technical, professional, and postgraduate exam preparation.</p>
           <ul><li>Day-by-day syllabus breakdowns</li><li>Timed mock exams and flashcards</li><li>Error diagnostics and concept review sessions</li></ul>
+          <div class="mt-3"><a class="btn btn-sm btn-primary" href="{{ url_for('main.testimonials') }}">Learn more</a></div>
         </article>
       </div>
       <div class="col-md-6">
-        <article class="service-card h-100">
+        <article id="career-services" class="service-card h-100">
           <div class="service-icon"><i class="bi bi-briefcase"></i></div>
           <h2 class="h5">Career & Resume Services</h2>
           <p>Professional support for CVs, resumes, LinkedIn profiles, cover letters, personal statements, applications, and interview preparation.</p>
           <ul><li>ATS-aware document structure</li><li>Recruiter-aligned language and keyword optimization</li><li>University, scholarship, and job application packages</li></ul>
+          <div class="mt-3"><a class="btn btn-sm btn-primary" href="{{ url_for('main.hiring') }}">Learn more</a></div>
         </article>
       </div>
     </div>

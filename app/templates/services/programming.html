@@ -1,0 +1,385 @@
+{% extends "base.html" %}
+{% block title %}Programming Services | AcademicPro{% endblock %}
+{% block content %}
+
+<!-- Hero Section -->
+<section class="service-hero-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="section-badge">Programming</span>
+                <h1 class="section-title display-5">
+                    Professional Programming & Development Services
+                </h1>
+                <p class="section-description">
+                    Expert assistance with coding projects, web development, databases, 
+                    and technical implementations. Our developers deliver clean, 
+                    well-documented code that works.
+                </p>
+                <div class="service-hero-buttons">
+                    <a href="{{ url_for('main.order') }}" class="btn btn-primary btn-lg">
+                        Place Order
+                    </a>
+                    <a href="#pricing" class="btn btn-outline-primary btn-lg">
+                        View Pricing
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="service-hero-features">
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Clean Code</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Well Documented</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Tested & Debugged</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Production Ready</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- What We Offer -->
+<section class="service-content-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">Programming Languages & Technologies</h2>
+            <p class="section-description">Expertise across multiple platforms and frameworks</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="service-item-card">
+                    <i class="bi bi-code-slash"></i>
+                    <h5>Python</h5>
+                    <p>Data analysis, machine learning, web development, and automation.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="service-item-card">
+                    <i class="bi bi-code-slash"></i>
+                    <h5>Java</h5>
+                    <p>Enterprise applications, Android development, and complex systems.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="service-item-card">
+                    <i class="bi bi-code-slash"></i>
+                    <h5>Web Development</h5>
+                    <p>Frontend, backend, and full-stack web application development.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="service-item-card">
+                    <i class="bi bi-database"></i>
+                    <h5>Databases</h5>
+                    <p>Database design, optimization, SQL queries, and administration.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="service-benefits-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">Why Choose Our Programming Services</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="bi bi-laptop-fill"></i>
+                    </div>
+                    <h5>Expert Developers</h5>
+                    <p>Our developers have years of experience in academic and production environments.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="bi bi-gear"></i>
+                    </div>
+                    <h5>Best Practices</h5>
+                    <p>We follow industry standards, design patterns, and coding best practices.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <h5>Fully Tested</h5>
+                    <p>All code is tested, debugged, and ready for deployment or submission.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Section -->
+<section id="pricing" class="service-pricing-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">Transparent Pricing</h2>
+            <p class="section-description">Flexible pricing based on project complexity</p>
+        </div>
+        <div class="pricing-table">
+            <div class="pricing-row">
+                <div class="pricing-col"><strong>Project Type</strong></div>
+                <div class="pricing-col"><strong>Base Price</strong></div>
+                <div class="pricing-col"><strong>Rush (24hrs)</strong></div>
+            </div>
+            <div class="pricing-row">
+                <div class="pricing-col">Simple Program</div>
+                <div class="pricing-col">KES 3,000</div>
+                <div class="pricing-col">KES 5,000</div>
+            </div>
+            <div class="pricing-row">
+                <div class="pricing-col">Web Application</div>
+                <div class="pricing-col">KES 5,000+</div>
+                <div class="pricing-col">Contact us</div>
+            </div>
+            <div class="pricing-row">
+                <div class="pricing-col">Database Project</div>
+                <div class="pricing-col">KES 4,500</div>
+                <div class="pricing-col">KES 7,000</div>
+            </div>
+            <div class="pricing-row">
+                <div class="pricing-col">Machine Learning</div>
+                <div class="pricing-col">KES 6,000+</div>
+                <div class="pricing-col">Contact us</div>
+            </div>
+        </div>
+        <div class="text-center mt-5">
+            <p class="text-muted">*Prices vary based on project scope and complexity. Get a custom quote when placing an order.</p>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="service-cta-final">
+    <div class="container">
+        <div class="cta-card">
+            <h3>Ready to Get Your Code Done?</h3>
+            <p>Our developers are ready to tackle your programming project with expertise and efficiency.</p>
+            <a href="{{ url_for('main.order') }}" class="btn btn-primary btn-lg">
+                Place Your Order
+            </a>
+        </div>
+    </div>
+</section>
+
+<style>
+.service-hero-section {
+    padding: 100px 0;
+    background: linear-gradient(135deg, #f8fafc 0%, #eef4ff 100%);
+}
+
+.service-hero-buttons {
+    display: flex;
+    gap: 20px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.service-hero-features {
+    display: grid;
+    gap: 20px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.feature-item i {
+    color: #2563eb;
+    font-size: 1.3rem;
+}
+
+.service-content-section {
+    padding: 80px 0;
+    background: #fff;
+}
+
+.service-item-card {
+    background: #f8fafc;
+    padding: 30px;
+    border-radius: 16px;
+    text-align: center;
+    border: 1px solid #edf1f7;
+    transition: all 0.3s;
+}
+
+.service-item-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(15,23,42,.08);
+    background: #fff;
+}
+
+.service-item-card i {
+    font-size: 2.5rem;
+    color: #2563eb;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.service-item-card h5 {
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #0f172a;
+}
+
+.service-item-card p {
+    color: #64748b;
+    font-size: 0.95rem;
+}
+
+.service-benefits-section {
+    padding: 80px 0;
+    background: #f8fafc;
+}
+
+.benefit-card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 16px;
+    border: 1px solid #edf1f7;
+    text-align: center;
+}
+
+.benefit-icon {
+    width: 70px;
+    height: 70px;
+    background: #eef4ff;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: #2563eb;
+    margin: 0 auto 20px;
+}
+
+.benefit-card h5 {
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.benefit-card p {
+    color: #64748b;
+    font-size: 0.95rem;
+}
+
+.service-pricing-section {
+    padding: 80px 0;
+    background: #fff;
+}
+
+.pricing-table {
+    background: #f8fafc;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #edf1f7;
+    max-width: 800px;
+    margin: 50px auto 0;
+}
+
+.pricing-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-bottom: 1px solid #edf1f7;
+}
+
+.pricing-row:last-child {
+    border-bottom: none;
+}
+
+.pricing-col {
+    padding: 20px;
+    text-align: center;
+    border-right: 1px solid #edf1f7;
+}
+
+.pricing-col:last-child {
+    border-right: none;
+}
+
+.pricing-row:first-child {
+    background: #2563eb;
+    color: #fff;
+    font-weight: 700;
+}
+
+.service-cta-final {
+    padding: 80px 0;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+.cta-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 60px;
+    border-radius: 20px;
+    text-align: center;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cta-card h3 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+}
+
+.cta-card p {
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    opacity: 0.95;
+}
+
+@media (max-width: 991px) {
+    .service-hero-section {
+        padding: 60px 0;
+    }
+    
+    .service-hero-buttons {
+        flex-direction: column;
+    }
+    
+    .service-hero-buttons .btn {
+        width: 100%;
+    }
+    
+    .cta-card {
+        padding: 40px 20px;
+    }
+    
+    .pricing-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .pricing-col {
+        border-right: none;
+        border-bottom: 1px solid #edf1f7;
+        padding: 15px;
+    }
+}
+</style>
+
+{% endblock %}
