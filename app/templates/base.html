@@ -6,7 +6,7 @@
   <title>{% block title %}AcademiaPro{% endblock %}</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=4">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=5">
 </head>
 <body data-authenticated="{{ 'true' if current_user.is_authenticated else 'false' }}">
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -27,97 +27,40 @@
       </button>
 
       <nav class="header-links d-none d-lg-flex align-items-center gap-4" aria-label="Primary navigation">
-        <div class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="{{ url_for('main.services_page') }}" id="servicesDropdown" data-bs-toggle="dropdown" aria-expanded="false">Services</a>
-          <div class="dropdown-menu dropdown-menu-dark dropdown-menu-end dropdown-menu-wide shadow-soft p-0" aria-labelledby="servicesDropdown">
-            <div class="dropdown-mega-header px-4 pt-4 pb-3 d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-3">
-              <div>
-                <div class="dropdown-header text-uppercase text-muted small mb-2">Explore Services</div>
-                <div class="dropdown-title h6 mb-0">Search the right academic support instantly</div>
+        <div class="nav-item dropdown services-dropdown">
+          <button class="nav-link dropdown-toggle" id="servicesDropdown" data-bs-toggle="dropdown" aria-expanded="false" type="button">
+            Services
+          </button>
+          <div class="dropdown-menu dropdown-menu-wide dropdown-menu-dark dropdown-mega-menu services-dropdown-menu" aria-labelledby="servicesDropdown">
+              <div class="dropdown-mega-category">
+                <h6>Academic Writing</h6>
+                <ul>
+                  <li><a href="{{ url_for('main.dissertations') }}">Dissertations &amp; Theses</a></li>
+                  <li><a href="{{ url_for('main.research_proposals') }}">Research Proposals</a></li>
+                  <li><a href="{{ url_for('main.editing_proofreading') }}">Editing &amp; Proofreading</a></li>
+                  <li><a href="{{ url_for('main.admission_help') }}">Admissions &amp; Essay Writing</a></li>
+                </ul>
               </div>
-              <a class="btn btn-sm btn-outline-light" href="{{ url_for('main.services_page') }}">View All Services</a>
-            </div>
-            <div class="px-4 pb-3">
-              <div class="dropdown-search">
-                <input type="search" class="form-control form-control-sm dropdown-service-search" placeholder="Search services, e.g. SPSS, Dissertation" aria-label="Search services">
+              <div class="dropdown-mega-category">
+                <h6>Technical &amp; Coding</h6>
+                <ul>
+                  <li><a href="{{ url_for('main.statistics') }}">Data Science &amp; Analysis</a></li>
+                  <li><a href="{{ url_for('main.programming') }}">Software Engineering</a></li>
+                  <li><a href="{{ url_for('main.database_architecture') }}">Database Architecture</a></li>
+                  <li><a href="{{ url_for('main.ai_machine_learning') }}">AI &amp; Machine Learning</a></li>
+                </ul>
               </div>
-            </div>
-            <div class="dropdown-mega-menu px-4 pb-4">
-                <div class="dropdown-mega-category">
-                  <h6>📚 Academic Writing</h6>
-                  <ul>
-                    <li><a href="{{ url_for('main.services_page') }}#academic-writing">Essay Writing</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#academic-writing">Research Paper Writing</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#academic-writing">Thesis & Dissertation</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#academic-writing">Assignment Help</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#academic-writing">Case Study Writing</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#academic-writing">Literature Review</a></li>
-                    <li><a class="dropdown-view-all" href="{{ url_for('main.services_page') }}#academic-writing">View All</a></li>
-                  </ul>
-                </div>
-                <div class="dropdown-mega-category">
-                  <h6>🔬 Research Services</h6>
-                  <ul>
-                    <li><a href="{{ url_for('main.services_page') }}#research-services">Research Proposal</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#research-services">Research Design</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#research-services">Data Collection Guidance</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#research-services">Qualitative Analysis</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#research-services">Quantitative Analysis</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#research-services">Survey Design</a></li>
-                    <li><a class="dropdown-view-all" href="{{ url_for('main.services_page') }}#research-services">View All</a></li>
-                  </ul>
-                </div>
-                <div class="dropdown-mega-category">
-                  <h6>📊 Statistics & Data Analysis</h6>
-                  <ul>
-                    <li><a href="{{ url_for('main.services_page') }}#data-analysis">SPSS Analysis</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#data-analysis">STATA</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#data-analysis">R Programming</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#data-analysis">Python</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#data-analysis">Excel</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#data-analysis">Tableau</a></li>
-                    <li><a class="dropdown-view-all" href="{{ url_for('main.services_page') }}#data-analysis">View All</a></li>
-                  </ul>
-                </div>
-                <div class="dropdown-mega-category">
-                  <h6>💻 Programming & IT</h6>
-                  <ul>
-                    <li><a href="{{ url_for('main.services_page') }}#programming-it">Python</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#programming-it">Java</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#programming-it">C / C++</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#programming-it">JavaScript</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#programming-it">SQL Databases</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#programming-it">Web Development</a></li>
-                    <li><a class="dropdown-view-all" href="{{ url_for('main.services_page') }}#programming-it">View All</a></li>
-                  </ul>
-                </div>
-                <div class="dropdown-mega-category">
-                  <h6>💼 Business & Finance</h6>
-                  <ul>
-                    <li><a href="{{ url_for('main.services_page') }}#business-finance">Accounting</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#business-finance">Finance</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#business-finance">Economics</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#business-finance">Marketing</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#business-finance">Business Plans</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#business-finance">Financial Modelling</a></li>
-                    <li><a class="dropdown-view-all" href="{{ url_for('main.services_page') }}#business-finance">View All</a></li>
-                  </ul>
-                </div>
-                <div class="dropdown-mega-category">
-                  <h6>🧮 Engineering & Mathematics</h6>
-                  <ul>
-                    <li><a href="{{ url_for('main.services_page') }}#engineering-math">Math Modelling</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#engineering-math">Statistics</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#engineering-math">STEM Projects</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#engineering-math">Technical Reports</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#engineering-math">CAD & Diagrams</a></li>
-                    <li><a href="{{ url_for('main.services_page') }}#engineering-math">Research Analysis</a></li>
-                    <li><a class="dropdown-view-all" href="{{ url_for('main.services_page') }}#engineering-math">View All</a></li>
-                  </ul>
-                </div>
-            </div>
-              <div class="dropdown-no-results d-none text-center text-white-50 py-3">No matching services found.</div>
-            </div>
+              <div class="dropdown-mega-category">
+                <h6>Career Strategy</h6>
+                <ul>
+                  <li><a href="{{ url_for('main.career_services') }}">ATS Resume &amp; CV Writing</a></li>
+                  <li><a href="{{ url_for('main.linkedin_optimization') }}">LinkedIn Optimization</a></li>
+                  <li><a href="{{ url_for('main.exam_preparation') }}">Certification &amp; Postgraduate Prep</a></li>
+                  <li><a href="{{ url_for('main.exam_preparation') }}">High-Stakes Finals Support</a></li>
+                </ul>
+              </div>
+          </div>
+        </div>
         <a class="nav-link" href="{{ url_for('main.pricing_page') }}">Pricing</a>
         <a class="nav-link" href="{{ url_for('main.Samples') }}">Samples</a>
         <a class="nav-link" href="{{ url_for('main.public_blogs') }}">Blog</a>
@@ -343,111 +286,85 @@
     </div>
   </div>
 
-  <footer id="contact" class="site-footer py-4 mt-5">
+  <footer id="contact" class="site-footer py-5 mt-5">
     <div class="container">
-      <div class="row g-4 mb-4 footer-trust-row">
-        <div class="col-lg-3 col-md-6">
-          <div class="trust-card h-100">
-            <div class="trust-icon">
-              <i class="bi bi-people-fill"></i>
-            </div>
-            <h5>Experienced Academic Team</h5>
-            <p>Our qualified academic consultants handle projects across business, IT, engineering, health sciences, research and university coursework.</p>
+      <!-- CTA panel -->
+      <div class="footer-cta d-flex align-items-center justify-content-between p-4 mb-4 rounded-4">
+        <div class="cta-text">
+          <span class="footer-cta-badge">Private consultation</span>
+          <h3 class="mb-2">Need help with your assignment?</h3>
+          <p class="mb-2">Professional support for research, programming, statistics, and reports.</p>
+          <div class="cta-actions d-flex gap-2 flex-wrap">
+            <button type="button" class="btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#siteContactModal">General Consultation</button>
+            <a href="https://api.whatsapp.com/send?phone=447426105606" target="_blank" rel="noopener" class="btn btn-outline-light">WhatsApp</a>
+            <a href="mailto:support@academiapro.com" class="btn btn-outline-light">Email</a>
           </div>
         </div>
-        <div class="col-lg-3 col-md-6">
-          <div class="trust-card h-100">
-            <div class="trust-icon">
-              <i class="bi bi-shield-check"></i>
-            </div>
-            <h5>Multi-stage Quality Assurance</h5>
-            <p>Every project passes through review, formatting, proofreading and quality checks before delivery.</p>
-          </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-          <div class="trust-card h-100">
-            <div class="trust-icon">
-              <i class="bi bi-lock-fill"></i>
-            </div>
-            <h5>Confidential & Original Work</h5>
-            <p>Every submission is prepared specifically for your requirements while protecting your privacy.</p>
-          </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-          <div class="trust-card h-100">
-            <div class="trust-icon">
-              <i class="bi bi-headset"></i>
-            </div>
-            <h5>Dedicated Support</h5>
-            <p>Stay informed with timely updates, responsive support and on-time delivery throughout your project.</p>
-          </div>
+        <div class="cta-qr d-flex flex-column align-items-center gap-2">
+          <a href="https://api.whatsapp.com/send?phone=447426105606" target="_blank" rel="noopener" class="d-block">
+            <img src="{{ url_for('static', filename='images/whatsapp-qr.png') }}" alt="WhatsApp QR" width="120" height="120" class="qr-compact">
+            <div class="text-center small mt-1">WhatsApp</div>
+          </a>
+          <a href="{{ url_for('main.index', _external=True) }}" target="_blank" rel="noopener" class="d-block">
+            <img src="{{ url_for('static', filename='images/website-qr.png') }}" alt="Website QR" width="120" height="120" class="qr-compact">
+            <div class="text-center small mt-1">Website</div>
+          </a>
         </div>
       </div>
 
-      <div class="footer-whatsapp-panel p-4 rounded-4 bg-white shadow-sm mb-4">
-        <div class="row g-4 align-items-stretch">
-          <div class="col-lg-7 d-flex flex-column justify-content-between">
-            <div>
-              <div class="d-flex align-items-center gap-2 mb-3 text-uppercase fw-semibold text-primary small">
-                <i class="bi bi-whatsapp"></i>
-                <span>Chat with us instantly on WhatsApp</span>
-              </div>
-              <h3 class="footer-qr-title mb-3">Instant support for project requests and consultations</h3>
-              <p class="mb-4 text-muted">Get quick answers, price quotes, and expert guidance for your academic projects. Our team is ready to help you succeed.</p>
-              <div class="row g-2 mb-4 footer-qr-features">
-                <div class="col-6"><div class="d-flex align-items-center gap-2"><i class="bi bi-check2-circle text-success"></i><span>Instant Responses</span></div></div>
-                <div class="col-6"><div class="d-flex align-items-center gap-2"><i class="bi bi-check2-circle text-success"></i><span>Discuss Your Project</span></div></div>
-                <div class="col-6"><div class="d-flex align-items-center gap-2"><i class="bi bi-check2-circle text-success"></i><span>Get Price Quotes</span></div></div>
-                <div class="col-6"><div class="d-flex align-items-center gap-2"><i class="bi bi-check2-circle text-success"></i><span>Available 24/7</span></div></div>
-              </div>
-            </div>
-              <div class="d-flex flex-wrap gap-3 align-items-center">
-              <a href="https://api.whatsapp.com/send?phone=447426105606" target="_blank" rel="noopener" class="btn btn-success btn-sm px-3 py-2">Chat on WhatsApp Now</a>
-              <div class="footer-qr-meta small text-muted d-flex align-items-center gap-2"><i class="bi bi-clock"></i>Average response time under 2 minutes</div>
-            </div>
+      <!-- Navigation columns -->
+      <div class="footer-columns row mb-4">
+        <div class="col-md-3 footer-column">
+          <div class="footer-logo mb-3">
+            <img src="{{ url_for('static', filename='img/logo-quill.jpg') }}" alt="AcademiaPro" style="width:56px;height:56px;border-radius:12px;">
           </div>
-          <div class="col-lg-5">
-            <div class="whatsapp-qr-card p-4 rounded-4 bg-white border shadow-sm text-center h-100 d-flex flex-column justify-content-between">
-              <div>
-                <div class="small text-primary fw-semibold mb-3">Scan to start a chat</div>
-                <a href="https://api.whatsapp.com/send?phone=447426105606" target="_blank" rel="noopener" class="d-inline-block mb-3">
-                  <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https://api.whatsapp.com/send?phone=447426105606" alt="WhatsApp admin QR code" class="footer-qr-image">
-                </a>
-              </div>
-              <div class="footer-qr-badge mt-3 p-3 rounded-3 bg-light">
-                <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
-                  <i class="bi bi-whatsapp text-success fs-4"></i>
-                  <span class="fw-semibold">WhatsApp Support</span>
-                </div>
-                <div class="small text-muted">We&apos;re here to help you 24/7</div>
-              </div>
-            </div>
-          </div>
+          <div class="footer-company">Partner in Academic Excellence</div>
+        </div>
+        <div class="col-md-3 footer-column">
+          <h5>Services</h5>
+          <ul class="list-unstyled">
+            <li><a href="{{ url_for('main.assignments') }}">Assignments</a></li>
+            <li><a href="{{ url_for('main.programming') }}">Programming</a></li>
+            <li><a href="{{ url_for('main.research_papers') }}">Research</a></li>
+            <li><a href="{{ url_for('main.statistics') }}">Statistics</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3 footer-column">
+          <h5>Company</h5>
+          <ul class="list-unstyled">
+            <li><a href="{{ url_for('main.about') }}">About</a></li>
+            <li><a href="{{ url_for('main.pricing_page') }}">Pricing</a></li>
+            <li><a href="{{ url_for('main.Samples') }}">Samples</a></li>
+            <li><a href="{{ url_for('main.faq') }}">FAQ</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3 footer-column">
+          <h5>Contact</h5>
+          <ul class="list-unstyled">
+            <li><a href="https://api.whatsapp.com/send?phone=447426105606">WhatsApp</a></li>
+            <li><a href="mailto:support@academiapro.com">support@academiapro.com</a></li>
+            <li><span>24/7 Support</span></li>
+            <li class="mt-2"><img src="{{ url_for('static', filename='images/website-qr.png') }}" alt="QR" width="80" height="80"></li>
+          </ul>
         </div>
       </div>
 
-      <div class="footer-top-bar rounded-4 mb-4 py-3 px-3">
-        <div class="row align-items-center gy-3">
-          <div class="col-md-4">
-            <div class="footer-top-links small text-white fw-semibold">Quick Links</div>
-            <div class="footer-top-links small mt-2">
-              <a href="{{ url_for('main.index') }}">Home</a> |
-              <a href="{{ url_for('main.public_blogs') }}">Blog</a> |
-              <a href="{{ url_for('main.contact') }}">Contact</a> |
-              <a href="{{ url_for('main.terms') }}">Terms</a> |
-              <a href="{{ url_for('main.privacy_policy') }}">Privacy Policy</a>
-            </div>
+      <!-- Bottom bar -->
+      <div class="footer-bottom d-flex align-items-center justify-content-between pt-3 border-top">
+        <div class="d-flex align-items-center gap-3">
+          <div class="small">©2026 AcademiaPro</div>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <div class="social-icons d-flex gap-2">
+            <a class="btn btn-outline-light btn-sm rounded-circle" href="#"><i class="bi bi-facebook"></i></a>
+            <a class="btn btn-outline-light btn-sm rounded-circle" href="#"><i class="bi bi-linkedin"></i></a>
+            <a class="btn btn-outline-light btn-sm rounded-circle" href="#"><i class="bi bi-instagram"></i></a>
+            <a class="btn btn-outline-light btn-sm rounded-circle" href="#"><i class="bi bi-x"></i></a>
           </div>
-          <div class="col-md-4 text-center">
-            <div class="footer-top-contact small text-white mb-2">Email: <a href="mailto:jkwriters89@gmail.com">jkwriters89@gmail.com</a></div>
-            <div class="footer-top-contact small text-white">
-              <i class="bi bi-whatsapp text-success me-1"></i>
-              <a href="https://api.whatsapp.com/send?phone=447426105606" target="_blank" rel="noopener">+44 7426 105606</a>
-            </div>
-          </div>
-          <div class="col-md-4 text-md-end text-center">
-            <div class="small text-white">© 2026 AcademiaPro</div>
-            <div class="small text-white">All Rights Reserved</div>
+          <div class="payment-icons d-flex gap-2 ms-3">
+            <img src="{{ url_for('static', filename='images/pay-visa.png') }}" alt="Visa" height="20">
+            <img src="{{ url_for('static', filename='images/pay-mastercard.png') }}" alt="Mastercard" height="20">
+            <img src="{{ url_for('static', filename='images/pay-paypal.png') }}" alt="PayPal" height="20">
           </div>
         </div>
       </div>
@@ -462,7 +379,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <p class="mb-3">Choose how you'd like to connect with admin. No login required.</p>
+          <p class="mb-3">Choose how you'd like to contact the admin for a private consultation. This is available for guests and clients.</p>
           <div class="list-group">
             <a href="https://wa.me/447426105606?text=Hello%20AcademicPro%20Admin%2C%20I%27d%20like%20to%20request%20consultation." target="_blank" rel="noopener" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
               <i class="bi bi-whatsapp fs-3 text-success"></i>
@@ -471,7 +388,7 @@
                 <div class="small text-muted">Open a chat directly with admin.</div>
               </div>
             </a>
-            <a href="mailto:jkwriters89@gmail.com?subject=AcademicPro%20Consultation%20Request" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+            <a href="mailto:support@academiapro.com?subject=AcademicPro%20Consultation%20Request" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
               <i class="bi bi-envelope-open fs-3 text-primary"></i>
               <div>
                 <div class="fw-semibold">Email</div>
