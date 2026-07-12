@@ -19,7 +19,7 @@
     <tr>
       <td>{{ payment.id }}</td>
       <td>{{ payment.user_name }}</td>
-      <td>KES {{ payment.amount }}</td>
+      <td>$ {{ payment.amount }}</td>
       <td>{{ payment.method }}</td>
       <td>
         <span class="badge bg-{{ 'success' if payment.status == 'Completed' else 'warning' }}">

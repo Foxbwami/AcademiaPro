@@ -1,0 +1,44 @@
+<section class="hero-section">
+  <div class="hero-deco-glow"></div>
+  <div class="hero-deco-line"></div>
+  <div class="container">
+    <div class="row align-items-center gx-5">
+      <div class="col-lg-7">
+        {% if badge %}
+          <span class="hero-badge">{{ badge|safe }}</span>
+        {% endif %}
+        <h1 class="hero-title">{{ title|safe }}</h1>
+        {% if description %}
+          <p class="hero-description">{{ description }}</p>
+        {% endif %}
+        {% if buttons %}
+          <div class="hero-buttons">
+            {% for b in buttons %}
+              <a href="{{ b.href }}" class="btn {{ b.classes }}">{{ b.label|safe }}</a>
+            {% endfor %}
+          </div>
+        {% endif %}
+        {% if points %}
+          <div class="hero-badge-row">
+            {% for p in points %}
+              <div class="hero-trust-badge">{{ p }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+        <a class="hero-cta-scroll" href="#services">Explore More</a>
+      </div>
+      <div class="col-lg-5">
+        <div class="hero-panel">
+          <div class="hero-panel-label">Trusted academic help</div>
+          <div class="hero-panel-score">97% Success Rate</div>
+          <p class="hero-panel-text">Fast responses, secure orders, and expert academic support across essays, research, programming and editing.</p>
+          <div class="hero-panel-list">
+            <div class="hero-panel-item"><i class="bi bi-check-circle-fill"></i> Expert consultants available 24/7</div>
+            <div class="hero-panel-item"><i class="bi bi-check-circle-fill"></i> First-order discount and flexible deadlines</div>
+            <div class="hero-panel-item"><i class="bi bi-check-circle-fill"></i> Safe payments, delivery tracking, revisions included</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

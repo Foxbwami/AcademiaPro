@@ -368,7 +368,9 @@ def create_app():
                 unread_count = Message.query.filter_by(receiver_id=current_user.id, is_read=False).count()
             except Exception:
                 unread_count = 0
-        return dict(current_user=current_user, unread_count=unread_count)
+        # Inject WhatsApp number and other globals for templates
+        whatsapp = app.config.get("WHATSAPP_NUMBER", "+447426105606")
+        return dict(current_user=current_user, unread_count=unread_count, WHATSAPP_NUMBER=whatsapp)
 
     @login_manager.user_loader
     def load_user(user_id):

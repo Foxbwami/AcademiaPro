@@ -1,0 +1,274 @@
+/* Design tokens for AcademiaPro - central palette, spacing, radii, shadows */
+:root{
+  /* Colors */
+  --color-primary: #1f6bff;
+  --color-primary-600: #1858d1;
+  --color-accent: #d4af37;
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-card: #ffffff;
+  --color-text: #0f1724;
+  --color-muted: #6b7280;
+  --color-border: #e6eef9;
+  --color-success: #16a34a;
+  --color-white: #ffffff;
+
+  /* Spacing */
+  --space-xxs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-xxl: 3rem;
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+
+  /* Shadows */
+  --shadow-sm: 0 6px 18px rgba(2,6,23,0.06);
+  --shadow-md: 0 16px 40px rgba(2,6,23,0.08);
+  --shadow-lg: 0 28px 72px rgba(2,6,23,0.10);
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace;
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: 1.5rem;
+
+  /* Transitions */
+  --transition-fast: 0.12s;
+  --transition-normal: 0.24s;
+  --transition-slow: 0.45s;
+
+  /* Utilities */
+  --border-radius: var(--radius-md);
+  --border-color: var(--color-border);
+}
+
+/* Global header and drawer layout */
+.site-header {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(18px);
+}
+
+.header-shell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.mobile-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  z-index: 1080;
+}
+
+.mobile-drawer {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: min(360px, 100%);
+  height: 100vh;
+  overflow-y: auto;
+  background: #ffffff;
+  box-shadow: 0 28px 90px rgba(15, 23, 42, 0.16);
+  transition: left 0.25s ease;
+  z-index: 1085;
+}
+
+.mobile-drawer.drawer-open {
+  left: 0;
+}
+
+.drawer-top {
+  padding: 1.25rem 1.5rem;
+}
+
+.mobile-drawer-inner {
+  padding: 1.25rem 1.25rem 2rem;
+}
+
+.mobile-drawer-overlay.drawer-active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.drawer-link {
+  display: block;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  color: var(--color-text);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.drawer-link:hover {
+  background: rgba(31, 107, 255, 0.08);
+}
+
+/* Global logo and interactive badge sizing */
+.brand-mark,
+.brand-mark-sm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.brand-mark {
+  width: 3.6rem;
+  height: 3.6rem;
+  min-width: 3.6rem;
+}
+
+.brand-mark-sm {
+  width: 2.8rem;
+  height: 2.8rem;
+  min-width: 2.8rem;
+}
+
+.brand-logo,
+.brand-logo-sm,
+.ai-fab-logo,
+.footer-qr-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.brand-logo {
+  width: 2.3rem;
+}
+
+.brand-logo-sm {
+  width: 1.7rem;
+}
+
+.ai-fab-logo {
+  width: 1.25rem;
+}
+
+.whatsapp-fab-shell,
+.ai-float-shell {
+  position: fixed;
+  right: 1rem;
+  display: grid;
+  place-items: center;
+  z-index: 1100;
+}
+
+.whatsapp-fab-shell {
+  bottom: 1rem;
+}
+
+.ai-float-shell {
+  bottom: 5.1rem;
+}
+
+.whatsapp-fab,
+.ai-fab {
+  width: 3.2rem;
+  height: 3.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: none;
+  background: var(--color-primary);
+  color: #ffffff;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.16);
+  transition: transform var(--transition-fast) ease, box-shadow var(--transition-fast) ease;
+}
+
+.whatsapp-fab {
+  background: #25d366;
+}
+
+.whatsapp-fab:hover,
+.ai-fab:hover {
+  transform: translateY(-2px);
+}
+
+.ai-panel {
+  position: fixed;
+  right: 1rem;
+  bottom: 9.5rem;
+  width: min(360px, calc(100vw - 2rem));
+  max-height: calc(100vh - 10rem);
+  background: #ffffff;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 32px 90px rgba(15, 23, 42, 0.18);
+  overflow: hidden;
+  z-index: 1100;
+}
+
+.ai-panel.d-none {
+  display: none !important;
+}
+
+.ai-panel-head {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ai-title {
+  font-weight: 700;
+}
+
+.ai-sub {
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.ai-panel-body {
+  max-height: calc(100vh - 17rem);
+  overflow: auto;
+  padding: 1rem;
+}
+
+.ai-panel-foot {
+  padding: 0.9rem 1rem;
+  border-top: 1px solid rgba(15, 23, 42, 0.06);
+  background: rgba(248, 251, 255, 0.86);
+}
+
+.ai-input {
+  width: 100%;
+  resize: vertical;
+}
+
+.ai-send-btn {
+  min-width: 96px;
+}
+

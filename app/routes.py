@@ -14,6 +14,7 @@ import urllib.error
 
 from app.extensions import db, login_manager
 from app.forms import OrderForm, RegistrationForm, LoginForm, ProfileForm, SettingForm
+from app.helpers import is_allowed_extension, normalize_email, save_uploaded_file
 from app.models import (
     BlogPost, Sample, User, Testimonial, Lead, SiteReview, ChatMessage, Message,
     Announcement, Order, OrderFile, Payment, SiteSetting, SupportTicket,
@@ -373,13 +374,104 @@ def lead():
     db.session.commit()
     return redirect(url_for('main.index'))
 
-UPLOAD_FOLDER = os.path.join(os.getcwd(), 'app', 'static', 'uploads')
-SAMPLE_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "samples")
-SUPPORT_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "support")
-ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx', 'txt', 'png', 'jpg'}
+def _get_upload_root():
+    return os.path.join(current_app.root_path, 'static', 'uploads')
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+def _get_sample_folder():
+    return os.path.join(_get_upload_root(), 'samples')
+
+def _get_support_folder():
+    return os.path.join(_get_upload_root(), 'support')
+
+
+def _save_user_photo(user, photo_field):
+    if not photo_field or not photo_field.filename:
+        return
+    filename = save_uploaded_file(photo_field, _get_upload_root(), prefix=f"user_{user.id}")
+    if filename:
+        user.photo = filename
+
+
+def _validate_unique_email(form, user):
+    email = normalize_email(form.email.data)
+    existing = User.query.filter(User.email == email, User.id != user.id).first()
+    return existing is None
+
+
+def _commit_user_changes():
+    try:
+        db.session.commit()
+        return True
+    except IntegrityError:
+        db.session.rollback()
+        return False
+
+
+def _apply_common_user_fields(user, form):
+    user.name = form.name.data or user.name
+    user.email = normalize_email(form.email.data) or user.email
+    pending_password_hash = None
+    if form.password.data:
+        pending_password_hash = generate_password_hash(form.password.data)
+    _save_user_photo(user, getattr(form, 'photo', None).data if hasattr(form, 'photo') else None)
+    return pending_password_hash
+
+
+def _apply_settings_fields(user, form):
+    user.phone = (form.phone.data or "").strip() or None
+    user.academic_level = form.academic_level.data or None
+    user.expertise_tags = (form.expertise_tags.data or "").strip() or None
+    user.two_factor_enabled = bool(form.two_factor_enabled.data)
+    user.profile_public = bool(form.profile_public.data)
+    user.notify_email = bool(form.notify_email.data)
+    user.notify_sms = bool(form.notify_sms.data)
+    user.notify_in_app = bool(form.notify_in_app.data)
+    user.alert_order_updates = bool(form.alert_order_updates.data)
+    user.alert_payment_confirmations = bool(form.alert_payment_confirmations.data)
+    user.alert_revision_requests = bool(form.alert_revision_requests.data)
+    user.alert_admin_announcements = bool(form.alert_admin_announcements.data)
+    user.billing_method = form.billing_method.data or None
+    user.payout_method = form.payout_method.data or None
+    user.auto_deposit_notifications = bool(form.auto_deposit_notifications.data)
+    user.preferred_language = form.preferred_language.data or user.preferred_language or "English"
+    user.timezone = form.timezone.data or user.timezone or "UTC"
+    user.preferred_channel = form.preferred_channel.data or user.preferred_channel or "chat"
+    user.layout_mode = form.layout_mode.data or user.layout_mode or "detailed"
+    user.citation_style = form.citation_style.data or user.citation_style or "APA"
+    user.marketing_opt_in = bool(form.marketing_opt_in.data)
+    return _apply_common_user_fields(user, form)
+
+
+def _process_user_profile_form(form, template, success_endpoint, success_message):
+    if form.validate_on_submit():
+        if not _validate_unique_email(form, current_user):
+            flash("That email is already used by another account.", "danger")
+            return render_template(template, form=form)
+
+        pending_password_hash = _apply_common_user_fields(current_user, form)
+        if not _commit_user_changes():
+            flash("That email is already used by another account.", "danger")
+            return render_template(template, form=form)
+
+        if pending_password_hash and not _otp_enabled():
+            current_user.password_hash = pending_password_hash
+            db.session.commit()
+            flash(success_message + " and password changed.", "success")
+            return redirect(url_for(success_endpoint))
+        if pending_password_hash:
+            session["pending_password_hash"] = pending_password_hash
+            otp = _issue_otp(email=current_user.email, purpose="password_change", user_id=current_user.id, minutes=10)
+            if otp:
+                flash(success_message + " Verify OTP sent to your email to complete password change.", "info")
+            else:
+                session.pop("pending_password_hash", None)
+                flash(success_message + ", but OTP delivery failed. Password was not changed.", "warning")
+                return redirect(url_for(success_endpoint))
+            return redirect(url_for("main.verify_password_change"))
+        flash(success_message, "success")
+        return redirect(url_for(success_endpoint))
+    return render_template(template, form=form)
+
 
 def get_grouped_chats(admin_id=None):
     chats = Message.query.order_by(Message.timestamp.asc()).all()
@@ -638,19 +730,16 @@ def support_chat_upload():
     if not uploaded or not uploaded.filename:
         return jsonify({"ok": False, "error": "No file selected."}), 400
 
-    original_name = secure_filename(uploaded.filename)
-    if not original_name:
-        return jsonify({"ok": False, "error": "Invalid filename."}), 400
-    if not allowed_file(original_name):
+    if not is_allowed_extension(uploaded.filename):
         return jsonify({"ok": False, "error": "Unsupported file type."}), 400
 
-    saved_name = f"support_{current_user.id}_{int(datetime.utcnow().timestamp())}_{uuid.uuid4().hex[:8]}_{original_name}"
-    os.makedirs(SUPPORT_UPLOAD_FOLDER, exist_ok=True)
-    uploaded.save(os.path.join(SUPPORT_UPLOAD_FOLDER, saved_name))
+    saved_name = save_uploaded_file(uploaded, _get_support_folder(), prefix=f"support_{current_user.id}")
+    if not saved_name:
+        return jsonify({"ok": False, "error": "Unable to save attachment."}), 500
     return jsonify({
         "ok": True,
         "filename": saved_name,
-        "original_name": original_name,
+        "original_name": secure_filename(uploaded.filename),
         "url": url_for("main.support_chat_file", filename=saved_name),
     })
 
@@ -660,7 +749,7 @@ def support_chat_file(filename):
     if not filename:
         abort(404)
     if current_user.is_admin:
-        return send_from_directory(SUPPORT_UPLOAD_FOLDER, filename, as_attachment=True)
+        return send_from_directory(_get_support_folder(), filename, as_attachment=True)
 
     admin = _get_primary_admin()
     if not admin:
@@ -674,7 +763,7 @@ def support_chat_file(filename):
     ).first()
     if not allowed:
         abort(403)
-    return send_from_directory(SUPPORT_UPLOAD_FOLDER, filename, as_attachment=True)
+    return send_from_directory(_get_support_folder(), filename, as_attachment=True)
 
 @main.route("/support/chat/messages", methods=["GET"])
 @login_required
@@ -939,94 +1028,27 @@ def support_tickets():
 @login_required
 def profile():
     form = ProfileForm(obj=current_user)
-    if form.validate_on_submit():
-        existing = User.query.filter(User.email == form.email.data.strip().lower(), User.id != current_user.id).first()
-        if existing:
-            flash("That email is already used by another account.", "danger")
-            return render_template("profile.html", form=form)
-        current_user.name = form.name.data or current_user.name
-        current_user.email = (form.email.data or current_user.email).strip().lower()
-        pending_password_hash = None
-        if form.password.data:
-            pending_password_hash = generate_password_hash(form.password.data)
-        if form.photo.data:
-            filename = secure_filename(form.photo.data.filename)
-            photo_name = f"user_{current_user.id}_{int(datetime.utcnow().timestamp())}_{filename}"
-            os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-            form.photo.data.save(os.path.join(UPLOAD_FOLDER, photo_name))
-            current_user.photo = photo_name
-        try:
-            db.session.commit()
-        except IntegrityError:
-            db.session.rollback()
-            flash("That email is already used by another account.", "danger")
-            return render_template("profile.html", form=form)
-        if pending_password_hash and not _otp_enabled():
-            current_user.password_hash = pending_password_hash
-            db.session.commit()
-            flash("Profile updated and password changed.", "success")
-            return redirect(url_for("main.profile"))
-        if pending_password_hash:
-            session["pending_password_hash"] = pending_password_hash
-            otp = _issue_otp(email=current_user.email, purpose="password_change", user_id=current_user.id, minutes=10)
-            if otp:
-                flash("Profile updated. Verify OTP sent to your email to complete password change.", "info")
-            else:
-                session.pop("pending_password_hash", None)
-                flash("Profile updated, but OTP delivery failed. Password was not changed.", "warning")
-                return redirect(url_for("main.profile"))
-            return redirect(url_for("main.verify_password_change"))
-        flash("Profile updated.", "success")
-        return redirect(url_for("main.profile"))
-    return render_template("profile.html", form=form)
+    return _process_user_profile_form(
+        form=form,
+        template="profile.html",
+        success_endpoint="main.profile",
+        success_message="Profile updated.",
+    )
 
 @main.route("/settings", methods=["GET", "POST"])
 @login_required
 def settings():
     form = SettingForm(obj=current_user)
     if form.validate_on_submit():
-        existing = User.query.filter(User.email == form.email.data.strip().lower(), User.id != current_user.id).first()
-        if existing:
+        if not _validate_unique_email(form, current_user):
             flash("That email is already used by another account.", "danger")
             return render_template("settings.html", form=form)
-        current_user.name = form.name.data or current_user.name
-        current_user.email = (form.email.data or current_user.email).strip().lower()
-        current_user.phone = (form.phone.data or "").strip() or None
-        current_user.academic_level = form.academic_level.data or None
-        current_user.expertise_tags = (form.expertise_tags.data or "").strip() or None
-        current_user.two_factor_enabled = bool(form.two_factor_enabled.data)
-        current_user.profile_public = bool(form.profile_public.data)
-        current_user.notify_email = bool(form.notify_email.data)
-        current_user.notify_sms = bool(form.notify_sms.data)
-        current_user.notify_in_app = bool(form.notify_in_app.data)
-        current_user.alert_order_updates = bool(form.alert_order_updates.data)
-        current_user.alert_payment_confirmations = bool(form.alert_payment_confirmations.data)
-        current_user.alert_revision_requests = bool(form.alert_revision_requests.data)
-        current_user.alert_admin_announcements = bool(form.alert_admin_announcements.data)
-        current_user.billing_method = form.billing_method.data or None
-        current_user.payout_method = form.payout_method.data or None
-        current_user.auto_deposit_notifications = bool(form.auto_deposit_notifications.data)
-        current_user.preferred_language = form.preferred_language.data or "English"
-        current_user.timezone = form.timezone.data or "UTC"
-        current_user.preferred_channel = form.preferred_channel.data or "chat"
-        current_user.layout_mode = form.layout_mode.data or "detailed"
-        current_user.citation_style = form.citation_style.data or "APA"
-        current_user.marketing_opt_in = bool(form.marketing_opt_in.data)
-        pending_password_hash = None
-        if form.password.data:
-            pending_password_hash = generate_password_hash(form.password.data)
-        if form.photo.data:
-            filename = secure_filename(form.photo.data.filename)
-            photo_name = f"user_{current_user.id}_{int(datetime.utcnow().timestamp())}_{filename}"
-            os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-            form.photo.data.save(os.path.join(UPLOAD_FOLDER, photo_name))
-            current_user.photo = photo_name
-        try:
-            db.session.commit()
-        except IntegrityError:
-            db.session.rollback()
+
+        pending_password_hash = _apply_settings_fields(current_user, form)
+        if not _commit_user_changes():
             flash("That email is already used by another account.", "danger")
             return render_template("settings.html", form=form)
+
         if pending_password_hash and not _otp_enabled():
             current_user.password_hash = pending_password_hash
             db.session.commit()
@@ -1875,13 +1897,13 @@ def admin_samples():
         file_type = None
         uploaded = request.files.get("file")
         if uploaded and uploaded.filename:
-            if not allowed_file(uploaded.filename):
+            if not is_allowed_extension(uploaded.filename):
                 flash("Unsupported file type.", "danger")
                 return redirect(url_for("main.admin_samples"))
-            os.makedirs(SAMPLE_UPLOAD_FOLDER, exist_ok=True)
-            safe_name = secure_filename(uploaded.filename)
-            stored = f"{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{safe_name}"
-            uploaded.save(os.path.join(SAMPLE_UPLOAD_FOLDER, stored))
+            stored = save_uploaded_file(uploaded, _get_sample_folder())
+            if not stored:
+                flash("Unable to save sample file.", "danger")
+                return redirect(url_for("main.admin_samples"))
             file_name = stored
             file_type = stored.rsplit(".", 1)[-1].lower()
 
@@ -1978,17 +2000,15 @@ def order():
         db.session.commit()
         if form.attachments.data:
             uploaded = form.attachments.data
-            if uploaded and uploaded.filename and allowed_file(uploaded.filename):
-                filename = secure_filename(uploaded.filename)
-                stored = f"order_{order.id}_{int(datetime.utcnow().timestamp())}_{filename}"
-                os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-                uploaded.save(os.path.join(UPLOAD_FOLDER, stored))
-                db.session.add(OrderFile(
-                    filename=stored,
-                    uploader=current_user.name,
-                    order_id=order.id
-                ))
-                db.session.commit()
+            if uploaded and uploaded.filename and is_allowed_extension(uploaded.filename):
+                stored = save_uploaded_file(uploaded, _get_upload_root(), prefix=f"order_{order.id}")
+                if stored:
+                    db.session.add(OrderFile(
+                        filename=stored,
+                        uploader=current_user.name,
+                        order_id=order.id
+                    ))
+                    db.session.commit()
         admin = _get_primary_admin()
         if admin:
             db.session.add(
@@ -2217,18 +2237,16 @@ def order_chat(order_id):
                 is_read=False
             ))
         if uploaded and uploaded.filename:
-            if not allowed_file(uploaded.filename):
+            if not is_allowed_extension(uploaded.filename):
                 flash("Unsupported file type.", "danger")
                 return redirect(url_for("main.order_chat", order_id=order.id))
-            filename = secure_filename(uploaded.filename)
-            stored = f"order_{order.id}_{int(datetime.utcnow().timestamp())}_{filename}"
-            os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-            uploaded.save(os.path.join(UPLOAD_FOLDER, stored))
-            db.session.add(OrderFile(
-                filename=stored,
-                uploader=current_user.name,
-                order_id=order.id
-            ))
+            stored = save_uploaded_file(uploaded, _get_upload_root(), prefix=f"order_{order.id}")
+            if stored:
+                db.session.add(OrderFile(
+                    filename=stored,
+                    uploader=current_user.name,
+                    order_id=order.id
+                ))
         db.session.commit()
         if raw or (uploaded and uploaded.filename):
             flash("Update sent.", "success")
@@ -2517,7 +2535,7 @@ def download_order_file(filename):
         allowed_ids.add(current_user.id)
     if current_user.id not in allowed_ids:
         abort(403)
-    return send_from_directory(UPLOAD_FOLDER, filename, as_attachment=True)
+    return send_from_directory(_get_upload_root(), filename, as_attachment=True)
 
 @main.route("/admin/order/delete/<int:id>")
 @login_required
@@ -2834,13 +2852,12 @@ def admin_chat():
 def upload_file():
     if request.method == 'POST':
         uploaded = request.files['file']
-        if uploaded and allowed_file(uploaded.filename):
-            filename = secure_filename(uploaded.filename)
-            uploaded.save(os.path.join(UPLOAD_FOLDER, filename))
-
-            file_entry = OrderFile(filename=filename, uploader='admin')
-            db.session.add(file_entry)
-            db.session.commit()
+        if uploaded and is_allowed_extension(uploaded.filename):
+            stored = save_uploaded_file(uploaded, _get_upload_root())
+            if stored:
+                file_entry = OrderFile(filename=stored, uploader='admin')
+                db.session.add(file_entry)
+                db.session.commit()
             return redirect(url_for('main.upload_file'))
 
     files = OrderFile.query.order_by(OrderFile.uploaded_at.desc()).all()
@@ -3332,6 +3349,30 @@ def statistics():
 @main.route('/services/business-finance')
 def business_finance():
     return render_template('services/business_finance.html')
+
+@main.route('/services/research-proposals')
+def research_proposals():
+    return render_template('services/research_proposals.html')
+
+@main.route('/services/career-services')
+def career_services():
+    return render_template('services/career_services.html')
+
+@main.route('/services/linkedin-optimization')
+def linkedin_optimization():
+    return render_template('services/linkedin_optimization.html')
+
+@main.route('/services/exam-preparation')
+def exam_preparation():
+    return render_template('services/exam_preparation.html')
+
+@main.route('/services/database-architecture')
+def database_architecture():
+    return render_template('services/database_architecture.html')
+
+@main.route('/services/ai-machine-learning')
+def ai_machine_learning():
+    return render_template('services/ai_ml.html')
 
 @main.route('/services/editing-proofreading')
 def editing_proofreading():

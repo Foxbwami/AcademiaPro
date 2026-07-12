@@ -40,7 +40,12 @@
         <li class="list-group-item d-flex justify-content-between align-items-start">
           <div class="me-3">
             <strong>{{ t.name }}</strong><br>
-            <span>⭐ {{ t.rating }}</span> – "{{ t.content }}"
+              <span class="stars">
+                {% for _ in range(t.rating) %}
+                  <i class="bi bi-star-fill"></i>
+                {% endfor %}
+              </span>
+              – "{{ t.content }}"
           </div>
           <div>
             <a href="{{ url_for('main.edit_testimonial', id=t.id) }}" class="btn btn-sm btn-outline-primary me-2">Edit</a>

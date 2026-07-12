@@ -1,0 +1,10 @@
+/* Dashboard styles — Upwork + Notion inspiration */
+
+.dashboard-shell{ padding:1.5rem 0; }
+.dashboard-grid{ display:grid; grid-template-columns: 280px 1fr; gap:1.5rem; }
+.dashboard-sidebar{ background:var(--color-surface); border-radius:12px; padding:1rem; box-shadow:var(--shadow-sm); }
+.dashboard-main{ background:var(--color-surface); border-radius:12px; padding:1rem; }
+.card-row{ display:grid; grid-template-columns: repeat(3,1fr); gap:1rem; }
+.card{ padding:1rem; border-radius:12px; background:#fff; box-shadow:var(--shadow-sm); }
+
+@media (max-width:992px){ .dashboard-grid{ grid-template-columns: 1fr; } .card-row{ grid-template-columns:1fr; } }

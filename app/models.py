@@ -87,12 +87,15 @@ class User(UserMixin, db.Model):
      
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    sender_id = db.Column(db.Integer, nullable=False)
-    receiver_id = db.Column(db.Integer, nullable=False)
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     content = db.Column(db.Text, nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
     is_read = db.Column(db.Boolean, default=False, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    sender = db.relationship('User', foreign_keys=[sender_id], backref=db.backref('sent_messages', lazy='dynamic'))
+    receiver = db.relationship('User', foreign_keys=[receiver_id], backref=db.backref('received_messages', lazy='dynamic'))
 
 class Payment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -150,7 +153,9 @@ class OrderFile(db.Model):
     filename = db.Column(db.String(255), nullable=False)
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
     uploader = db.Column(db.String(50))
-    order_id = db.Column(db.Integer, nullable=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=True)
+
+    order = db.relationship('Order', backref=db.backref('files', lazy='dynamic'))
 
 class BlogPost(db.Model):
     id = db.Column(db.Integer, primary_key=True)

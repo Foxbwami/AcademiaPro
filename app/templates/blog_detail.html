@@ -1,36 +1,508 @@
 {% extends "base.html" %}
+
+{% block title %}Blog Article · AcademiaPro{% endblock %}
+
+{% block meta_description %}{{ post.excerpt or 'Academic insights and guides from AcademiaPro' }}{% endblock %}
+
 {% block content %}
+  <article class="blog-article container my-4">
+    {# Original page content will be rendered here by the view #}
+    {{ post.content|safe }}
+  </article>
+{% endblock %}
+                <a class="dropdown-item d-flex align-items-center justify-content-between" href="{{ url_for('main.notifications') }}">
+                  <span>Notifications</span>
+                  {% if unread_count and unread_count > 0 %}
+                    <span class="badge bg-warning text-dark rounded-pill">{{ unread_count }}</span>
+                  {% endif %}
+                </a>
+              </li>
+              <li><a class="dropdown-item" href="{{ url_for('main.support_tickets') }}">Support Tickets</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">My Profile</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('main.settings') }}">Settings</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="{{ url_for('main.logout') }}">Sign Out</a></li>
+            </ul>
+          </div>
+        {% else %}
+          <a class="btn btn-outline-light btn-sm" href="{{ url_for('main.login') }}">Sign In</a>
+          <a class="btn btn-gold btn-sm fw-semibold" href="{{ url_for('main.register') }}">Sign Up</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
 
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-md-10 col-lg-8">
-      <h1 class="fw-bold text-primary mb-3">{{ blog.title }}</h1>
-      <p class="text-muted small">Published on {{ blog.created_at.strftime('%B %d, %Y') if blog.created_at else '' }}</p>
-      <div class="small mb-2 d-flex flex-wrap gap-1">
-        <span class="badge bg-light text-dark border">{{ blog.category or 'Academic Skills' }}</span>
-        {% if blog.pillar %}<span class="badge bg-light text-dark border">{{ blog.pillar }}</span>{% endif %}
-        {% if blog.cluster_topic %}<span class="badge bg-light text-dark border">{{ blog.cluster_topic }}</span>{% endif %}
-      </div>
-      <p class="small text-muted">By {{ blog.author_name or 'AcademicPro Team' }}</p>
-      {% if official_links %}
-      <div class="d-flex flex-wrap gap-2 mb-2">
-        {% for label, href in official_links %}
-        <a href="{{ href }}" class="btn btn-outline-secondary btn-sm" target="_blank" rel="noopener">{{ label }}</a>
-        {% endfor %}
-      </div>
-      {% endif %}
-      <hr>
-      <div class="mt-4">
-        <p style="white-space: pre-line;">{{ blog.content }}</p>
+  <div class="mobile-drawer-overlay" id="mobileDrawerOverlay" aria-hidden="true"></div>
+  <aside class="mobile-drawer" id="mobileDrawer" role="dialog" aria-modal="true" aria-label="Mobile navigation">
+    <div class="mobile-drawer-inner">
+      <div class="drawer-top d-flex align-items-start justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <div class="brand-mark brand-mark-sm shadow-soft">
+            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='img/logo-quill.jpg') }}" alt="AcademiaPro logo" class="brand-logo-sm">
+          </div>
+          <div class="drawer-brand">
+            <div class="brand-text drawer-title">AcademiaPro</div>
+            <div class="drawer-subtitle">Your Partner in Academic Excellence</div>
+          </div>
+        </div>
+        <button class="drawer-close-btn" id="mobileDrawerClose" type="button" aria-label="Close menu">
+          <i class="bi bi-x-lg" aria-hidden="true"></i>
+        </button>
       </div>
 
-      <div class="mt-5">
-        <a href="{{ url_for('main.blog_list') }}" class="btn btn-outline-secondary btn-sm">
-          Back to Blog
+      <div class="drawer-banner rounded-4 shadow-soft p-3 mb-4">
+        <div class="d-flex align-items-start gap-3 mb-3">
+          <span class="drawer-banner-icon"><i class="bi bi-shield-fill-check"></i></span>
+          <div>
+            <div class="fw-semibold">Premium Academic Help</div>
+            <div class="small text-secondary">Quality. Originality. Delivered On Time.</div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="drawer-links mb-4" aria-label="Mobile navigation">
+        <div class="drawer-group mb-3">
+          <div class="drawer-group-title">Services</div>
+          <a class="drawer-link" href="{{ url_for('main.academic_writing') }}">Academic Writing</a>
+          <a class="drawer-link" href="{{ url_for('main.research_dissertation') }}">Research & Dissertation</a>
+          <a class="drawer-link" href="{{ url_for('main.programming') }}">Programming</a>
+          <a class="drawer-link" href="{{ url_for('main.editing_proofreading') }}">Editing & Proofreading</a>
+        </div>
+        <div class="drawer-group mb-3">
+          <div class="drawer-group-title">Resources</div>
+          <a class="drawer-link" href="{{ url_for('main.Samples') }}">Samples</a>
+          <a class="drawer-link" href="{{ url_for('main.public_blogs') }}">Blog</a>
+          <a class="drawer-link" href="{{ url_for('main.faq') }}">FAQ</a>
+          <a class="drawer-link" href="{{ url_for('main.how_it_works') }}">How It Works</a>
+        </div>
+        <a class="drawer-link" href="{{ url_for('main.pricing_page') }}">Pricing</a>
+      </nav>
+
+      <div class="drawer-actions d-grid gap-3 mb-4">
+        <a class="btn btn-gold btn-sm rounded-4 d-flex align-items-center justify-content-center gap-2" href="{{ url_for('main.order') }}">
+          <i class="bi bi-cart-fill"></i>Place Order
         </a>
+        {% if current_user.is_authenticated %}
+          <div class="drawer-user-panel rounded-4 p-3 bg-white border">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="drawer-avatar">
+                {{ current_user.name.split(' ')[0][0] if current_user.name else current_user.email.split('@')[0][0] }}
+              </div>
+              <div>
+                <div class="fw-semibold">Welcome, {{ current_user.name.split(' ')[0] if current_user.name else current_user.email.split('@')[0] }}</div>
+                <div class="small text-secondary">Quick account access</div>
+              </div>
+            </div>
+            <div class="drawer-user-links d-grid gap-2">
+              <a class="drawer-user-link" href="{{ url_for('main.admin_dashboard') if current_user.is_admin else url_for('main.dashboard') }}">
+                <i class="bi bi-speedometer2"></i>Dashboard
+              </a>
+              <a class="drawer-user-link" href="{{ url_for('main.order') }}">
+                <i class="bi bi-cart-fill"></i>Start New Order
+              </a>
+              <a class="drawer-user-link" href="{{ url_for('main.my_orders') }}">
+                <i class="bi bi-bag-check-fill"></i>My Orders
+              </a>
+              <a class="drawer-user-link" href="{{ url_for('main.notifications') }}">
+                <i class="bi bi-bell-fill"></i>Notifications
+              </a>
+              <a class="drawer-user-link" href="{{ url_for('main.support_tickets') }}">
+                <i class="bi bi-chat-dots-fill"></i>Support Tickets
+              </a>
+              <a class="drawer-user-link" href="{{ url_for('main.profile') }}">
+                <i class="bi bi-person-circle"></i>Profile
+              </a>
+              <a class="drawer-user-link" href="{{ url_for('main.settings') }}">
+                <i class="bi bi-gear-fill"></i>Settings
+              </a>
+              <a class="drawer-user-link text-danger" href="{{ url_for('main.logout') }}">
+                <i class="bi bi-box-arrow-right"></i>Sign Out
+              </a>
+            </div>
+          </div>
+        {% else %}
+          <a class="btn btn-light btn-lg rounded-4 d-flex align-items-center justify-content-center gap-2" href="{{ url_for('main.login') }}">Sign In</a>
+          <a class="btn btn-primary btn-lg rounded-4 d-flex align-items-center justify-content-center gap-2" href="{{ url_for('main.register') }}">Sign Up</a>
+        {% endif %}
+      </div>
+
+      <div class="drawer-support rounded-4 bg-success bg-opacity-15 p-3 mb-4">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <span class="support-icon"><i class="bi bi-headset"></i></span>
+          <div>
+            <div class="fw-semibold">Need Help?</div>
+            <div class="small text-secondary">Chat with our academic consultants instantly.</div>
+          </div>
+        </div>
+        <a href="https://api.whatsapp.com/send?phone={{ (WHATSAPP_NUMBER|string)|replace('+','') }}" target="_blank" rel="noopener" class="btn btn-success btn-sm rounded-pill w-100">
+          <i class="bi bi-whatsapp me-2"></i>Chat on WhatsApp
+        </a>
+      </div>
+
+      <div class="drawer-social d-flex justify-content-center gap-2 mb-3">
+        <a class="social-pill" href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+        <a class="social-pill" href="#" aria-label="X"><i class="bi bi-x"></i></a>
+        <a class="social-pill" href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+        <a class="social-pill" href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+        <a class="social-pill" href="#" aria-label="TikTok"><i class="bi bi-music-note-beamed"></i></a>
+      </div>
+
+      <div class="drawer-footer small text-center text-secondary">
+        © 2026 AcademiaPro · Empowering Academic Success
+      </div>
+    </div>
+  </aside>
+
+  <main id="main-content" class="container my-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ 'warning' if category == 'message' else category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Site footer -->
+  <footer class="site-footer mt-5" role="contentinfo">
+    <div class="container">
+      <div class="row gy-4">
+        <div class="col-lg-3">
+          <a class="footer-brand" href="{{ url_for('main.index') }}">AcademiaPro</a>
+          <p>Premium academic support for writing, research, programming and editing — delivered with clarity, quality and on-time communication.</p>
+        </div>
+        <div class="col-lg-3 footer-col">
+          <h6>Services</h6>
+          <ul class="footer-links">
+            <li><a href="{{ url_for('main.academic_writing') }}">Academic Writing</a></li>
+            <li><a href="{{ url_for('main.research_dissertation') }}">Research & Dissertation</a></li>
+            <li><a href="{{ url_for('main.programming') }}">Programming</a></li>
+            <li><a href="{{ url_for('main.editing_proofreading') }}">Editing & Proofreading</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3 footer-col">
+          <h6>Resources</h6>
+          <ul class="footer-links">
+            <li><a href="{{ url_for('main.Samples') }}">Samples</a></li>
+            <li><a href="{{ url_for('main.public_blogs') }}">Blog</a></li>
+            <li><a href="{{ url_for('main.faq') }}">FAQ</a></li>
+            <li><a href="{{ url_for('main.how_it_works') }}">How It Works</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3 footer-col">
+          <h6>Contact</h6>
+          <ul class="footer-links">
+            <li><a href="https://wa.me/{{ (WHATSAPP_NUMBER|string)|replace('+','') }}">WhatsApp</a></li>
+            <li><a href="mailto:support@academiapro.com">Email</a></li>
+            <li><a href="{{ url_for('main.contact') }}">Live Chat</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 mt-4 pt-4 border-top">
+        <div class="footer-copy small text-muted">© 2026 AcademiaPro · Secure payments · Original work guarantee</div>
+        <div class="footer-meta d-flex flex-wrap gap-2 align-items-center">
+          <span class="footer-badge"><i class="bi bi-check-circle-fill"></i>SSL Secure</span>
+          <span class="footer-badge"><i class="bi bi-credit-card-2-back-fill"></i>Accepted Payments</span>
+          <span class="footer-badge"><i class="bi bi-shield-lock-fill"></i>Privacy Protected</span>
+        </div>
+        <div class="footer-social d-flex gap-2">
+          <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+          <a href="#" aria-label="X"><i class="bi bi-x"></i></a>
+          <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="whatsapp-fab-shell" aria-label="Contact admin">
+    <a href="https://wa.me/{{ (WHATSAPP_NUMBER|string)|replace('+','') }}?text=Hello%20AcademiaPro%20Admin%2C%20I%27d%20like%20to%20request%20consultation." target="_blank" rel="noopener" class="whatsapp-fab" aria-label="Contact admin via WhatsApp">
+      <i class="bi bi-whatsapp" aria-hidden="true"></i>
+    </a>
+  </div>
+
+  <div class="ai-float-shell" aria-label="AI support tools">
+      <button id="globalAiFab" class="ai-fab" type="button" title="AI Support" aria-label="Open AI support">
+      <img loading="lazy" decoding="async" src="{{ url_for('static', filename='img/logo-quill.jpg') }}" alt="AcademiaPro AI" class="ai-fab-logo">
+    </button>
+  </div>
+
+  <div id="globalAiPanel" class="ai-panel d-none" role="dialog" aria-label="AcademiaPro AI Support">
+    <div class="ai-panel-head">
+      <div>
+        <div class="ai-title">AcademiaPro AI</div>
+        <div class="ai-sub">Smart assistant for orders, pricing, services, and deadlines</div>
+      </div>
+      <button type="button" class="btn-close btn-close-sm" id="globalAiClose" aria-label="Close"></button>
+    </div>
+    <div id="globalAiBody" class="ai-panel-body"></div>
+    <div class="ai-panel-foot">
+      <textarea id="globalAiInput" class="form-control ai-input" rows="1" placeholder="Type your message..."></textarea>
+      <button id="globalAiSend" class="btn btn-primary btn-sm ai-send-btn" type="button">Send</button>
+    </div>
+  </div>
+
+  <div class="modal fade" id="siteContactModal" tabindex="-1" aria-labelledby="siteContactModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="siteContactModalLabel">Contact AcademiaPro Admin</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-3">How you'd like to contact the admin for a consultation.</p>
+          <div class="list-group">
+            <a href="https://wa.me/{{ (WHATSAPP_NUMBER|string)|replace('+','') }}?text=Hello%20AcademiaPro%20Admin%2C%20I%27d%20like%20to%20request%20consultation." target="_blank" rel="noopener" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+              <i class="bi bi-whatsapp fs-3 text-success"></i>
+              <div>
+                <div class="fw-semibold">WhatsApp</div>
+                <div class="small text-muted">Open a chat with admin.</div>
+              </div>
+            </a>
+            <a href="mailto:support@academiapro.com?subject=AcademiaPro%20Consultation%20Request" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+              <i class="bi bi-envelope-open fs-3 text-primary"></i>
+              <div>
+                <div class="fw-semibold">Email</div>
+                <div class="small text-muted">Send your request by email.</div>
+              </div>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-{% endblock %}
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    (function () {
+      const mobileMenuButton = document.getElementById('mobileMenuButton');
+      const mobileDrawer = document.getElementById('mobileDrawer');
+      const mobileDrawerOverlay = document.getElementById('mobileDrawerOverlay');
+      const mobileDrawerClose = document.getElementById('mobileDrawerClose');
+      const serviceSearch = document.querySelector('.dropdown-service-search');
+      const serviceCards = document.querySelectorAll('.dropdown-mega-category');
+      const serviceNoResults = document.querySelector('.dropdown-no-results');
+
+      function openDrawer() {
+        mobileDrawer.classList.add('drawer-open');
+        mobileDrawerOverlay.classList.add('drawer-active');
+        mobileMenuButton.setAttribute('aria-expanded', 'true');
+        mobileDrawerClose.focus();
+        enableDrawerFocusTrap();
+      }
+
+      function closeDrawer() {
+        mobileDrawer.classList.remove('drawer-open');
+        mobileDrawerOverlay.classList.remove('drawer-active');
+        mobileMenuButton.setAttribute('aria-expanded', 'false');
+        disableDrawerFocusTrap();
+        mobileMenuButton.focus();
+      }
+
+      let _drawerTrapListener = null;
+      function getDrawerFocusable() {
+        if (!mobileDrawer) return [];
+        return Array.from(mobileDrawer.querySelectorAll('a, button, input, textarea, select, [tabindex]:not([tabindex="-1"])')).filter(function (el) {
+          return !el.hasAttribute('disabled');
+        });
+      }
+
+      function _handleDrawerTrap(e) {
+        if (e.key !== 'Tab') return;
+        const focusable = getDrawerFocusable();
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
+
+      function enableDrawerFocusTrap() {
+        if (_drawerTrapListener) return;
+        _drawerTrapListener = _handleDrawerTrap;
+        document.addEventListener('keydown', _drawerTrapListener, true);
+      }
+
+      function disableDrawerFocusTrap() {
+        if (!_drawerTrapListener) return;
+        document.removeEventListener('keydown', _drawerTrapListener, true);
+        _drawerTrapListener = null;
+      }
+
+      if (mobileMenuButton && mobileDrawer && mobileDrawerOverlay && mobileDrawerClose) {
+        mobileMenuButton.addEventListener('click', openDrawer);
+        mobileDrawerClose.addEventListener('click', closeDrawer);
+        mobileDrawerOverlay.addEventListener('click', closeDrawer);
+        document.addEventListener('keydown', function (event) {
+          if (event.key === 'Escape' && mobileDrawer.classList.contains('drawer-open')) {
+            closeDrawer();
+          }
+        });
+      }
+
+      if (serviceSearch && serviceCards.length) {
+        serviceSearch.addEventListener('input', function () {
+          const query = this.value.trim().toLowerCase();
+          let visibleCount = 0;
+          serviceCards.forEach(function (card) {
+            const matches = !query || card.textContent.toLowerCase().includes(query);
+            card.classList.toggle('is-hidden', !matches);
+            if (matches) visibleCount += 1;
+          });
+          if (serviceNoResults) {
+            serviceNoResults.classList.toggle('d-none', visibleCount > 0);
+          }
+        });
+      }
+
+      const fab = document.getElementById('globalAiFab');
+      const panel = document.getElementById('globalAiPanel');
+      const closeBtn = document.getElementById('globalAiClose');
+      const body = document.getElementById('globalAiBody');
+      const input = document.getElementById('globalAiInput');
+      const send = document.getElementById('globalAiSend');
+
+      if (fab && panel && body && input && send) {
+        let pollHandle = null;
+
+        function esc(v) {
+          return String(v || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/\"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+        }
+
+        function formatAiContent(text) {
+          if (!text) return '';
+          const escaped = esc(text).replace(/\r\n/g, '\n');
+          return escaped
+            .split(/\n{2,}/)
+            .map((block) => {
+              if (/^(?:[-*+] .+(?:\n(?:[-*+] .+))*)$/.test(block.trim())) {
+                const items = block
+                  .trim()
+                  .split(/\n+/)
+                  .map((line) => `<li>${line.replace(/^[*-+] /, '')}</li>`)
+                  .join('');
+                return `<ul>${items}</ul>`;
+              }
+              return `<p>${block.replace(/\n/g, '<br>')}</p>`;
+            })
+            .join('');
+        }
+
+        function autoGrow() {
+          input.style.height = 'auto';
+          const next = Math.min(input.scrollHeight, 160);
+          input.style.height = `${next}px`;
+        }
+
+        function bubble(role, text, timestamp) {
+          const mine = role === 'user';
+          const align = mine ? 'ai-msg me' : 'ai-msg bot';
+          const ts = timestamp ? `<div class="ai-ts">${esc(timestamp)}</div>` : '';
+          return `<div class="${align}"><div class="ai-bubble">${formatAiContent(text)}</div>${ts}</div>`;
+        }
+
+        async function loadHistory() {
+          try {
+            const res = await fetch('{{ url_for("main.ai_chat_history") }}', { cache: 'no-store' });
+            const data = await res.json();
+            if (!res.ok || !data.ok) return;
+            const rows = data.messages || [];
+            if (!rows.length) {
+              body.innerHTML = bubble('assistant', 'I am ready. Tell me your topic, deadline, level, service type, and word count, and I will guide you step by step.');
+              return;
+            }
+            body.innerHTML = rows.map((m) => bubble(m.role, m.content, m.timestamp)).join('');
+            body.scrollTop = body.scrollHeight;
+          } catch (_err) {}
+        }
+
+        async function sendMessage() {
+          const message = input.value.trim();
+          if (!message) return;
+          input.value = '';
+          autoGrow();
+          try {
+            const res = await fetch('{{ url_for("main.ai_chat_send") }}', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ message })
+            });
+            const data = await res.json();
+            if (!res.ok || !data.ok) return;
+            await loadHistory();
+          } catch (_err) {}
+        }
+
+        function openPanel() {
+          panel.classList.remove('d-none');
+          loadHistory();
+          if (!pollHandle) pollHandle = setInterval(loadHistory, 6000);
+        }
+
+        function closePanel() {
+          panel.classList.add('d-none');
+          if (pollHandle) {
+            clearInterval(pollHandle);
+            pollHandle = null;
+          }
+        }
+
+        fab.addEventListener('click', () => {
+          if (panel.classList.contains('d-none')) {
+            openPanel();
+          } else {
+            closePanel();
+          }
+        });
+        closeBtn.addEventListener('click', closePanel);
+        send.addEventListener('click', sendMessage);
+        input.addEventListener('input', autoGrow);
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+          }
+        });
+        autoGrow();
+      }
+      function initScrollAnimations() {
+        const targets = document.querySelectorAll('.animate-on-scroll');
+        if (!targets.length) return;
+        const observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+        targets.forEach(function (target) {
+          observer.observe(target);
+        });
+      }
+
+      initScrollAnimations();
+    })();
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

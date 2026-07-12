@@ -43,7 +43,7 @@
         {% for r in reviews %}
         <li class="list-group-item d-flex justify-content-between align-items-start">
           <div>
-            <strong>{{ r.reviewer }}</strong> – {{ r.stars }}⭐<br>
+            <strong>{{ r.reviewer }}</strong> – <span class="stars">{% for _ in range(r.stars) %}<i class="bi bi-star-fill"></i>{% endfor %}</span><br>
             <small>"{{ r.comment }}"</small>
           </div>
           <a href="{{ url_for('main.delete_review', id=r.id) }}" class="btn btn-sm btn-danger">Delete</a>

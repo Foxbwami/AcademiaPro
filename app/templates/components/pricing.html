@@ -1,0 +1,51 @@
+<section class="pricing-section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow">Pricing</div>
+      <h2 class="section-title">Transparent pricing to match your deadline</h2>
+      <p class="section-description">Choose a plan based on urgency and complexity — pay only for what you need.</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="pricing-card">
+          <div class="pricing-label">Standard</div>
+          <div class="pricing-price">$19.99</div>
+          <div class="pricing-meta">Per page · 5 day turnaround</div>
+          <ul class="pricing-features">
+            <li>Expert writer</li>
+            <li>Plagiarism check</li>
+            <li>2 revisions</li>
+          </ul>
+          <a href="{{ url_for('main.order') }}" class="btn cta-btn">Order Standard</a>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="pricing-card featured">
+          <div class="pricing-label">Priority</div>
+          <div class="pricing-price">$34.99</div>
+          <div class="pricing-meta">Per page · 48 hour turnaround</div>
+          <ul class="pricing-features">
+            <li>Top-rated writers</li>
+            <li>Priority support</li>
+            <li>Unlimited revisions</li>
+          </ul>
+          <a href="{{ url_for('main.order') }}" class="btn cta-btn">Order Priority</a>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="pricing-card">
+          <div class="pricing-label">Express</div>
+          <div class="pricing-price">$59.99</div>
+          <div class="pricing-meta">Per page · 12 hour turnaround</div>
+          <ul class="pricing-features">
+            <li>Expert + editor</li>
+            <li>Dedicated manager</li>
+            <li>Fastest delivery</li>
+          </ul>
+          <a href="{{ url_for('main.order') }}" class="btn cta-btn">Order Express</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

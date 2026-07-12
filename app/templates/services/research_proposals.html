@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %}Research Proposals | AcademicPro{% endblock %}
+{% block content %}
+
+<section class="service-hero-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="section-badge">Research Proposals</span>
+                <h1 class="section-title display-5">
+                    Research Proposal Writing for Master’s and PhD Success
+                </h1>
+                <p class="section-description">
+                    Get a compelling, academically rigorous proposal that convinces supervisors and funding panels.
+                    We craft methodology, literature review, and research design tailored to your discipline.
+                </p>
+                <div class="service-hero-buttons">
+                    <a href="{{ url_for('main.order') }}" class="btn btn-primary btn-lg">Place Order</a>
+                    <a href="#pricing" class="btn btn-outline-primary btn-lg">View Pricing</a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="service-hero-features">
+                    <div class="feature-item"><i class="bi bi-check-circle-fill"></i><span>Supervisor-ready proposal documents</span></div>
+                    <div class="feature-item"><i class="bi bi-check-circle-fill"></i><span>Methodology and data plan with academic rigour</span></div>
+                    <div class="feature-item"><i class="bi bi-check-circle-fill"></i><span>Literature review and research gap analysis</span></div>
+                    <div class="feature-item"><i class="bi bi-check-circle-fill"></i><span>Funding and ethics submission support</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="service-content-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">What We Include</h2>
+            <p class="section-description">A complete proposal package with strong academic structure, citation support, and submission-ready polish.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="service-item-card">
+                    <i class="bi bi-journal-text"></i>
+                    <h5>Research Design</h5>
+                    <p>Clear research questions, hypothesis, and methodology aligned to your field.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="service-item-card">
+                    <i class="bi bi-book"></i>
+                    <h5>Literature Review</h5>
+                    <p>Scholarly context and gap analysis that positions your study as essential.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="service-item-card">
+                    <i class="bi bi-bar-chart"></i>
+                    <h5>Data & Analysis Plan</h5>
+                    <p>Recommended methods, sample size, tools, and analytics for robust conclusions.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="service-item-card">
+                    <i class="bi bi-lightning-charge"></i>
+                    <h5>Funding-ready</h5>
+                    <p>Polished writing and structure designed to meet supervisor and scholarship expectations.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="service-benefits-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">Why Our Research Proposals Work</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="benefit-card">
+                    <div class="benefit-icon"><i class="bi bi-person-check"></i></div>
+                    <h5>Academic Expertise</h5>
+                    <p>Writers with specialist knowledge across humanities, business, science, and engineering.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="benefit-card">
+                    <div class="benefit-icon"><i class="bi bi-shield-check"></i></div>
+                    <h5>Submission-ready Quality</h5>
+                    <p>Clear, structured, and fully referenced proposals that impress advisory boards.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="benefit-card">
+                    <div class="benefit-icon"><i class="bi bi-clock"></i></div>
+                    <h5>Fast Delivery</h5>
+                    <p>Reliable turnaround for tight application deadlines and funding cycles.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="pricing" class="service-pricing-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">Research Proposal Pricing</h2>
+            <p class="section-description">Affordable packages for every stage of application or project planning.</p>
+        </div>
+        <div class="pricing-table">
+            <div class="pricing-row">
+                <div class="pricing-col"><strong>Package</strong></div>
+                <div class="pricing-col"><strong>Starting</strong></div>
+                <div class="pricing-col"><strong>Rush</strong></div>
+            </div>
+            <div class="pricing-row">
+                <div class="pricing-col">Brief Proposal Draft</div>
+                <div class="pricing-col">$55</div>
+                <div class="pricing-col">$90</div>
+            </div>
+            <div class="pricing-row">
+                <div class="pricing-col">Full Research Proposal</div>
+                <div class="pricing-col">$110</div>
+                <div class="pricing-col">$180</div>
+            </div>
+            <div class="pricing-row">
+                <div class="pricing-col">Proposal Editing & Review</div>
+                <div class="pricing-col">$45</div>
+                <div class="pricing-col">$70</div>
+            </div>
+            <div class="pricing-row">
+                <div class="pricing-col">Custom Funding Support</div>
+                <div class="pricing-col">Contact us</div>
+                <div class="pricing-col">Contact us</div>
+            </div>
+        </div>
+        <div class="text-center mt-5">
+            <p class="text-muted">*Final prices depend on research scope, length, and deadline.</p>
+        </div>
+    </div>
+</section>
+
+<section class="service-cta-final">
+    <div class="container">
+        <div class="cta-card">
+            <h3>Ready to Secure Your Next Research Opportunity?</h3>
+            <p>Start your proposal with a proven academic writing team and submit the strongest possible application.</p>
+            <a href="{{ url_for('main.order') }}" class="btn btn-primary btn-lg">Place Your Order</a>
+        </div>
+    </div>
+</section>
+
+<style>
+.service-hero-section { padding: 100px 0; background: linear-gradient(135deg, #f4f7fb 0%, #eef4ff 100%); }
+.service-hero-buttons { display: flex; gap: 20px; margin-top: 30px; flex-wrap: wrap; }
+.service-hero-features { display: grid; gap: 18px; }
+.feature-item { display: flex; align-items: center; gap: 12px; font-size: 1.05rem; font-weight: 600; color: #102a43; }
+.feature-item i { color: #2563eb; font-size: 1.3rem; }
+.service-content-section { padding: 80px 0; background: #fff; }
+.service-item-card { background: #f8fafc; padding: 28px; border-radius: 16px; text-align: center; border: 1px solid #e5e9f2; transition: all 0.28s ease; }
+.service-item-card:hover { transform: translateY(-6px); box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08); background: #fff; }
+.service-item-card i { font-size: 2.2rem; color: #2563eb; margin-bottom: 18px; display: block; }
+</style>
+
+{% endblock %}

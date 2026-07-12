@@ -1,0 +1,8 @@
+/* AI Assistant area — ChatGPT-like compact UI */
+
+.ai-shell{ max-width:900px; margin:0 auto; padding:1rem; }
+.ai-window{ border-radius:12px; border:1px solid rgba(15,23,42,.06); background:#fff; box-shadow:var(--shadow-md); overflow:hidden; }
+.ai-messages{ max-height:420px; overflow:auto; padding:1rem; }
+.ai-input{ display:flex; gap:.5rem; padding: .75rem; border-top:1px solid rgba(15,23,42,.04); }
+.ai-input textarea{ flex:1; min-height:48px; resize:vertical; border-radius:8px; padding:.6rem; border:1px solid rgba(15,23,42,.06); }
+.ai-send{ background:var(--color-primary); color:var(--color-white); border-radius:8px; padding:.6rem 1rem; }

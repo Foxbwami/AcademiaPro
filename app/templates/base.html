@@ -4,113 +4,195 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}AcademiaPro{% endblock %}</title>
+  {# Basic SEO defaults; override per-page using blocks #}
+  <meta name="description" content="{% block meta_description %}Professional academic and technical consultancy — writing, research, and data services.{% endblock %}">
+  <meta name="keywords" content="academic help, dissertation, thesis, proofreading, data science, programming">
+  <meta property="og:title" content="{% block og_title %}AcademiaPro{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}Professional academic and technical consultancy.{% endblock %}">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="{{ request.url }}">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=5">
+  <link rel="stylesheet" href="{{ url_for('static', filename='tokens.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='header.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='footer.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='animations.css') }}">
+  {% block styles %}{% endblock %}
+  <!-- Page-specific CSS injected by child templates -->
 </head>
 <body data-authenticated="{{ 'true' if current_user.is_authenticated else 'false' }}">
-  <a class="skip-link" href="#main-content">Skip to content</a>
+  {# Trust indicators bar #}
+  <div class="trust-bar">
+    <div class="container">
+      <div class="trust-items">
+        <div class="trust-item">
+          <i class="bi bi-star-fill"></i>
+          <span><strong>Rated 4.9</strong> by 1,200+ Clients</span>
+        </div>
+        <div class="trust-item">
+          <i class="bi bi-shield-check"></i>
+          <span><strong>100%</strong> Confidential</span>
+        </div>
+        <div class="trust-item">
+          <i class="bi bi-headset"></i>
+          <span><strong>24/7</strong> Support</span>
+        </div>
+        <div class="trust-item">
+          <i class="bi bi-trophy-fill"></i>
+          <span><strong>700+</strong> Projects Delivered</span>
+        </div>
+        <div class="trust-social ms-auto">
+          Follow us:
+          <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+          <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+          <a href="#" aria-label="Twitter"><i class="bi bi-twitter"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <header class="site-header sticky-top" role="banner">
     <div class="container header-shell">
-      <div class="header-brand d-flex align-items-center gap-2">
+      {# Left: Logo and Brand #}
+      <div class="header-brand">
         <div class="brand-mark shadow-soft">
-          <img src="{{ url_for('static', filename='img/logo-quill.jpg') }}" alt="AcademiaPro logo" class="brand-logo">
+          <img loading="lazy" decoding="async" src="{{ url_for('static', filename='img/academiaprolog.svg') }}" alt="AcademiaPro logo" class="brand-logo">
         </div>
-        <a class="header-logo-link" href="{{ url_for('main.index') }}">
-          <span class="brand-text">Academia</span><span class="brand-accent">Pro</span>
-        </a>
+        <div class="brand-info">
+          <a class="header-logo-link" href="{{ url_for('main.index') }}">AcademiaPro</a>
+          <div class="brand-tagline">Academic & Technical Consultancy</div>
+        </div>
       </div>
 
       <button class="mobile-menu-btn d-lg-none" id="mobileMenuButton" type="button" aria-controls="mobileDrawer" aria-expanded="false" aria-label="Open navigation menu">
         <i class="bi bi-list" aria-hidden="true"></i>
       </button>
 
-      <nav class="header-links d-none d-lg-flex align-items-center gap-4" aria-label="Primary navigation">
-        <div class="nav-item dropdown services-dropdown">
-          <button class="nav-link dropdown-toggle" id="servicesDropdown" data-bs-toggle="dropdown" aria-expanded="false" type="button">
-            Services
+      {# Center: Navigation Dropdowns #}
+      <nav class="header-nav d-none d-lg-flex" aria-label="Primary navigation">
+        {# Services Dropdown #}
+        <div class="nav-dropdown">
+          <button id="servicesDropdownBtn" class="nav-dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="servicesDropdownMenu">
+            Services <i class="bi bi-chevron-down"></i>
           </button>
-          <div class="dropdown-menu dropdown-menu-wide dropdown-menu-dark dropdown-mega-menu services-dropdown-menu" aria-labelledby="servicesDropdown">
-              <div class="dropdown-mega-category">
-                <h6>Academic Writing</h6>
-                <ul>
-                  <li><a href="{{ url_for('main.dissertations') }}">Dissertations &amp; Theses</a></li>
-                  <li><a href="{{ url_for('main.research_proposals') }}">Research Proposals</a></li>
-                  <li><a href="{{ url_for('main.editing_proofreading') }}">Editing &amp; Proofreading</a></li>
-                  <li><a href="{{ url_for('main.admission_help') }}">Admissions &amp; Essay Writing</a></li>
-                </ul>
+          <div id="servicesDropdownMenu" class="dropdown-menu mega-menu" aria-labelledby="servicesDropdownBtn">
+            <div class="mega-menu-grid">
+              <div class="mega-menu-column">
+                <h6 class="dropdown-header">Academic</h6>
+                <a class="dropdown-item" href="{{ url_for('main.academic_writing') }}">
+                  <i class="bi bi-book-fill"></i> Academic Writing
+                </a>
+                <a class="dropdown-item" href="{{ url_for('main.research_dissertation') }}">
+                  <i class="bi bi-mortarboard"></i> Research & Dissertation
+                </a>
+                <a class="dropdown-item" href="{{ url_for('main.editing_proofreading') }}">
+                  <i class="bi bi-pencil-square"></i> Editing & Proofreading
+                </a>
               </div>
-              <div class="dropdown-mega-category">
-                <h6>Technical &amp; Coding</h6>
-                <ul>
-                  <li><a href="{{ url_for('main.statistics') }}">Data Science &amp; Analysis</a></li>
-                  <li><a href="{{ url_for('main.programming') }}">Software Engineering</a></li>
-                  <li><a href="{{ url_for('main.database_architecture') }}">Database Architecture</a></li>
-                  <li><a href="{{ url_for('main.ai_machine_learning') }}">AI &amp; Machine Learning</a></li>
-                </ul>
+              <div class="mega-menu-column">
+                <h6 class="dropdown-header">Technical</h6>
+                <a class="dropdown-item" href="{{ url_for('main.programming') }}">
+                  <i class="bi bi-code-slash"></i> Programming
+                </a>
+                <a class="dropdown-item" href="{{ url_for('main.programming') }}">
+                  <i class="bi bi-graph-up"></i> Data Analysis
+                </a>
               </div>
-              <div class="dropdown-mega-category">
-                <h6>Career Strategy</h6>
-                <ul>
-                  <li><a href="{{ url_for('main.career_services') }}">ATS Resume &amp; CV Writing</a></li>
-                  <li><a href="{{ url_for('main.linkedin_optimization') }}">LinkedIn Optimization</a></li>
-                  <li><a href="{{ url_for('main.exam_preparation') }}">Certification &amp; Postgraduate Prep</a></li>
-                  <li><a href="{{ url_for('main.exam_preparation') }}">High-Stakes Finals Support</a></li>
-                </ul>
+              <div class="mega-menu-column">
+                <h6 class="dropdown-header">Quick Links</h6>
+                <a class="dropdown-item" href="{{ url_for('main.Samples') }}">
+                  <i class="bi bi-file-earmark"></i> View Samples
+                </a>
               </div>
+            </div>
           </div>
         </div>
+
+        {# Pricing Link #}
         <a class="nav-link" href="{{ url_for('main.pricing_page') }}">Pricing</a>
-        <a class="nav-link" href="{{ url_for('main.Samples') }}">Samples</a>
-        <a class="nav-link" href="{{ url_for('main.public_blogs') }}">Blog</a>
-        <a class="nav-link" href="{{ url_for('main.contact') }}">Contact</a>
+
+        {# Resources Dropdown #}
+        <div class="nav-dropdown">
+          <button id="resourcesDropdownBtn" class="nav-dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="resourcesDropdownMenu">
+            Resources <i class="bi bi-chevron-down"></i>
+          </button>
+          <div id="resourcesDropdownMenu" class="dropdown-menu resources-menu" aria-labelledby="resourcesDropdownBtn">
+            <a class="dropdown-item" href="{{ url_for('main.public_blogs') }}">
+              <i class="bi bi-newspaper"></i> Blog
+            </a>
+            <a class="dropdown-item" href="{{ url_for('main.faq') }}">
+              <i class="bi bi-question-circle"></i> FAQ
+            </a>
+            <a class="dropdown-item" href="#">
+              <i class="bi bi-book"></i> Free Guides
+            </a>
+            <a class="dropdown-item" href="#">
+              <i class="bi bi-lightbulb"></i> Templates
+            </a>
+          </div>
+        </div>
+
+        {# About Link #}
+        <a class="nav-link" href="{{ url_for('main.about') }}">About</a>
       </nav>
 
-      <div class="header-actions d-none d-lg-flex align-items-center gap-2">
-        <a class="btn btn-primary btn-sm fw-semibold header-cta" href="{{ url_for('main.order') }}">
-          <i class="bi bi-cart-fill me-2" aria-hidden="true"></i>Place Order
+      {# Right: Actions and CTA #}
+      <div class="header-actions d-none d-lg-flex">
+        {# Search Icon #}
+        <button class="icon-action-btn search-btn" type="button" aria-label="Search" data-bs-toggle="modal" data-bs-target="#searchModal">
+          <i class="bi bi-search"></i>
+        </button>
+
+        {# AI Assistant (prominent link in navbar) #}
+        <a class="nav-link ai-link btn-ai" href="{{ url_for('main.ai_chat') if 'main.ai_chat' in config.get('ENABLED_ROUTES', []) else '#' }}" role="button" aria-label="AI Assistant">
+          <i class="bi bi-robot"></i> AI
         </a>
+
+        {# Notifications #}
         <a class="icon-action-btn" href="{{ url_for('main.notifications') }}" aria-label="Notifications">
           <i class="bi bi-bell-fill"></i>
           {% if unread_count and unread_count > 0 %}
             <span class="icon-badge">{{ unread_count }}</span>
           {% endif %}
         </a>
+
+        {# Auth Actions #}
         {% if current_user.is_authenticated %}
           <div class="dropdown profile-dropdown">
-            <button class="btn btn-link profile-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" type="button">
+            <button class="btn profile-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
               <span class="profile-avatar">
                 {{ current_user.name.split(' ')[0][0] if current_user.name else current_user.email.split('@')[0][0] }}
               </span>
-              <span class="profile-name">{{ current_user.name.split(' ')[0] if current_user.name else current_user.email.split('@')[0] }}</span>
+              <span class="profile-name d-none d-xl-inline">{{ current_user.name.split(' ')[0] if current_user.name else 'Account' }}</span>
               <i class="bi bi-chevron-down"></i>
             </button>
-            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-soft profile-menu" aria-labelledby="profileDropdown">
-              <li><h6 class="dropdown-header">Account tools</h6></li>
-              <li><a class="dropdown-item" href="{{ url_for('main.admin_dashboard') if current_user.is_admin else url_for('main.dashboard') }}">Dashboard</a></li>
-              <li><a class="dropdown-item" href="{{ url_for('main.order') }}">New Order</a></li>
-              <li><a class="dropdown-item" href="{{ url_for('main.my_orders') }}">My Orders</a></li>
-              <li>
-                <a class="dropdown-item d-flex align-items-center justify-content-between" href="{{ url_for('main.notifications') }}">
-                  <span>Notifications</span>
-                  {% if unread_count and unread_count > 0 %}
-                    <span class="badge bg-warning text-dark rounded-pill">{{ unread_count }}</span>
-                  {% endif %}
-                </a>
-              </li>
-              <li><a class="dropdown-item" href="{{ url_for('main.support_tickets') }}">Support Tickets</a></li>
+            <ul class="dropdown-menu dropdown-menu-end shadow-soft" aria-labelledby="profileDropdown">
+              <li><h6 class="dropdown-header">Account</h6></li>
+              <li><a class="dropdown-item" href="{{ url_for('main.admin_dashboard') if current_user.is_admin else url_for('main.dashboard') }}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('main.my_orders') }}"><i class="bi bi-bag"></i> My Orders</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('main.notifications') }}"><i class="bi bi-bell"></i> Notifications</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">My Profile</a></li>
-              <li><a class="dropdown-item" href="{{ url_for('main.settings') }}">Settings</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('main.profile') }}"><i class="bi bi-person"></i> Profile</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('main.settings') }}"><i class="bi bi-gear"></i> Settings</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item text-danger" href="{{ url_for('main.logout') }}">Sign Out</a></li>
+              <li><a class="dropdown-item text-danger" href="{{ url_for('main.logout') }}"><i class="bi bi-box-arrow-right"></i> Sign Out</a></li>
             </ul>
           </div>
         {% else %}
-          <a class="btn btn-outline-light btn-sm" href="{{ url_for('main.login') }}">Sign In</a>
-          <a class="btn btn-gold btn-sm fw-semibold" href="{{ url_for('main.register') }}">Sign Up</a>
+          <a class="btn btn-outline-light btn-sm header-btn-secondary" href="{{ url_for('main.login') }}">
+            <i class="bi bi-person-circle"></i> Login
+          </a>
+          <a class="btn btn-gold btn-sm header-btn-primary fw-semibold" href="{{ url_for('main.register') }}">
+            Create Account
+          </a>
         {% endif %}
+
+        {# Primary CTA #}
+        <a class="btn btn-place-order ms-2" href="{{ url_for('main.order') }}" role="button" aria-label="Place Order">
+          <i class="bi bi-cart-fill"></i> Place Order
+        </a>
       </div>
     </div>
   </header>
@@ -121,7 +203,7 @@
       <div class="drawer-top d-flex align-items-start justify-content-between">
         <div class="d-flex align-items-center gap-3">
           <div class="brand-mark brand-mark-sm shadow-soft">
-            <img src="{{ url_for('static', filename='img/logo-quill.jpg') }}" alt="AcademiaPro logo" class="brand-logo-sm">
+            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='img/academiaprolog.svg') }}" alt="AcademiaPro logo" class="brand-logo-sm">
           </div>
           <div class="drawer-brand">
             <div class="brand-text drawer-title">AcademiaPro</div>
@@ -144,30 +226,26 @@
       </div>
 
       <nav class="drawer-links mb-4" aria-label="Mobile navigation">
-        <a class="drawer-link" href="{{ url_for('main.services_page') }}">
-          <span><i class="bi bi-briefcase-fill me-2"></i>Services</span>
-          <i class="bi bi-chevron-right"></i>
-        </a>
-        <a class="drawer-link" href="{{ url_for('main.pricing_page') }}">
-          <span><i class="bi bi-tag-fill me-2"></i>Pricing</span>
-          <i class="bi bi-chevron-right"></i>
-        </a>
-        <a class="drawer-link" href="{{ url_for('main.Samples') }}">
-          <span><i class="bi bi-file-earmark-text-fill me-2"></i>Samples</span>
-          <i class="bi bi-chevron-right"></i>
-        </a>
-        <a class="drawer-link" href="{{ url_for('main.public_blogs') }}">
-          <span><i class="bi bi-pencil-fill me-2"></i>Blog</span>
-          <i class="bi bi-chevron-right"></i>
-        </a>
-        <a class="drawer-link" href="{{ url_for('main.contact') }}">
-          <span><i class="bi bi-telephone-fill me-2"></i>Contact</span>
-          <i class="bi bi-chevron-right"></i>
-        </a>
-        <a class="drawer-link" href="{{ url_for('main.faq') }}">
-          <span><i class="bi bi-bookshelf me-2"></i>Resources</span>
-          <i class="bi bi-chevron-right"></i>
-        </a>
+        {# Services Section #}
+        <div class="drawer-section">
+          <div class="drawer-section-title">Services</div>
+          <a class="drawer-link" href="{{ url_for('main.academic_writing') }}"><i class="bi bi-book-fill"></i> Academic Writing</a>
+          <a class="drawer-link" href="{{ url_for('main.research_dissertation') }}"><i class="bi bi-mortarboard"></i> Research & Dissertation</a>
+          <a class="drawer-link" href="{{ url_for('main.programming') }}"><i class="bi bi-code-slash"></i> Programming</a>
+          <a class="drawer-link" href="{{ url_for('main.editing_proofreading') }}"><i class="bi bi-pencil-square"></i> Editing & Proofreading</a>
+        </div>
+        
+        <a class="drawer-link" href="{{ url_for('main.pricing_page') }}"><i class="bi bi-tag"></i> Pricing</a>
+        
+        {# Resources Section #}
+        <div class="drawer-section">
+          <div class="drawer-section-title">Resources</div>
+          <a class="drawer-link" href="{{ url_for('main.Samples') }}"><i class="bi bi-file-earmark"></i> Samples</a>
+          <a class="drawer-link" href="{{ url_for('main.public_blogs') }}"><i class="bi bi-newspaper"></i> Blog</a>
+          <a class="drawer-link" href="{{ url_for('main.faq') }}"><i class="bi bi-question-circle"></i> FAQ</a>
+        </div>
+        
+        <a class="drawer-link" href="{{ url_for('main.about') }}"><i class="bi bi-info-circle"></i> About</a>
       </nav>
 
       <div class="drawer-actions d-grid gap-3 mb-4">
@@ -226,7 +304,7 @@
             <div class="small text-secondary">Chat with our academic consultants instantly.</div>
           </div>
         </div>
-        <a href="https://api.whatsapp.com/send?phone=447426105606" target="_blank" rel="noopener" class="btn btn-success btn-sm rounded-pill w-100">
+        <a href="https://api.whatsapp.com/send?phone={{ WHATSAPP_NUMBER|replace('+','') }}" target="_blank" rel="noopener" class="btn btn-success btn-sm rounded-pill w-100">
           <i class="bi bi-whatsapp me-2"></i>Chat on WhatsApp
         </a>
       </div>
@@ -259,19 +337,59 @@
     {% block content %}{% endblock %}
   </main>
 
+  <!-- Site footer -->
+  <footer class="site-footer mt-5" role="contentinfo">
+    <div class="container">
+      <div class="footer-grid rounded-4 p-4 p-lg-5 shadow-soft bg-secondary bg-opacity-10">
+        <div class="footer-summary">
+          <a class="footer-brand" href="{{ url_for('main.index') }}">AcademiaPro</a>
+          <p class="footer-lead">Professional Academic &<br>Technical Consultancy</p>
+          <div class="footer-nav-links d-flex flex-wrap gap-3 mt-3">
+            <a class="footer-link" href="{{ url_for('main.about') }}">About</a>
+            <a class="footer-link" href="{{ url_for('main.services_page') }}">Services</a>
+            <a class="footer-link" href="{{ url_for('main.contact') }}">Contact</a>
+          </div>
+        </div>
+        <div class="footer-qr-panel">
+          <div class="footer-qr-card rounded-4 shadow-soft p-4 text-center bg-white">
+            <div class="footer-qr-title">Website link QR</div>
+            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/website-qr.png') }}" alt="Website QR code" class="footer-qr-image mx-auto mb-3">
+            <div class="footer-qr-caption">visit AcademiaPro</div>
+          </div>
+        </div>
+        <div class="footer-qr-panel">
+          <div class="footer-qr-card rounded-4 shadow-soft p-4 text-center bg-white">
+            <div class="footer-qr-title">WhatsApp QR</div>
+            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/whatsapp-qr.png') }}" alt="WhatsApp QR code" class="footer-qr-image mx-auto mb-3">
+            <div class="footer-qr-caption">Scan to Chat</div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-contact-section d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 mt-4">
+        <div class="footer-contact-item"><i class="bi bi-telephone-fill"></i><span>+{{ WHATSAPP_NUMBER }}</span></div>
+        <div class="footer-contact-item"><i class="bi bi-envelope-fill"></i><span>support@academiapro.com</span></div>
+        <div class="footer-contact-item"><i class="bi bi-globe2"></i><span>AcademiaPro.com</span></div>
+      </div>
+      <div class="footer-actions d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3 mt-4 pt-3 border-top">
+        <a class="btn btn-outline-dark btn-sm rounded-pill" href="{{ url_for('main.about') }}">Print Company Profile</a>
+        <div class="footer-copy small text-muted">© 2026 AcademiaPro</div>
+      </div>
+    </div>
+  </footer>
+
   <div class="whatsapp-fab-shell" aria-label="Contact admin">
-    <a href="https://wa.me/447426105606?text=Hello%20AcademicPro%20Admin%2C%20I%27d%20like%20to%20request%20consultation." target="_blank" rel="noopener" class="whatsapp-fab" aria-label="Contact admin via WhatsApp">
+    <a href="https://wa.me/{{ WHATSAPP_NUMBER|replace('+','') }}?text=Hello%20AcademiaPro%20Admin%2C%20I%27d%20like%20to%20request%20consultation." target="_blank" rel="noopener" class="whatsapp-fab" aria-label="Contact admin via WhatsApp">
       <i class="bi bi-whatsapp" aria-hidden="true"></i>
     </a>
   </div>
 
   <div class="ai-float-shell" aria-label="AI support tools">
-    <button id="globalAiFab" class="ai-fab" type="button" title="AI Support" aria-label="Open AI support">
-      <img src="{{ url_for('static', filename='img/logo-quill.jpg') }}" alt="AcademicPro AI" class="ai-fab-logo">
+      <button id="globalAiFab" class="ai-fab" type="button" title="AI Support" aria-label="Open AI support">
+      <img loading="lazy" decoding="async" src="{{ url_for('static', filename='img/logo-quill.jpg') }}" alt="AcademiaPro AI" class="ai-fab-logo">
     </button>
   </div>
 
-  <div id="globalAiPanel" class="ai-panel d-none" role="dialog" aria-label="AcademicPro AI Support">
+  <div id="globalAiPanel" class="ai-panel d-none" role="dialog" aria-label="AcademiaPro AI Support">
     <div class="ai-panel-head">
       <div>
         <div class="ai-title">AcademiaPro AI</div>
@@ -286,113 +404,28 @@
     </div>
   </div>
 
-  <footer id="contact" class="site-footer py-5 mt-5">
-    <div class="container">
-      <!-- CTA panel -->
-      <div class="footer-cta d-flex align-items-center justify-content-between p-4 mb-4 rounded-4">
-        <div class="cta-text">
-          <span class="footer-cta-badge">Private consultation</span>
-          <h3 class="mb-2">Need help with your assignment?</h3>
-          <p class="mb-2">Professional support for research, programming, statistics, and reports.</p>
-          <div class="cta-actions d-flex gap-2 flex-wrap">
-            <button type="button" class="btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#siteContactModal">General Consultation</button>
-            <a href="https://api.whatsapp.com/send?phone=447426105606" target="_blank" rel="noopener" class="btn btn-outline-light">WhatsApp</a>
-            <a href="mailto:support@academiapro.com" class="btn btn-outline-light">Email</a>
-          </div>
-        </div>
-        <div class="cta-qr d-flex flex-column align-items-center gap-2">
-          <a href="https://api.whatsapp.com/send?phone=447426105606" target="_blank" rel="noopener" class="d-block">
-            <img src="{{ url_for('static', filename='images/whatsapp-qr.png') }}" alt="WhatsApp QR" width="120" height="120" class="qr-compact">
-            <div class="text-center small mt-1">WhatsApp</div>
-          </a>
-          <a href="{{ url_for('main.index', _external=True) }}" target="_blank" rel="noopener" class="d-block">
-            <img src="{{ url_for('static', filename='images/website-qr.png') }}" alt="Website QR" width="120" height="120" class="qr-compact">
-            <div class="text-center small mt-1">Website</div>
-          </a>
-        </div>
-      </div>
-
-      <!-- Navigation columns -->
-      <div class="footer-columns row mb-4">
-        <div class="col-md-3 footer-column">
-          <div class="footer-logo mb-3">
-            <img src="{{ url_for('static', filename='img/logo-quill.jpg') }}" alt="AcademiaPro" style="width:56px;height:56px;border-radius:12px;">
-          </div>
-          <div class="footer-company">Partner in Academic Excellence</div>
-        </div>
-        <div class="col-md-3 footer-column">
-          <h5>Services</h5>
-          <ul class="list-unstyled">
-            <li><a href="{{ url_for('main.assignments') }}">Assignments</a></li>
-            <li><a href="{{ url_for('main.programming') }}">Programming</a></li>
-            <li><a href="{{ url_for('main.research_papers') }}">Research</a></li>
-            <li><a href="{{ url_for('main.statistics') }}">Statistics</a></li>
-          </ul>
-        </div>
-        <div class="col-md-3 footer-column">
-          <h5>Company</h5>
-          <ul class="list-unstyled">
-            <li><a href="{{ url_for('main.about') }}">About</a></li>
-            <li><a href="{{ url_for('main.pricing_page') }}">Pricing</a></li>
-            <li><a href="{{ url_for('main.Samples') }}">Samples</a></li>
-            <li><a href="{{ url_for('main.faq') }}">FAQ</a></li>
-          </ul>
-        </div>
-        <div class="col-md-3 footer-column">
-          <h5>Contact</h5>
-          <ul class="list-unstyled">
-            <li><a href="https://api.whatsapp.com/send?phone=447426105606">WhatsApp</a></li>
-            <li><a href="mailto:support@academiapro.com">support@academiapro.com</a></li>
-            <li><span>24/7 Support</span></li>
-            <li class="mt-2"><img src="{{ url_for('static', filename='images/website-qr.png') }}" alt="QR" width="80" height="80"></li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- Bottom bar -->
-      <div class="footer-bottom d-flex align-items-center justify-content-between pt-3 border-top">
-        <div class="d-flex align-items-center gap-3">
-          <div class="small">©2026 AcademiaPro</div>
-        </div>
-        <div class="d-flex align-items-center gap-3">
-          <div class="social-icons d-flex gap-2">
-            <a class="btn btn-outline-light btn-sm rounded-circle" href="#"><i class="bi bi-facebook"></i></a>
-            <a class="btn btn-outline-light btn-sm rounded-circle" href="#"><i class="bi bi-linkedin"></i></a>
-            <a class="btn btn-outline-light btn-sm rounded-circle" href="#"><i class="bi bi-instagram"></i></a>
-            <a class="btn btn-outline-light btn-sm rounded-circle" href="#"><i class="bi bi-x"></i></a>
-          </div>
-          <div class="payment-icons d-flex gap-2 ms-3">
-            <img src="{{ url_for('static', filename='images/pay-visa.png') }}" alt="Visa" height="20">
-            <img src="{{ url_for('static', filename='images/pay-mastercard.png') }}" alt="Mastercard" height="20">
-            <img src="{{ url_for('static', filename='images/pay-paypal.png') }}" alt="PayPal" height="20">
-          </div>
-        </div>
-      </div>
-    </div>
-  </footer>
-
   <div class="modal fade" id="siteContactModal" tabindex="-1" aria-labelledby="siteContactModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="siteContactModalLabel">Contact AcademicPro Admin</h5>
+          <h5 class="modal-title" id="siteContactModalLabel">Contact AcademiaPro Admin</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <p class="mb-3">Choose how you'd like to contact the admin for a private consultation. This is available for guests and clients.</p>
+          <p class="mb-3">How you'd like to contact the admin for a consultation.</p>
           <div class="list-group">
-            <a href="https://wa.me/447426105606?text=Hello%20AcademicPro%20Admin%2C%20I%27d%20like%20to%20request%20consultation." target="_blank" rel="noopener" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+            <a href="https://wa.me/{{ WHATSAPP_NUMBER|replace('+','') }}?text=Hello%20AcademiaPro%20Admin%2C%20I%27d%20like%20to%20request%20consultation." target="_blank" rel="noopener" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
               <i class="bi bi-whatsapp fs-3 text-success"></i>
               <div>
                 <div class="fw-semibold">WhatsApp</div>
-                <div class="small text-muted">Open a chat directly with admin.</div>
+                <div class="small text-muted">Open a chat with admin.</div>
               </div>
             </a>
-            <a href="mailto:support@academiapro.com?subject=AcademicPro%20Consultation%20Request" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+            <a href="mailto:support@academiapro.com?subject=AcademiaPro%20Consultation%20Request" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
               <i class="bi bi-envelope-open fs-3 text-primary"></i>
               <div>
                 <div class="fw-semibold">Email</div>
-                <div class="small text-muted">Send your request by email immediately.</div>
+                <div class="small text-muted">Send your request by email.</div>
               </div>
             </a>
           </div>
@@ -402,173 +435,10 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    (function () {
-      const mobileMenuButton = document.getElementById('mobileMenuButton');
-      const mobileDrawer = document.getElementById('mobileDrawer');
-      const mobileDrawerOverlay = document.getElementById('mobileDrawerOverlay');
-      const mobileDrawerClose = document.getElementById('mobileDrawerClose');
-      const serviceSearch = document.querySelector('.dropdown-service-search');
-      const serviceCards = document.querySelectorAll('.dropdown-mega-category');
-      const serviceNoResults = document.querySelector('.dropdown-no-results');
-
-      function openDrawer() {
-        mobileDrawer.classList.add('drawer-open');
-        mobileDrawerOverlay.classList.add('drawer-active');
-        mobileMenuButton.setAttribute('aria-expanded', 'true');
-        mobileDrawerClose.focus();
-      }
-
-      function closeDrawer() {
-        mobileDrawer.classList.remove('drawer-open');
-        mobileDrawerOverlay.classList.remove('drawer-active');
-        mobileMenuButton.setAttribute('aria-expanded', 'false');
-        mobileMenuButton.focus();
-      }
-
-      if (mobileMenuButton && mobileDrawer && mobileDrawerOverlay && mobileDrawerClose) {
-        mobileMenuButton.addEventListener('click', openDrawer);
-        mobileDrawerClose.addEventListener('click', closeDrawer);
-        mobileDrawerOverlay.addEventListener('click', closeDrawer);
-        document.addEventListener('keydown', function (event) {
-          if (event.key === 'Escape' && mobileDrawer.classList.contains('drawer-open')) {
-            closeDrawer();
-          }
-        });
-      }
-
-      if (serviceSearch && serviceCards.length) {
-        serviceSearch.addEventListener('input', function () {
-          const query = this.value.trim().toLowerCase();
-          let visibleCount = 0;
-          serviceCards.forEach(function (card) {
-            const matches = !query || card.textContent.toLowerCase().includes(query);
-            card.classList.toggle('is-hidden', !matches);
-            if (matches) visibleCount += 1;
-          });
-          if (serviceNoResults) {
-            serviceNoResults.classList.toggle('d-none', visibleCount > 0);
-          }
-        });
-      }
-
-      const fab = document.getElementById('globalAiFab');
-      const panel = document.getElementById('globalAiPanel');
-      const closeBtn = document.getElementById('globalAiClose');
-      const body = document.getElementById('globalAiBody');
-      const input = document.getElementById('globalAiInput');
-      const send = document.getElementById('globalAiSend');
-
-      if (fab && panel && body && input && send) {
-        let pollHandle = null;
-
-        function esc(v) {
-          return String(v || '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/\"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-        }
-
-        function formatAiContent(text) {
-          if (!text) return '';
-          const escaped = esc(text).replace(/\r\n/g, '\n');
-          return escaped
-            .split(/\n{2,}/)
-            .map((block) => {
-              if (/^(?:[-*+] .+(?:\n(?:[-*+] .+))*)$/.test(block.trim())) {
-                const items = block
-                  .trim()
-                  .split(/\n+/)
-                  .map((line) => `<li>${line.replace(/^[*-+] /, '')}</li>`)
-                  .join('');
-                return `<ul>${items}</ul>`;
-              }
-              return `<p>${block.replace(/\n/g, '<br>')}</p>`;
-            })
-            .join('');
-        }
-
-        function autoGrow() {
-          input.style.height = 'auto';
-          const next = Math.min(input.scrollHeight, 160);
-          input.style.height = `${next}px`;
-        }
-
-        function bubble(role, text, timestamp) {
-          const mine = role === 'user';
-          const align = mine ? 'ai-msg me' : 'ai-msg bot';
-          const ts = timestamp ? `<div class="ai-ts">${esc(timestamp)}</div>` : '';
-          return `<div class="${align}"><div class="ai-bubble">${formatAiContent(text)}</div>${ts}</div>`;
-        }
-
-        async function loadHistory() {
-          try {
-            const res = await fetch('{{ url_for("main.ai_chat_history") }}', { cache: 'no-store' });
-            const data = await res.json();
-            if (!res.ok || !data.ok) return;
-            const rows = data.messages || [];
-            if (!rows.length) {
-              body.innerHTML = bubble('assistant', 'I am ready. Tell me your topic, deadline, level, service type, and word count, and I will guide you step by step.');
-              return;
-            }
-            body.innerHTML = rows.map((m) => bubble(m.role, m.content, m.timestamp)).join('');
-            body.scrollTop = body.scrollHeight;
-          } catch (_err) {}
-        }
-
-        async function sendMessage() {
-          const message = input.value.trim();
-          if (!message) return;
-          input.value = '';
-          autoGrow();
-          try {
-            const res = await fetch('{{ url_for("main.ai_chat_send") }}', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ message })
-            });
-            const data = await res.json();
-            if (!res.ok || !data.ok) return;
-            await loadHistory();
-          } catch (_err) {}
-        }
-
-        function openPanel() {
-          panel.classList.remove('d-none');
-          loadHistory();
-          if (!pollHandle) pollHandle = setInterval(loadHistory, 6000);
-        }
-
-        function closePanel() {
-          panel.classList.add('d-none');
-          if (pollHandle) {
-            clearInterval(pollHandle);
-            pollHandle = null;
-          }
-        }
-
-        fab.addEventListener('click', () => {
-          if (panel.classList.contains('d-none')) {
-            openPanel();
-          } else {
-            closePanel();
-          }
-        });
-        closeBtn.addEventListener('click', closePanel);
-        send.addEventListener('click', sendMessage);
-        input.addEventListener('input', autoGrow);
-        input.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-          }
-        });
-        autoGrow();
-      }
-    })();
-  </script>
-  {% block scripts %}{% endblock %}
+  <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/mobile-drawer.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/ai-chat.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/guest-chat.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/testimonial.js') }}"></script>
 </body>
 </html>

@@ -34,6 +34,11 @@ class Config:
     GROQ_MODEL = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile").strip()
     GROQ_TIMEOUT = int(os.environ.get("GROQ_TIMEOUT", "90"))
     GROQ_MAX_TOKENS = int(os.environ.get("GROQ_MAX_TOKENS", "6000"))
+    # Primary contact number for WhatsApp links. Store as international form, e.g. +447426105606
+    WHATSAPP_NUMBER = os.environ.get("WHATSAPP_NUMBER", "+447426105606").strip()
+    ALLOWED_UPLOAD_EXTENSIONS = {"pdf", "doc", "docx", "txt", "png", "jpg"}
+    TEMPLATES_AUTO_RELOAD = True
+    SEND_FILE_MAX_AGE_DEFAULT = 0
 
 LOGIN_MESSAGE = "You must log in to access this page."
 LOGIN_MESSAGE_CATEGORY = "warning"

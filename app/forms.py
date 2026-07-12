@@ -2,6 +2,20 @@ from flask_wtf import FlaskForm
 from wtforms import BooleanField, DateField, IntegerField, PasswordField, SelectField, StringField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, Email, EqualTo, InputRequired, Length, Optional
 from flask_wtf.file import FileField, FileAllowed
+from app.constants import (
+    SERVICE_TRACK_CHOICES,
+    TASK_TYPE_CHOICES,
+    LEVEL_CHOICES,
+    CITATION_STYLE_CHOICES,
+    CURRENCY_CHOICES,
+    TIMEZONE_CHOICES,
+    BILLING_METHOD_CHOICES,
+    PAYOUT_METHOD_CHOICES,
+    LANGUAGE_CHOICES,
+    CHANNEL_CHOICES,
+    LAYOUT_MODE_CHOICES,
+    ALLOWED_UPLOAD_EXTENSIONS,
+)
 
 class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
@@ -25,49 +39,37 @@ class OrderForm(FlaskForm):
     subject = StringField('Subject', validators=[DataRequired()])
     service_track = SelectField(
         "Service Track",
-        choices=[
-            ("writing", "Academic & Research Writing"),
-            ("programming", "Programming & Technical"),
-            ("exams", "Exam Preparation"),
-            ("career", "Career & Resume"),
-        ],
+        choices=SERVICE_TRACK_CHOICES,
         validators=[DataRequired()],
     )
     task_type = SelectField(
         "Task Type",
-        choices=[
-            ("Essay", "Essay"),
-            ("Research Paper", "Research Paper"),
-            ("Dissertation", "Dissertation"),
-            ("Assignment", "Assignment"),
-            ("Case Study", "Case Study"),
-            ("Admission Essay", "Admission Essay"),
-        ],
+        choices=TASK_TYPE_CHOICES,
         validators=[Optional()],
     )
     word_count = IntegerField("Word Count", validators=[Optional()])
     level = SelectField(
         "Academic Level",
-        choices=[("Undergrad", "Undergrad"), ("Masters", "Masters"), ("PhD", "PhD")],
+        choices=LEVEL_CHOICES,
         validators=[Optional()],
     )
     citation_style = SelectField(
         "Referencing Style",
-        choices=[("APA", "APA"), ("MLA", "MLA"), ("Chicago", "Chicago"), ("Harvard", "Harvard")],
+        choices=CITATION_STYLE_CHOICES,
         validators=[Optional()],
     )
     sources_count = IntegerField("Minimum Sources", validators=[Optional()])
     currency = SelectField(
         "Currency",
-        choices=[("USD", "USD"), ("GBP", "GBP"), ("EUR", "EUR")],
+        choices=CURRENCY_CHOICES,
         validators=[Optional()],
     )
     timezone = SelectField(
         "Deadline Timezone",
-        choices=[("UTC", "UTC"), ("America/New_York", "GMT-5 (New York)"), ("Europe/London", "GMT+0 (London)"), ("Africa/Nairobi", "GMT+3 (Nairobi)")],
+        choices=TIMEZONE_CHOICES,
         validators=[Optional()],
     )
-    attachments = FileField("Upload Files", validators=[FileAllowed(['pdf', 'doc', 'docx', 'txt', 'png', 'jpg'], 'Unsupported file type')])
+    attachments = FileField("Upload Files", validators=[FileAllowed(list(ALLOWED_UPLOAD_EXTENSIONS), 'Unsupported file type')])
     details = TextAreaField('Details', validators=[DataRequired()])
     deadline = DateField('Deadline', validators=[DataRequired()])
     accept_terms = BooleanField('I agree to the Terms', validators=[InputRequired()])
@@ -87,7 +89,7 @@ class SettingForm(FlaskForm):
     phone = StringField("Phone Number", validators=[Optional()])
     academic_level = SelectField(
         "Academic Level",
-        choices=[("", "Select level"), ("Undergrad", "Undergrad"), ("Masters", "Masters"), ("PhD", "PhD")],
+        choices=[("", "Select level")] + LEVEL_CHOICES,
         validators=[Optional()],
     )
     expertise_tags = StringField("Expertise Tags", validators=[Optional()])
@@ -104,38 +106,38 @@ class SettingForm(FlaskForm):
     alert_admin_announcements = BooleanField("Admin announcements")
     billing_method = SelectField(
         "Billing Method",
-        choices=[("", "Not set"), ("Card", "Card"), ("PayPal", "PayPal"), ("Mobile Money", "Mobile Money"), ("Bank", "Bank Transfer")],
+        choices=BILLING_METHOD_CHOICES,
         validators=[Optional()],
     )
     payout_method = SelectField(
         "Payout Method",
-        choices=[("", "Not set"), ("PayPal", "PayPal"), ("Bank", "Bank Transfer"), ("Mobile Money", "Mobile Money")],
+        choices=PAYOUT_METHOD_CHOICES,
         validators=[Optional()],
     )
     auto_deposit_notifications = BooleanField("Auto-deposit notifications")
     preferred_language = SelectField(
         "Language",
-        choices=[("English", "English"), ("French", "French"), ("Spanish", "Spanish")],
+        choices=LANGUAGE_CHOICES,
         validators=[Optional()],
     )
     timezone = SelectField(
         "Time Zone",
-        choices=[("UTC", "UTC"), ("Africa/Nairobi", "Africa/Nairobi"), ("America/New_York", "America/New_York"), ("Europe/London", "Europe/London")],
+        choices=TIMEZONE_CHOICES,
         validators=[Optional()],
     )
     preferred_channel = SelectField(
         "Preferred Communication Channel",
-        choices=[("chat", "Chat"), ("email", "Email")],
+        choices=CHANNEL_CHOICES,
         validators=[Optional()],
     )
     layout_mode = SelectField(
         "Dashboard Layout",
-        choices=[("detailed", "Detailed"), ("compact", "Compact")],
+        choices=LAYOUT_MODE_CHOICES,
         validators=[Optional()],
     )
     citation_style = SelectField(
         "Preferred Citation Style",
-        choices=[("APA", "APA"), ("MLA", "MLA"), ("Chicago", "Chicago"), ("Harvard", "Harvard")],
+        choices=CITATION_STYLE_CHOICES,
         validators=[Optional()],
     )
     marketing_opt_in = BooleanField("Receive marketing/newsletter emails")

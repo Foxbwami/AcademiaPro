@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d4af37;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer circle background - Navy -->
+  <circle cx="100" cy="100" r="98" fill="#0f3a7d" stroke="none"/>
+  
+  <!-- Inner lighter navy circle for depth -->
+  <circle cx="100" cy="100" r="92" fill="#1a4a9e"/>
+  
+  <!-- Gold accent circle -->
+  <circle cx="100" cy="100" r="85" fill="none" stroke="url(#goldGradient)" stroke-width="2"/>
+  
+  <!-- Mortarboard (cap) - Gold gradient -->
+  <g>
+    <!-- Top of mortarboard -->
+    <line x1="50" y1="90" x2="150" y2="90" stroke="url(#goldGradient)" stroke-width="12" stroke-linecap="round"/>
+    <!-- Left tassel -->
+    <line x1="45" y1="90" x2="35" y2="130" stroke="url(#goldGradient)" stroke-width="4" stroke-linecap="round"/>
+    <!-- Center circle of tassel -->
+    <circle cx="35" cy="135" r="5" fill="url(#goldGradient)"/>
+  </g>
+  
+  <!-- Book representation - Navy with gold spine -->
+  <g>
+    <!-- Left page -->
+    <rect x="55" y="115" width="35" height="50" fill="#ffffff" opacity="0.95" rx="3"/>
+    <!-- Right page -->
+    <rect x="110" y="115" width="35" height="50" fill="#ffffff" opacity="0.85" rx="3"/>
+    <!-- Spine - Gold -->
+    <rect x="90" y="115" width="20" height="50" fill="url(#goldGradient)" rx="2"/>
+  </g>
+  
+  <!-- Decorative gold stars/accents -->
+  <g fill="url(#goldGradient)">
+    <circle cx="60" cy="70" r="3"/>
+    <circle cx="140" cy="70" r="3"/>
+  </g>
+</svg>

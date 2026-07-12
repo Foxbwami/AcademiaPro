@@ -1,0 +1,20 @@
+<section class="hero-status-strip">
+  <div class="container">
+    <div class="hero-status-strip-inner d-flex flex-column flex-md-row align-items-start gap-3 justify-content-between">
+      <div>
+        <div class="hero-status-strip-title">Live service status</div>
+        <div class="hero-status-items">
+          {% for item in panel.list %}
+            <div class="hero-status-item">
+              <span class="hero-status-dot" aria-hidden="true">●</span>
+              <span>{{ item }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% if panel.link %}
+        <a href="{{ panel.link.href }}" class="hero-status-link">{{ panel.link.label }}</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
