@@ -23,182 +23,167 @@
 </head>
 <body data-authenticated="{{ 'true' if current_user.is_authenticated else 'false' }}">
   {# Trust indicators bar #}
-  <div class="trust-bar">
+  <div class="trust-bar" role="region" aria-label="Trust indicators">
     <div class="container">
       <div class="trust-items">
         <div class="trust-item">
-          <i class="bi bi-star-fill"></i>
+          <i class="bi bi-star-fill" aria-hidden="true"></i>
           <span><strong>Rated 4.9</strong> by 1,200+ Clients</span>
         </div>
         <div class="trust-item">
-          <i class="bi bi-shield-check"></i>
+          <i class="bi bi-shield-check" aria-hidden="true"></i>
           <span><strong>100%</strong> Confidential</span>
         </div>
         <div class="trust-item">
-          <i class="bi bi-headset"></i>
+          <i class="bi bi-headset" aria-hidden="true"></i>
           <span><strong>24/7</strong> Support</span>
         </div>
         <div class="trust-item">
-          <i class="bi bi-trophy-fill"></i>
+          <i class="bi bi-trophy-fill" aria-hidden="true"></i>
           <span><strong>700+</strong> Projects Delivered</span>
         </div>
         <div class="trust-social ms-auto">
           Follow us:
-          <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
-          <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
-          <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
-          <a href="#" aria-label="Twitter"><i class="bi bi-twitter"></i></a>
+          <a href="#" aria-label="Facebook"><i class="bi bi-facebook" aria-hidden="true"></i></a>
+          <a href="#" aria-label="Instagram"><i class="bi bi-instagram" aria-hidden="true"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin" aria-hidden="true"></i></a>
+          <a href="#" aria-label="Twitter"><i class="bi bi-twitter" aria-hidden="true"></i></a>
         </div>
       </div>
     </div>
   </div>
 
   <header class="site-header sticky-top" role="banner">
-    <div class="container header-shell">
-      {# Left: Logo and Brand #}
-      <div class="header-brand">
-        <div class="brand-mark shadow-soft">
-          <img loading="lazy" decoding="async" src="{{ url_for('static', filename='img/academiaprolog.svg') }}" alt="AcademiaPro logo" class="brand-logo">
+    <div class="container header-top-row">
+      <div class="header-shell">
+        <div class="header-brand">
+          <div class="brand-mark shadow-soft">
+            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='img/academiaprolog.svg') }}" alt="AcademiaPro logo" class="brand-logo">
+          </div>
+          <div class="brand-info">
+            <a class="header-logo-link" href="{{ url_for('main.index') }}">AcademiaPro</a>
+            <div class="brand-tagline">Academic & Technical Consultancy</div>
+          </div>
         </div>
-        <div class="brand-info">
-          <a class="header-logo-link" href="{{ url_for('main.index') }}">AcademiaPro</a>
-          <div class="brand-tagline">Academic & Technical Consultancy</div>
+
+        <button class="mobile-menu-btn d-lg-none" id="mobileMenuButton" type="button" aria-controls="mobileDrawer" aria-expanded="false" aria-label="Open navigation menu">
+          <i class="bi bi-list" aria-hidden="true"></i>
+        </button>
+
+        <div class="header-actions d-none d-lg-flex align-items-center">
+          <button class="icon-action-btn search-btn" type="button" aria-label="Search" data-bs-toggle="modal" data-bs-target="#searchModal">
+            <i class="bi bi-search" aria-hidden="true"></i>
+          </button>
+
+          <a class="icon-action-btn ai-btn" href="{{ url_for('main.ai_chat') }}" role="button" aria-label="AI Assistant">
+            <i class="bi bi-robot" aria-hidden="true"></i>
+          </a>
+
+          <a class="icon-action-btn" href="{{ url_for('main.notifications') }}" aria-label="Notifications">
+            <i class="bi bi-bell-fill" aria-hidden="true"></i>
+            {% if unread_count and unread_count > 0 %}
+              <span class="icon-badge">{{ unread_count }}</span>
+            {% endif %}
+          </a>
+
+          {% if current_user.is_authenticated %}
+            <div class="dropdown profile-dropdown">
+              <button class="btn profile-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="profile-avatar">{{ current_user.name.split(' ')[0][0] if current_user.name else current_user.email.split('@')[0][0] }}</span>
+                <span class="profile-name d-none d-xl-inline">{{ current_user.name.split(' ')[0] if current_user.name else 'Account' }}</span>
+                <i class="bi bi-chevron-down" aria-hidden="true"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-soft" aria-labelledby="profileDropdown">
+                <li><h6 class="dropdown-header">Account</h6></li>
+                <li><a class="dropdown-item" href="{{ url_for('main.admin_dashboard') if current_user.is_admin else url_for('main.dashboard') }}"><i class="bi bi-speedometer2" aria-hidden="true"></i> Dashboard</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('main.my_orders') }}"><i class="bi bi-bag" aria-hidden="true"></i> My Orders</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('main.notifications') }}"><i class="bi bi-bell" aria-hidden="true"></i> Notifications</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{{ url_for('main.profile') }}"><i class="bi bi-person" aria-hidden="true"></i> Profile</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('main.settings') }}"><i class="bi bi-gear" aria-hidden="true"></i> Settings</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="{{ url_for('main.logout') }}"><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Sign Out</a></li>
+              </ul>
+            </div>
+          {% else %}
+            <a class="btn header-btn-secondary" href="{{ url_for('main.login') }}">Login</a>
+            <a class="btn header-btn-primary ms-2" href="{{ url_for('main.register') }}">Create Account</a>
+          {% endif %}
+
+          <div class="header-sep" aria-hidden="true"></div>
+          <a class="btn btn-place-order ms-3" href="{{ url_for('main.order') }}" role="button" aria-label="Place Order">
+            <i class="bi bi-cart-fill" aria-hidden="true"></i>
+            <span class="place-order-text">Place Order</span>
+          </a>
         </div>
       </div>
+    </div>
 
-      <button class="mobile-menu-btn d-lg-none" id="mobileMenuButton" type="button" aria-controls="mobileDrawer" aria-expanded="false" aria-label="Open navigation menu">
-        <i class="bi bi-list" aria-hidden="true"></i>
-      </button>
-
-      {# Center: Navigation Dropdowns #}
-      <nav class="header-nav d-none d-lg-flex" aria-label="Primary navigation">
-        {# Services Dropdown #}
+    <div class="container header-middle-row d-none d-lg-block">
+      <nav class="header-nav" aria-label="Primary navigation">
         <div class="nav-dropdown">
           <button id="servicesDropdownBtn" class="nav-dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="servicesDropdownMenu">
-            Services <i class="bi bi-chevron-down"></i>
+            Services <i class="bi bi-chevron-down" aria-hidden="true"></i>
           </button>
           <div id="servicesDropdownMenu" class="dropdown-menu mega-menu" aria-labelledby="servicesDropdownBtn">
             <div class="mega-menu-grid">
-              <div class="mega-menu-column">
-                <h6 class="dropdown-header">Academic</h6>
-                <a class="dropdown-item" href="{{ url_for('main.academic_writing') }}">
-                  <i class="bi bi-book-fill"></i> Academic Writing
-                </a>
-                <a class="dropdown-item" href="{{ url_for('main.research_dissertation') }}">
-                  <i class="bi bi-mortarboard"></i> Research & Dissertation
-                </a>
-                <a class="dropdown-item" href="{{ url_for('main.editing_proofreading') }}">
-                  <i class="bi bi-pencil-square"></i> Editing & Proofreading
-                </a>
+              <div class="mega-feature">
+                <div class="mega-feature-media">
+                  <img src="{{ url_for('static', filename='images/mega-feature.jpg') }}" alt="Featured service" loading="lazy">
+                </div>
+                <div class="mega-feature-body">
+                  <div class="mega-feature-eyebrow">Featured</div>
+                  <h5 class="mega-feature-title">Premium Dissertation Support</h5>
+                  <p class="mega-feature-excerpt">End-to-end supervision, literature review, methodology guidance and proofreading for high-stakes research submissions.</p>
+                  <a class="btn btn-sm btn-primary mt-2" href="{{ url_for('main.research_dissertation') }}">Learn more</a>
+                </div>
               </div>
-              <div class="mega-menu-column">
-                <h6 class="dropdown-header">Technical</h6>
-                <a class="dropdown-item" href="{{ url_for('main.programming') }}">
-                  <i class="bi bi-code-slash"></i> Programming
-                </a>
-                <a class="dropdown-item" href="{{ url_for('main.programming') }}">
-                  <i class="bi bi-graph-up"></i> Data Analysis
-                </a>
-              </div>
-              <div class="mega-menu-column">
-                <h6 class="dropdown-header">Quick Links</h6>
-                <a class="dropdown-item" href="{{ url_for('main.Samples') }}">
-                  <i class="bi bi-file-earmark"></i> View Samples
-                </a>
+
+              <div class="mega-columns">
+                <div class="mega-menu-column">
+                  <h6 class="dropdown-header">Academic</h6>
+                  <a class="dropdown-item" href="{{ url_for('main.academic_writing') }}"><i class="bi bi-book-fill" aria-hidden="true"></i> Academic Writing</a>
+                  <a class="dropdown-item" href="{{ url_for('main.research_dissertation') }}"><i class="bi bi-mortarboard" aria-hidden="true"></i> Research & Dissertation</a>
+                  <a class="dropdown-item" href="{{ url_for('main.editing_proofreading') }}"><i class="bi bi-pencil-square" aria-hidden="true"></i> Editing & Proofreading</a>
+                </div>
+                <div class="mega-menu-column">
+                  <h6 class="dropdown-header">Technical</h6>
+                  <a class="dropdown-item" href="{{ url_for('main.programming') }}"><i class="bi bi-code-slash" aria-hidden="true"></i> Programming</a>
+                  <a class="dropdown-item" href="{{ url_for('main.statistics') }}"><i class="bi bi-graph-up" aria-hidden="true"></i> Data Analysis</a>
+                </div>
+                <div class="mega-menu-column">
+                  <h6 class="dropdown-header">Business & Data</h6>
+                  <a class="dropdown-item" href="{{ url_for('main.business_finance') }}"><i class="bi bi-briefcase" aria-hidden="true"></i> Business & Finance</a>
+                  <a class="dropdown-item" href="{{ url_for('main.statistics') }}"><i class="bi bi-bar-chart-fill" aria-hidden="true"></i> Statistics</a>
+                  <a class="dropdown-item" href="{{ url_for('main.programming') }}"><i class="bi bi-laptop" aria-hidden="true"></i> Machine Learning</a>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {# Pricing Link #}
         <a class="nav-link" href="{{ url_for('main.pricing_page') }}">Pricing</a>
-
-        {# Resources Dropdown #}
+        <a class="nav-link" href="{{ url_for('main.Samples') }}">Samples</a>
         <div class="nav-dropdown">
           <button id="resourcesDropdownBtn" class="nav-dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="resourcesDropdownMenu">
-            Resources <i class="bi bi-chevron-down"></i>
+            Resources <i class="bi bi-chevron-down" aria-hidden="true"></i>
           </button>
           <div id="resourcesDropdownMenu" class="dropdown-menu resources-menu" aria-labelledby="resourcesDropdownBtn">
-            <a class="dropdown-item" href="{{ url_for('main.public_blogs') }}">
-              <i class="bi bi-newspaper"></i> Blog
-            </a>
-            <a class="dropdown-item" href="{{ url_for('main.faq') }}">
-              <i class="bi bi-question-circle"></i> FAQ
-            </a>
-            <a class="dropdown-item" href="#">
-              <i class="bi bi-book"></i> Free Guides
-            </a>
-            <a class="dropdown-item" href="#">
-              <i class="bi bi-lightbulb"></i> Templates
-            </a>
+            <a class="dropdown-item" href="{{ url_for('main.public_blogs') }}"><i class="bi bi-newspaper" aria-hidden="true"></i> Blog</a>
+            <a class="dropdown-item" href="{{ url_for('main.faq') }}"><i class="bi bi-question-circle" aria-hidden="true"></i> FAQ</a>
+            <a class="dropdown-item" href="{{ url_for('main.how_it_works') }}"><i class="bi bi-book" aria-hidden="true"></i> How It Works</a>
+            <a class="dropdown-item" href="{{ url_for('main.Samples') }}"><i class="bi bi-file-earmark-text" aria-hidden="true"></i> Samples</a>
           </div>
         </div>
-
-        {# About Link #}
         <a class="nav-link" href="{{ url_for('main.about') }}">About</a>
       </nav>
-
-      {# Right: Actions and CTA #}
-      <div class="header-actions d-none d-lg-flex">
-        {# Search Icon #}
-        <button class="icon-action-btn search-btn" type="button" aria-label="Search" data-bs-toggle="modal" data-bs-target="#searchModal">
-          <i class="bi bi-search"></i>
-        </button>
-
-        {# AI Assistant (prominent link in navbar) #}
-        <a class="nav-link ai-link btn-ai" href="{{ url_for('main.ai_chat') if 'main.ai_chat' in config.get('ENABLED_ROUTES', []) else '#' }}" role="button" aria-label="AI Assistant">
-          <i class="bi bi-robot"></i> AI
-        </a>
-
-        {# Notifications #}
-        <a class="icon-action-btn" href="{{ url_for('main.notifications') }}" aria-label="Notifications">
-          <i class="bi bi-bell-fill"></i>
-          {% if unread_count and unread_count > 0 %}
-            <span class="icon-badge">{{ unread_count }}</span>
-          {% endif %}
-        </a>
-
-        {# Auth Actions #}
-        {% if current_user.is_authenticated %}
-          <div class="dropdown profile-dropdown">
-            <button class="btn profile-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-              <span class="profile-avatar">
-                {{ current_user.name.split(' ')[0][0] if current_user.name else current_user.email.split('@')[0][0] }}
-              </span>
-              <span class="profile-name d-none d-xl-inline">{{ current_user.name.split(' ')[0] if current_user.name else 'Account' }}</span>
-              <i class="bi bi-chevron-down"></i>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow-soft" aria-labelledby="profileDropdown">
-              <li><h6 class="dropdown-header">Account</h6></li>
-              <li><a class="dropdown-item" href="{{ url_for('main.admin_dashboard') if current_user.is_admin else url_for('main.dashboard') }}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
-              <li><a class="dropdown-item" href="{{ url_for('main.my_orders') }}"><i class="bi bi-bag"></i> My Orders</a></li>
-              <li><a class="dropdown-item" href="{{ url_for('main.notifications') }}"><i class="bi bi-bell"></i> Notifications</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="{{ url_for('main.profile') }}"><i class="bi bi-person"></i> Profile</a></li>
-              <li><a class="dropdown-item" href="{{ url_for('main.settings') }}"><i class="bi bi-gear"></i> Settings</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item text-danger" href="{{ url_for('main.logout') }}"><i class="bi bi-box-arrow-right"></i> Sign Out</a></li>
-            </ul>
-          </div>
-        {% else %}
-          <a class="btn btn-outline-light btn-sm header-btn-secondary" href="{{ url_for('main.login') }}">
-            <i class="bi bi-person-circle"></i> Login
-          </a>
-          <a class="btn btn-gold btn-sm header-btn-primary fw-semibold" href="{{ url_for('main.register') }}">
-            Create Account
-          </a>
-        {% endif %}
-
-        {# Primary CTA #}
-        <a class="btn btn-place-order ms-2" href="{{ url_for('main.order') }}" role="button" aria-label="Place Order">
-          <i class="bi bi-cart-fill"></i> Place Order
-        </a>
-      </div>
     </div>
+
+    <!-- header subnav removed per layout simplification (services are available on Services page) -->
   </header>
 
   <div class="mobile-drawer-overlay" id="mobileDrawerOverlay" aria-hidden="true"></div>
-  <aside class="mobile-drawer" id="mobileDrawer" role="dialog" aria-modal="true" aria-label="Mobile navigation">
+  <div class="mobile-drawer" id="mobileDrawer" role="dialog" aria-modal="true" aria-label="Mobile navigation">
     <div class="mobile-drawer-inner">
       <div class="drawer-top d-flex align-items-start justify-content-between">
         <div class="d-flex align-items-center gap-3">
@@ -217,7 +202,7 @@
 
       <div class="drawer-banner rounded-4 shadow-soft p-3 mb-4">
         <div class="d-flex align-items-start gap-3 mb-3">
-          <span class="drawer-banner-icon"><i class="bi bi-shield-fill-check"></i></span>
+          <span class="drawer-banner-icon"><i class="bi bi-shield-fill-check" aria-hidden="true"></i></span>
           <div>
             <div class="fw-semibold">Premium Academic Help</div>
             <div class="small text-secondary">Quality. Originality. Delivered On Time.</div>
@@ -229,28 +214,31 @@
         {# Services Section #}
         <div class="drawer-section">
           <div class="drawer-section-title">Services</div>
-          <a class="drawer-link" href="{{ url_for('main.academic_writing') }}"><i class="bi bi-book-fill"></i> Academic Writing</a>
-          <a class="drawer-link" href="{{ url_for('main.research_dissertation') }}"><i class="bi bi-mortarboard"></i> Research & Dissertation</a>
-          <a class="drawer-link" href="{{ url_for('main.programming') }}"><i class="bi bi-code-slash"></i> Programming</a>
-          <a class="drawer-link" href="{{ url_for('main.editing_proofreading') }}"><i class="bi bi-pencil-square"></i> Editing & Proofreading</a>
+          <a class="drawer-link" href="{{ url_for('main.academic_writing') }}"><i class="bi bi-book-fill" aria-hidden="true"></i> Academic Writing</a>
+          <a class="drawer-link" href="{{ url_for('main.research_dissertation') }}"><i class="bi bi-mortarboard" aria-hidden="true"></i> Research & Dissertation</a>
+          <a class="drawer-link" href="{{ url_for('main.programming') }}"><i class="bi bi-code-slash" aria-hidden="true"></i> Programming</a>
+          <a class="drawer-link" href="{{ url_for('main.editing_proofreading') }}"><i class="bi bi-pencil-square" aria-hidden="true"></i> Editing & Proofreading</a>
         </div>
         
-        <a class="drawer-link" href="{{ url_for('main.pricing_page') }}"><i class="bi bi-tag"></i> Pricing</a>
+        <a class="drawer-link" href="{{ url_for('main.pricing_page') }}"><i class="bi bi-tag" aria-hidden="true"></i> Pricing</a>
         
         {# Resources Section #}
         <div class="drawer-section">
           <div class="drawer-section-title">Resources</div>
-          <a class="drawer-link" href="{{ url_for('main.Samples') }}"><i class="bi bi-file-earmark"></i> Samples</a>
-          <a class="drawer-link" href="{{ url_for('main.public_blogs') }}"><i class="bi bi-newspaper"></i> Blog</a>
-          <a class="drawer-link" href="{{ url_for('main.faq') }}"><i class="bi bi-question-circle"></i> FAQ</a>
+          <a class="drawer-link" href="{{ url_for('main.Samples') }}"><i class="bi bi-file-earmark" aria-hidden="true"></i> Samples</a>
+          <a class="drawer-link" href="{{ url_for('main.public_blogs') }}"><i class="bi bi-newspaper" aria-hidden="true"></i> Blog</a>
+          <a class="drawer-link" href="{{ url_for('main.faq') }}"><i class="bi bi-question-circle" aria-hidden="true"></i> FAQ</a>
         </div>
         
-        <a class="drawer-link" href="{{ url_for('main.about') }}"><i class="bi bi-info-circle"></i> About</a>
+        <a class="drawer-link" href="{{ url_for('main.about') }}"><i class="bi bi-info-circle" aria-hidden="true"></i> About</a>
       </nav>
 
       <div class="drawer-actions d-grid gap-3 mb-4">
         <a class="btn btn-gold btn-sm rounded-4 d-flex align-items-center justify-content-center gap-2" href="{{ url_for('main.order') }}">
-          <i class="bi bi-cart-fill"></i>Place Order
+          <i class="bi bi-cart-fill" aria-hidden="true"></i>Place Order
+        </a>
+        <a class="btn btn-outline-secondary btn-sm rounded-4 d-flex align-items-center justify-content-center gap-2" href="{{ url_for('main.ai_chat') }}">
+          <i class="bi bi-robot" aria-hidden="true"></i> AI Assistant
         </a>
         {% if current_user.is_authenticated %}
           <div class="drawer-user-panel rounded-4 p-3 bg-white border">
@@ -265,28 +253,28 @@
             </div>
             <div class="drawer-user-links d-grid gap-2">
               <a class="drawer-user-link" href="{{ url_for('main.admin_dashboard') if current_user.is_admin else url_for('main.dashboard') }}">
-                <i class="bi bi-speedometer2"></i>Dashboard
+                <i class="bi bi-speedometer2" aria-hidden="true"></i>Dashboard
               </a>
               <a class="drawer-user-link" href="{{ url_for('main.order') }}">
-                <i class="bi bi-cart-fill"></i>Start New Order
+                <i class="bi bi-cart-fill" aria-hidden="true"></i>Start New Order
               </a>
               <a class="drawer-user-link" href="{{ url_for('main.my_orders') }}">
-                <i class="bi bi-bag-check-fill"></i>My Orders
+                <i class="bi bi-bag-check-fill" aria-hidden="true"></i>My Orders
               </a>
               <a class="drawer-user-link" href="{{ url_for('main.notifications') }}">
-                <i class="bi bi-bell-fill"></i>Notifications
+                <i class="bi bi-bell-fill" aria-hidden="true"></i>Notifications
               </a>
               <a class="drawer-user-link" href="{{ url_for('main.support_tickets') }}">
-                <i class="bi bi-chat-dots-fill"></i>Support Tickets
+                <i class="bi bi-chat-dots-fill" aria-hidden="true"></i>Support Tickets
               </a>
               <a class="drawer-user-link" href="{{ url_for('main.profile') }}">
-                <i class="bi bi-person-circle"></i>Profile
+                <i class="bi bi-person-circle" aria-hidden="true"></i>Profile
               </a>
               <a class="drawer-user-link" href="{{ url_for('main.settings') }}">
-                <i class="bi bi-gear-fill"></i>Settings
+                <i class="bi bi-gear-fill" aria-hidden="true"></i>Settings
               </a>
               <a class="drawer-user-link text-danger" href="{{ url_for('main.logout') }}">
-                <i class="bi bi-box-arrow-right"></i>Sign Out
+                <i class="bi bi-box-arrow-right" aria-hidden="true"></i>Sign Out
               </a>
             </div>
           </div>
@@ -298,32 +286,32 @@
 
       <div class="drawer-support rounded-4 bg-success bg-opacity-15 p-3 mb-4">
         <div class="d-flex align-items-center gap-3 mb-3">
-          <span class="support-icon"><i class="bi bi-headset"></i></span>
+          <span class="support-icon"><i class="bi bi-headset" aria-hidden="true"></i></span>
           <div>
             <div class="fw-semibold">Need Help?</div>
             <div class="small text-secondary">Chat with our academic consultants instantly.</div>
           </div>
         </div>
         <a href="https://api.whatsapp.com/send?phone={{ WHATSAPP_NUMBER|replace('+','') }}" target="_blank" rel="noopener" class="btn btn-success btn-sm rounded-pill w-100">
-          <i class="bi bi-whatsapp me-2"></i>Chat on WhatsApp
+          <i class="bi bi-whatsapp me-2" aria-hidden="true"></i>Chat on WhatsApp
         </a>
       </div>
 
-      <div class="drawer-social d-flex justify-content-center gap-2 mb-3">
-        <a class="social-pill" href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
-        <a class="social-pill" href="#" aria-label="X"><i class="bi bi-x"></i></a>
-        <a class="social-pill" href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
-        <a class="social-pill" href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
-        <a class="social-pill" href="#" aria-label="TikTok"><i class="bi bi-music-note-beamed"></i></a>
+        <div class="drawer-social d-flex justify-content-center gap-2 mb-3">
+          <a class="social-pill" href="#" aria-label="Facebook"><i class="bi bi-facebook" aria-hidden="true"></i></a>
+          <a class="social-pill" href="#" aria-label="X"><i class="bi bi-x" aria-hidden="true"></i></a>
+          <a class="social-pill" href="#" aria-label="Instagram"><i class="bi bi-instagram" aria-hidden="true"></i></a>
+          <a class="social-pill" href="#" aria-label="LinkedIn"><i class="bi bi-linkedin" aria-hidden="true"></i></a>
+          <a class="social-pill" href="#" aria-label="TikTok"><i class="bi bi-music-note-beamed" aria-hidden="true"></i></a>
       </div>
 
       <div class="drawer-footer small text-center text-secondary">
         © 2026 AcademiaPro · Empowering Academic Success
       </div>
     </div>
-  </aside>
+  </div>
 
-  <main id="main-content" class="container my-4">
+  <main id="main-content" class="wrapper my-4">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
@@ -337,72 +325,82 @@
     {% block content %}{% endblock %}
   </main>
 
-  <!-- Site footer -->
+  <!-- Site footer (premium multi-column redesign) -->
   <footer class="site-footer mt-5" role="contentinfo">
-    <div class="container">
-      <div class="footer-grid rounded-4 p-4 p-lg-5 shadow-soft bg-secondary bg-opacity-10">
-        <div class="footer-summary">
+    <div class="wrapper">
+      <div class="footer-grid premium-footer rounded-4 p-4 p-lg-5 shadow-soft bg-secondary bg-opacity-6">
+        <div class="footer-col footer-brand-col">
           <a class="footer-brand" href="{{ url_for('main.index') }}">AcademiaPro</a>
-          <p class="footer-lead">Professional Academic &<br>Technical Consultancy</p>
-          <div class="footer-nav-links d-flex flex-wrap gap-3 mt-3">
-            <a class="footer-link" href="{{ url_for('main.about') }}">About</a>
-            <a class="footer-link" href="{{ url_for('main.services_page') }}">Services</a>
-            <a class="footer-link" href="{{ url_for('main.contact') }}">Contact</a>
+          <p class="footer-lead">Professional Academic &amp;<br>Technical Consultancy</p>
+          <div class="footer-social mt-3">
+            <a class="social-pill me-2" href="#" aria-label="Facebook"><i class="bi bi-facebook" aria-hidden="true"></i></a>
+            <a class="social-pill me-2" href="#" aria-label="X"><i class="bi bi-x" aria-hidden="true"></i></a>
+            <a class="social-pill me-2" href="#" aria-label="Instagram"><i class="bi bi-instagram" aria-hidden="true"></i></a>
+            <a class="social-pill me-2" href="#" aria-label="LinkedIn"><i class="bi bi-linkedin" aria-hidden="true"></i></a>
           </div>
         </div>
-        <div class="footer-qr-panel">
-          <div class="footer-qr-card rounded-4 shadow-soft p-4 text-center bg-white">
-            <div class="footer-qr-title">Website link QR</div>
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/website-qr.png') }}" alt="Website QR code" class="footer-qr-image mx-auto mb-3">
-            <div class="footer-qr-caption">visit AcademiaPro</div>
-          </div>
+
+        <div class="footer-col footer-links-col">
+          <h4 class="footer-col-title">Services</h4>
+          <ul class="footer-links list-unstyled">
+            <li><a href="{{ url_for('main.academic_writing') }}">Academic Writing</a></li>
+            <li><a href="{{ url_for('main.research_dissertation') }}">Research &amp; Dissertation</a></li>
+            <li><a href="{{ url_for('main.programming') }}">Programming &amp; Development</a></li>
+            <li><a href="{{ url_for('main.editing_proofreading') }}">Editing &amp; Proofreading</a></li>
+          </ul>
         </div>
-        <div class="footer-qr-panel">
-          <div class="footer-qr-card rounded-4 shadow-soft p-4 text-center bg-white">
-            <div class="footer-qr-title">WhatsApp QR</div>
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/whatsapp-qr.png') }}" alt="WhatsApp QR code" class="footer-qr-image mx-auto mb-3">
-            <div class="footer-qr-caption">Scan to Chat</div>
+
+        <div class="footer-col footer-company-col">
+          <h4 class="footer-col-title">Company</h4>
+          <ul class="footer-links list-unstyled">
+            <li><a href="{{ url_for('main.about') }}">About Us</a></li>
+            <li><a href="{{ url_for('main.public_blogs') }}">Blog</a></li>
+            <li><a href="{{ url_for('main.faq') }}">FAQ</a></li>
+            <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col footer-contact-col">
+          <h4 class="footer-col-title">Contact &amp; Newsletter</h4>
+          <div class="footer-contact-list mb-3">
+            <div class="footer-contact-item"><i class="bi bi-telephone-fill" aria-hidden="true"></i><span>+{{ WHATSAPP_NUMBER }}</span></div>
+            <div class="footer-contact-item"><i class="bi bi-envelope-fill" aria-hidden="true"></i><span>support@academiapro.com</span></div>
+            <div class="footer-contact-item"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i><span>Online</span></div>
+          </div>
+          <form action="#" method="post" class="newsletter-form d-flex gap-2" onsubmit="return false;">
+            <input type="email" name="email" class="form-control form-control-sm" placeholder="Your email" aria-label="Email address">
+            <button class="btn btn-primary btn-sm" type="submit">Subscribe</button>
+          </form>
+
+          <div class="footer-qr-row d-flex gap-2 mt-3">
+            <div class="footer-qr-card rounded-4 shadow-soft p-2 text-center bg-white flex-fill">
+              <div class="footer-qr-title small">Website QR</div>
+              <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/website-qr.png') }}" alt="Website QR code" class="footer-qr-image mx-auto mb-1">
+            </div>
+            <div class="footer-qr-card rounded-4 shadow-soft p-2 text-center bg-white flex-fill">
+              <div class="footer-qr-title small">WhatsApp QR</div>
+              <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/whatsapp-qr.png') }}" alt="WhatsApp QR code" class="footer-qr-image mx-auto mb-1">
+            </div>
           </div>
         </div>
       </div>
-      <div class="footer-contact-section d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 mt-4">
-        <div class="footer-contact-item"><i class="bi bi-telephone-fill"></i><span>+{{ WHATSAPP_NUMBER }}</span></div>
-        <div class="footer-contact-item"><i class="bi bi-envelope-fill"></i><span>support@academiapro.com</span></div>
-        <div class="footer-contact-item"><i class="bi bi-globe2"></i><span>AcademiaPro.com</span></div>
-      </div>
-      <div class="footer-actions d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3 mt-4 pt-3 border-top">
-        <a class="btn btn-outline-dark btn-sm rounded-pill" href="{{ url_for('main.about') }}">Print Company Profile</a>
-        <div class="footer-copy small text-muted">© 2026 AcademiaPro</div>
+
+      <div class="footer-bottom d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 mt-4 pt-3 border-top">
+        <div class="footer-legal small text-muted">© 2026 AcademiaPro · All rights reserved · <a href="{{ url_for('main.privacy_policy') }}">Privacy</a> · <a href="{{ url_for('main.terms') }}">Terms</a></div>
+        <div class="footer-actions d-flex gap-2">
+          <a class="btn btn-outline-dark btn-sm rounded-pill" href="{{ url_for('main.about') }}">Company Profile</a>
+          <a class="btn btn-primary btn-sm rounded-pill" href="{{ url_for('main.order') }}">Place Order</a>
+        </div>
       </div>
     </div>
   </footer>
 
-  <div class="whatsapp-fab-shell" aria-label="Contact admin">
+  <div class="whatsapp-fab-shell">
     <a href="https://wa.me/{{ WHATSAPP_NUMBER|replace('+','') }}?text=Hello%20AcademiaPro%20Admin%2C%20I%27d%20like%20to%20request%20consultation." target="_blank" rel="noopener" class="whatsapp-fab" aria-label="Contact admin via WhatsApp">
       <i class="bi bi-whatsapp" aria-hidden="true"></i>
     </a>
   </div>
-
-  <div class="ai-float-shell" aria-label="AI support tools">
-      <button id="globalAiFab" class="ai-fab" type="button" title="AI Support" aria-label="Open AI support">
-      <img loading="lazy" decoding="async" src="{{ url_for('static', filename='img/logo-quill.jpg') }}" alt="AcademiaPro AI" class="ai-fab-logo">
-    </button>
-  </div>
-
-  <div id="globalAiPanel" class="ai-panel d-none" role="dialog" aria-label="AcademiaPro AI Support">
-    <div class="ai-panel-head">
-      <div>
-        <div class="ai-title">AcademiaPro AI</div>
-        <div class="ai-sub">Smart assistant for orders, pricing, services, and deadlines</div>
-      </div>
-      <button type="button" class="btn-close btn-close-sm" id="globalAiClose" aria-label="Close"></button>
-    </div>
-    <div id="globalAiBody" class="ai-panel-body"></div>
-    <div class="ai-panel-foot">
-      <textarea id="globalAiInput" class="form-control ai-input" rows="1" placeholder="Type your message..."></textarea>
-      <button id="globalAiSend" class="btn btn-primary btn-sm ai-send-btn" type="button">Send</button>
-    </div>
-  </div>
+  <!-- Floating AI removed; AI accessible via the dedicated AI page -->
 
   <div class="modal fade" id="siteContactModal" tabindex="-1" aria-labelledby="siteContactModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -415,14 +413,14 @@
           <p class="mb-3">How you'd like to contact the admin for a consultation.</p>
           <div class="list-group">
             <a href="https://wa.me/{{ WHATSAPP_NUMBER|replace('+','') }}?text=Hello%20AcademiaPro%20Admin%2C%20I%27d%20like%20to%20request%20consultation." target="_blank" rel="noopener" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
-              <i class="bi bi-whatsapp fs-3 text-success"></i>
+              <i class="bi bi-whatsapp fs-3 text-success" aria-hidden="true"></i>
               <div>
                 <div class="fw-semibold">WhatsApp</div>
                 <div class="small text-muted">Open a chat with admin.</div>
               </div>
             </a>
             <a href="mailto:support@academiapro.com?subject=AcademiaPro%20Consultation%20Request" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
-              <i class="bi bi-envelope-open fs-3 text-primary"></i>
+              <i class="bi bi-envelope-open fs-3 text-primary" aria-hidden="true"></i>
               <div>
                 <div class="fw-semibold">Email</div>
                 <div class="small text-muted">Send your request by email.</div>

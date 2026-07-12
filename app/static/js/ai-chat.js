@@ -1,12 +1,13 @@
 (function () {
+  // support both a floating panel (embedded) and a dedicated AI page
   const fab = document.getElementById('globalAiFab');
-  const panel = document.getElementById('globalAiPanel');
-  const closeBtn = document.getElementById('globalAiClose');
-  const body = document.getElementById('globalAiBody');
-  const input = document.getElementById('globalAiInput');
-  const send = document.getElementById('globalAiSend');
+  const panel = document.getElementById('globalAiPanel') || document.getElementById('aiPagePanel');
+  const closeBtn = document.getElementById('globalAiClose') || document.getElementById('aiPageClose');
+  const body = document.getElementById('globalAiBody') || document.getElementById('aiPageBody');
+  const input = document.getElementById('globalAiInput') || document.getElementById('aiPageInput');
+  const send = document.getElementById('globalAiSend') || document.getElementById('aiPageSend');
 
-  if (!fab || !panel || !closeBtn || !body || !input || !send) return;
+  if (!panel || !body || !input || !send) return;
 
   const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
@@ -57,7 +58,7 @@
 
   async function loadHistory() {
     try {
-      const response = await fetch('{{ url_for("main.ai_chat_history") }}', { cache: 'no-store' });
+      const response = await fetch('/ai/chat/history', { cache: 'no-store' });
       const data = await response.json();
       if (!response.ok || !data.ok) {
         throw new Error(data.error || 'Unable to load chat history');
@@ -83,7 +84,7 @@
     send.textContent = 'Sending...';
 
     try {
-      const response = await fetch('{{ url_for("main.ai_chat_send") }}', {
+      const response = await fetch('/ai/chat/send', {
         method: 'POST',
         headers: Object.assign({ 'Content-Type': 'application/json' }, csrfToken ? { 'X-CSRFToken': csrfToken } : {}),
         body: JSON.stringify({ message })
@@ -115,18 +116,22 @@
     panel.classList.add('d-none');
   }
 
-  fab.addEventListener('click', () => {
-    if (panel.classList.contains('d-none')) {
-      openPanel();
-    } else {
-      closePanel();
-    }
-  });
+  if (fab) {
+    fab.addEventListener('click', () => {
+      if (panel.classList.contains('d-none')) {
+        openPanel();
+      } else {
+        closePanel();
+      }
+    });
+  }
 
-  closeBtn.addEventListener('click', closePanel);
+  if (closeBtn) closeBtn.addEventListener('click', closePanel);
 
   document.addEventListener('click', (event) => {
-    if (!panel.classList.contains('d-none') && !panel.contains(event.target) && !fab.contains(event.target)) {
+    const clickedInside = panel.contains(event.target);
+    const clickedFab = fab ? fab.contains(event.target) : false;
+    if (!panel.classList.contains('d-none') && !clickedInside && !clickedFab) {
       closePanel();
     }
   });

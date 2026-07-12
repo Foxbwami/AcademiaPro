@@ -3258,6 +3258,11 @@ def how_it_works():
 def hiring():
     return render_template('hiring.html')
 
+
+@main.route('/ai')
+def ai_chat():
+    return render_template('ai.html')
+
 @main.route('/terms')
 def terms():
     return render_template('terms.html')

@@ -1,35 +1,35 @@
 <section id="services" class="services-section">
-  <div class="container">
-    {% set eyebrow = 'Featured Services' %}
-    {% set title = 'Trusted Academic Support, Delivered Clearly' %}
-    {% set description = 'A focused selection of our most requested services, designed to help you finish coursework, research, programming and academic writing with confidence.' %}
+  <div class="wrapper">
+    {% set eyebrow = 'Live Services' %}
+    {% set title = 'Premium Academic Support Ready When You Are' %}
+    {% set description = 'High-impact service packages for students, researchers, and professionals seeking trusted writing, research, programming, and editing support with fast delivery and clear communication.' %}
     {% include 'components/section_header.html' %}
     <div class="row g-4">
-      <div class="col-lg-3 col-md-6">
+      <div class="col-lg-4 col-md-6">
         {% set icon = '<i class="bi bi-journal-text"></i>' %}
         {% set title = 'Academic Writing' %}
-        {% set excerpt = 'Structured support for essays, reports and coursework.' %}
+        {% set excerpt = 'Premium essays, reports and coursework with expert structure and research.' %}
         {% set url = url_for('main.academic_writing') %}
         {% include 'components/service_card.html' %}
       </div>
-      <div class="col-lg-3 col-md-6">
+      <div class="col-lg-4 col-md-6">
         {% set icon = '<i class="bi bi-search"></i>' %}
         {% set title = 'Research & Dissertation' %}
-        {% set excerpt = 'Clear planning, reviews and dissertation guidance.' %}
+        {% set excerpt = 'End-to-end dissertation support, literature review, and methodology guidance.' %}
         {% set url = url_for('main.research_dissertation') %}
         {% include 'components/service_card.html' %}
       </div>
-      <div class="col-lg-3 col-md-6">
+      <div class="col-lg-4 col-md-6">
         {% set icon = '<div class="service-icon-gradient"><i class="bi bi-code-slash"></i></div>' %}
         {% set title = 'Programming' %}
-        {% set excerpt = 'Practical help for coding, debugging and technical tasks.' %}
+        {% set excerpt = 'Expert development, debugging and technical solutions for academic projects.' %}
         {% set url = url_for('main.programming') %}
         {% include 'components/service_card.html' %}
       </div>
-      <div class="col-lg-3 col-md-6">
+      <div class="col-lg-4 col-md-6">
         {% set icon = '<i class="bi bi-pencil-square"></i>' %}
         {% set title = 'Editing & Proofreading' %}
-        {% set excerpt = 'Polished writing with careful formatting and citation support.' %}
+        {% set excerpt = 'High-precision editing, formatting and citation checks for flawless submissions.' %}
         {% set url = url_for('main.editing_proofreading') %}
         {% include 'components/service_card.html' %}
       </div>

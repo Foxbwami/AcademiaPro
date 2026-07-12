@@ -1,10 +1,15 @@
 <article class="service-card">
-  <div class="d-flex align-items-start gap-3">
+  <div class="service-card-head d-flex align-items-start gap-3">
     <div class="service-icon">{{ icon|default('S')|safe }}</div>
     <div>
+      {% if badge %}
+      <div class="service-badge small text-white fw-bold">{{ badge }}</div>
+      {% endif %}
       <div class="service-title">{{ title }}</div>
-      <div class="service-excerpt">{{ excerpt }}</div>
-      <div class="service-cta"><a class="service-link" href="{{ url }}">Learn more</a></div>
+      <p class="service-excerpt">{{ excerpt }}</p>
     </div>
+  </div>
+  <div class="service-card-footer">
+    <a class="service-link service-cta" href="{{ url }}">Learn more <i class="bi bi-arrow-right-short" aria-hidden="true"></i></a>
   </div>
 </article>

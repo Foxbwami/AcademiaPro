@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}AI Assistant | AcademiaPro{% endblock %}
+
+{% block content %}
+<div class="section-wrapper">
+  <div class="container">
+    <div class="section-header text-center">
+      <div class="section-eyebrow">AI Assistant</div>
+      <h1 class="section-title">AcademiaPro AI Support</h1>
+      <p class="section-description">Ask the assistant about services, pricing, order preparation, deadlines, or general academic help.</p>
+    </div>
+
+    <div class="ai-page-card rounded-4 shadow-soft bg-white p-4" id="aiPagePanel" role="region" aria-label="AI chat">
+      <div class="ai-panel-head d-flex align-items-center justify-content-between mb-3">
+        <div>
+          <div class="fw-bold">AcademiaPro AI</div>
+          <div class="small text-muted">Smart assistant for orders, pricing, services, and deadlines</div>
+        </div>
+        <button class="btn-close" id="aiPageClose" aria-label="Close"></button>
+      </div>
+
+      <div id="aiPageBody" class="ai-panel-body mb-3" style="min-height:260px; max-height:420px; overflow:auto;"></div>
+
+      <div class="ai-panel-foot d-flex gap-2 align-items-end">
+        <textarea id="aiPageInput" class="form-control ai-input" rows="2" placeholder="Type your message..."></textarea>
+        <button id="aiPageSend" class="btn btn-primary btn-sm ai-send-btn" type="button">Send</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

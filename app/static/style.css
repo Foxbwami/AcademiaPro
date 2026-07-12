@@ -29,6 +29,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
@@ -38,6 +39,7 @@ body {
   color: var(--color-text);
   background: radial-gradient(circle at top left, rgba(31, 107, 255, 0.08), transparent 16%), linear-gradient(180deg, #f6f9ff 0%, #eef4ff 38%, #fdfdff 100%);
   line-height: 1.7;
+  overflow-x: hidden;
 }
 
 body::before {
@@ -93,8 +95,26 @@ select {
 }
 
 .container {
-  width: min(1100px, 100% - 2rem);
+  max-width: 1600px;
+  width: 100%;
   margin: 0 auto;
+  padding: 0 32px;
+  box-sizing: border-box;
+}
+
+/* Utility wrapper for consistent section widths */
+.wrapper {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 32px;
+  box-sizing: border-box;
+}
+
+/* Center section headers globally for consistent rhythm */
+.section-header {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .site-header {
@@ -112,11 +132,14 @@ select {
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
-  padding: 1rem 0;
+  padding: 0.6rem 0;
+  min-height: 80px;
 }
 
 .site-header .container {
-  width: min(1140px, 100% - 2rem);
+  max-width: 1440px;
+  width: 100%;
+  padding: 0 24px;
 }
 
 .header-logo-link {
@@ -371,7 +394,7 @@ select {
 }
 
 .hero-section {
-  padding: 5rem 0 3.5rem;
+  padding: 5rem 0 3rem;
   position: relative;
   overflow: hidden;
   background: linear-gradient(180deg, rgba(248, 251, 255, 0.94), #ffffff 58%);
@@ -476,8 +499,8 @@ select {
   display: inline-flex;
   padding: 0.6rem 0.9rem;
   border-radius: 999px;
-  background: rgba(31, 107, 255, 0.08);
-  color: var(--color-primary);
+  background: rgba(31, 107, 255, 0.12);
+  color: #0f3fa0;
   font-size: 0.9rem;
   font-weight: 700;
   margin-bottom: 1rem;
@@ -491,7 +514,7 @@ select {
 }
 
 .hero-panel-text {
-  color: var(--color-muted);
+  color: #334155;
   line-height: 1.85;
   margin-bottom: 1.5rem;
 }
