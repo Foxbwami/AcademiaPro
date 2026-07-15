@@ -11,6 +11,9 @@ import random
 import json
 import urllib.request
 import urllib.error
+import io
+import zipfile
+import xml.etree.ElementTree as ET
 
 from app.extensions import db, login_manager
 from app.forms import OrderForm, RegistrationForm, LoginForm, ProfileForm, SettingForm
@@ -41,11 +44,18 @@ def _get_guest_thread_id():
         session["guest_thread_id"] = thread_id
     return thread_id
 
+def _remember_ai_thread(thread_id):
+    threads = session.get("ai_guest_threads", [])
+    if thread_id not in threads:
+        threads.insert(0, thread_id)
+    session["ai_guest_threads"] = threads[:20]
+
 def _get_ai_guest_thread_id():
     thread_id = session.get(AI_THREAD_TAG)
     if not thread_id:
         thread_id = uuid.uuid4().hex[:20]
         session[AI_THREAD_TAG] = thread_id
+    _remember_ai_thread(thread_id)
     return thread_id
 
 def _guest_thread_prefix(thread_id):
@@ -242,6 +252,8 @@ def _ai_generate_reply(question, history, user):
             + "\n\nOperational context: The live website is student-client to admin support only. "
             "Do not mention writers, bidding, writer profiles, or writer assignment. "
             "Give complete, practical answers that help the student place an order, understand pricing, prepare requirements, track deadlines, or contact admin. "
+            "Format responses clearly with short headings, numbered steps, bullets, and concise next actions. "
+            "When reviewing uploaded content, first summarize what you found, then list gaps, recommendations, and the next step. "
             f"Address the user as {name} when natural."
         )
         messages = []
@@ -348,7 +360,7 @@ def index():
     }
 
 
- 
+
     return render_template(
         "index.html",
         announcements=announcements,
@@ -684,7 +696,7 @@ def send_message():
 @login_required
 def get_messages():
     messages = Message.query.filter(
-        (Message.sender_id == current_user.id) | 
+        (Message.sender_id == current_user.id) |
         (Message.receiver_id == current_user.id)
     ).order_by(Message.timestamp).all()
     return jsonify([
@@ -896,7 +908,7 @@ def unauthorized_callback():
 def dashboard():
     unread_count = Message.query.filter_by(receiver_id=current_user.id, is_read=False).count()
     my_orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.created_at.desc()).limit(8).all()
-    
+
     client_orders_all = Order.query.filter_by(user_id=current_user.id).order_by(Order.created_at.desc()).all()
     client_active_orders = [o for o in client_orders_all if (o.status or "") in ("Open", "In Progress")]
     client_completed_orders = [o for o in client_orders_all if (o.status or "") == "Completed"]
@@ -1833,7 +1845,7 @@ def admin_dashboard():
         unattended_tasks=unattended_tasks,
         unread_message_sender_items=unread_message_sender_items,
     )
-    
+
 @main.route('/admin/leads')
 def admin_leads():
     leads = Lead.query.order_by(Lead.created_at.desc()).all()
@@ -1965,13 +1977,26 @@ def delete_review(id):
     return redirect(url_for('main.admin_reviews'))
 
 @main.route("/order", methods=["GET", "POST"])
-@login_required
 def order():
     form = OrderForm()
-    if request.method == "GET":
+    if request.method == "GET" and current_user.is_authenticated:
         form.name.data = current_user.name
         form.email.data = current_user.email
     if form.validate_on_submit():
+        order_user = current_user if current_user.is_authenticated else None
+        if order_user is None:
+            guest_email = normalize_email(form.email.data)
+            order_user = User.query.filter_by(email=guest_email).first()
+            if order_user is None:
+                order_user = User(
+                    name=(form.name.data or guest_email.split("@")[0]).strip(),
+                    email=guest_email,
+                    role="client",
+                    email_verified=False,
+                )
+                order_user.set_password(uuid.uuid4().hex)
+                db.session.add(order_user)
+                db.session.commit()
         service_track = (form.service_track.data or "writing").strip()
         task_type = (form.task_type.data or "Essay").strip()
         submitted_wc = form.word_count.data if form.word_count.data else 0
@@ -1994,7 +2019,7 @@ def order():
             level=level,
             price=final_price,
             status="Pending Review",
-            user_id=current_user.id
+            user_id=order_user.id
         )
         db.session.add(order)
         db.session.commit()
@@ -2005,7 +2030,7 @@ def order():
                 if stored:
                     db.session.add(OrderFile(
                         filename=stored,
-                        uploader=current_user.name,
+                        uploader=order_user.name,
                         order_id=order.id
                     ))
                     db.session.commit()
@@ -2013,7 +2038,7 @@ def order():
         if admin:
             db.session.add(
                 Message(
-                    sender_id=current_user.id,
+                    sender_id=order_user.id,
                     receiver_id=admin.id,
                     content=f"[New Order #{order.id}] {order.topic} | {task_type} | {word_count} words | ${final_price} | Style: {order.citation_style} | Sources: {order.sources_count}",
                     is_admin=False,
@@ -2024,9 +2049,9 @@ def order():
 
         msg = MailMessage(
             subject="We Received Your Order",
-            recipients=[current_user.email],
+            recipients=[order_user.email],
             body=f"""
-Hi {current_user.name},
+Hi {order_user.name},
 
 Thanks for your order!
 
@@ -2618,19 +2643,88 @@ def guest_chat_messages():
     } for m in messages]
     return jsonify({"ok": True, "messages": payload})
 
+
+def _current_ai_thread_id(create=True):
+    thread_id = request.args.get("thread_id") or request.form.get("thread_id")
+    if not thread_id:
+        payload = request.get_json(silent=True) or {}
+        thread_id = payload.get("thread_id")
+    if thread_id:
+        session[AI_THREAD_TAG] = str(thread_id)[:64]
+        _remember_ai_thread(session[AI_THREAD_TAG])
+        return session[AI_THREAD_TAG]
+    if create:
+        return _get_ai_guest_thread_id()
+    return session.get(AI_THREAD_TAG)
+
+def _extract_ai_upload_text(uploaded_file):
+    filename = secure_filename(uploaded_file.filename or "")
+    ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+    raw = uploaded_file.read()
+    max_chars = 12000
+    try:
+        if ext in {"txt", "md", "csv", "json", "html", "htm"}:
+            text = raw.decode("utf-8", errors="ignore")
+        elif ext == "docx":
+            with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+                xml = archive.read("word/document.xml")
+            root = ET.fromstring(xml)
+            text = "\n".join(node.text for node in root.iter() if node.text)
+        elif ext == "pdf":
+            text = raw.decode("latin-1", errors="ignore")
+            text = re.sub(r"[^\x09\x0A\x0D\x20-\x7E]+", " ", text)
+            text = re.sub(r"\s+", " ", text)
+        else:
+            return filename, "Unsupported file type. Please upload txt, md, csv, json, html, docx, or text-based pdf files."
+    except Exception:
+        return filename, "I could not read this file cleanly. Please paste the important text or upload a plain text/docx version."
+    text = (text or "").strip()
+    if len(text) > max_chars:
+        text = text[:max_chars] + "\n\n[File text truncated for chat context.]"
+    return filename, text or "No readable text was found in this file."
+
 @main.route("/guest/ai/ask", methods=["POST"])
 def guest_ai_ask():
     payload = request.get_json(silent=True) or {}
     question = (payload.get("question") or "").strip()
     return jsonify({"ok": True, "answer": _ai_generate_reply(question, [], None)})
 
+@main.route("/ai/chat/threads", methods=["GET"])
+def ai_chat_threads():
+    if current_user.is_authenticated:
+        rows = AIConversationMessage.query.filter_by(user_id=current_user.id).order_by(AIConversationMessage.created_at.desc()).all()
+    else:
+        allowed_threads = set(session.get("ai_guest_threads", []))
+        active_thread = session.get(AI_THREAD_TAG)
+        if active_thread:
+            allowed_threads.add(active_thread)
+        rows = AIConversationMessage.query.filter_by(user_id=None).order_by(AIConversationMessage.created_at.desc()).all()
+        rows = [r for r in rows if r.guest_thread_id in allowed_threads]
+    threads = {}
+    for row in rows:
+        thread_id = row.guest_thread_id or "default"
+        if thread_id not in threads:
+            title = (row.content or "New chat").strip().splitlines()[0][:64]
+            threads[thread_id] = {
+                "id": thread_id,
+                "title": title or "New chat",
+                "timestamp": row.created_at.strftime("%Y-%m-%d %H:%M") if row.created_at else ""
+            }
+    return jsonify({"ok": True, "threads": list(threads.values())[:20], "active_thread_id": session.get(AI_THREAD_TAG)})
+
+@main.route("/ai/chat/new", methods=["POST"])
+def ai_chat_new():
+    session[AI_THREAD_TAG] = uuid.uuid4().hex[:20]
+    _remember_ai_thread(session[AI_THREAD_TAG])
+    return jsonify({"ok": True, "thread_id": session[AI_THREAD_TAG]})
+
 @main.route("/ai/chat/history", methods=["GET"])
 def ai_chat_history():
     _cleanup_temporary_ai_history()
+    thread_id = _current_ai_thread_id(create=True)
     if current_user.is_authenticated:
-        rows = AIConversationMessage.query.filter_by(user_id=current_user.id).order_by(AIConversationMessage.created_at.asc()).all()
+        rows = AIConversationMessage.query.filter_by(user_id=current_user.id, guest_thread_id=thread_id).order_by(AIConversationMessage.created_at.asc()).all()
     else:
-        thread_id = _get_ai_guest_thread_id()
         rows = AIConversationMessage.query.filter_by(user_id=None, guest_thread_id=thread_id).order_by(AIConversationMessage.created_at.asc()).all()
     payload = [{
         "id": r.id,
@@ -2638,42 +2732,64 @@ def ai_chat_history():
         "content": r.content,
         "timestamp": r.created_at.strftime("%Y-%m-%d %H:%M") if r.created_at else ""
     } for r in rows]
-    return jsonify({"ok": True, "messages": payload})
+    return jsonify({"ok": True, "messages": payload, "thread_id": thread_id})
+
+@main.route("/ai/chat/upload", methods=["POST"])
+def ai_chat_upload():
+    uploaded_files = request.files.getlist("files")
+    if not uploaded_files:
+        return jsonify({"ok": False, "error": "No files uploaded."}), 400
+    files = []
+    for uploaded_file in uploaded_files[:5]:
+        filename, text = _extract_ai_upload_text(uploaded_file)
+        files.append({"name": filename, "text": text, "chars": len(text)})
+    return jsonify({"ok": True, "files": files})
 
 @main.route("/ai/chat/send", methods=["POST"])
 def ai_chat_send():
     _cleanup_temporary_ai_history()
     payload = request.get_json(silent=True) or {}
     question = (payload.get("message") or "").strip()
-    if not question:
+    attachments = payload.get("attachments") or []
+    thread_id = _current_ai_thread_id(create=True)
+    if not question and not attachments:
         return jsonify({"ok": False, "error": "Message is required."}), 400
+
+    attachment_context = ""
+    if attachments:
+        blocks = []
+        for item in attachments[:5]:
+            name = (item.get("name") or "Uploaded file")[:120]
+            text = (item.get("text") or "")[:12000]
+            blocks.append(f"File: {name}\n{text}")
+        attachment_context = "\n\nUploaded file context:\n" + "\n\n---\n\n".join(blocks)
+
+    full_question = (question or "Please review the uploaded file and summarize what I should do next.") + attachment_context
 
     if current_user.is_authenticated:
         user_id = current_user.id
-        guest_thread_id = None
-        history_rows = AIConversationMessage.query.filter_by(user_id=user_id).order_by(AIConversationMessage.created_at.asc()).all()
+        history_rows = AIConversationMessage.query.filter_by(user_id=user_id, guest_thread_id=thread_id).order_by(AIConversationMessage.created_at.asc()).all()
     else:
         user_id = None
-        guest_thread_id = _get_ai_guest_thread_id()
-        history_rows = AIConversationMessage.query.filter_by(user_id=None, guest_thread_id=guest_thread_id).order_by(AIConversationMessage.created_at.asc()).all()
+        history_rows = AIConversationMessage.query.filter_by(user_id=None, guest_thread_id=thread_id).order_by(AIConversationMessage.created_at.asc()).all()
 
     history = [{"role": h.role, "content": h.content} for h in history_rows[-12:]]
-    answer = _ai_generate_reply(question, history, current_user if current_user.is_authenticated else None)
+    answer = _ai_generate_reply(full_question, history, current_user if current_user.is_authenticated else None)
 
     db.session.add(AIConversationMessage(
         user_id=user_id,
-        guest_thread_id=guest_thread_id,
+        guest_thread_id=thread_id,
         role="user",
-        content=question
+        content=question or "Uploaded file for review"
     ))
     db.session.add(AIConversationMessage(
         user_id=user_id,
-        guest_thread_id=guest_thread_id,
+        guest_thread_id=thread_id,
         role="assistant",
         content=answer
     ))
     db.session.commit()
-    return jsonify({"ok": True, "answer": answer})
+    return jsonify({"ok": True, "answer": answer, "thread_id": thread_id})
 
 @main.route("/pricing/estimate", methods=["POST"])
 def pricing_estimate():
@@ -3399,4 +3515,3 @@ def inject_now():
     except Exception:
         payload["admin_unread_messages_count"] = 0
     return payload
-

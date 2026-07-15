@@ -1,254 +1,50 @@
 {% extends "base.html" %}
-{% block title %}Pricing | AcademicPro Consultancy{% endblock %}
+{% block title %}Pricing | AcademiaPro Consultancy{% endblock %}
 {% block content %}
-<section class="mb-5">
-  <div class="text-center mb-5">
-    <div class="section-kicker">Transparent Pricing</div>
-    <h1 class="section-title">Investments in Excellence</h1>
-    <p class="lead">Transparent, track-based pricing designed for clarity. Request a project assessment and receive a custom quote in real-time.</p>
+<section class="pricing-page-hero section-wrapper">
+  <div class="container text-center">
+    <span class="section-badge">Transparent Pricing</span>
+    <h1 class="section-title">One clear pricing system across every page</h1>
+    <p class="section-description">Use these starting prices to plan your budget. After you submit the brief, we confirm a fixed quote based on length, complexity, deadline, and files.</p>
   </div>
+</section>
 
-  <div class="row g-4 mb-5">
-    <!-- Academic & Research Writing -->
-    <div class="col-lg-6">
-      <div class="pricing-card h-100 shadow-sm rounded-3">
-        <div class="pricing-header bg-light p-4 rounded-top-3">
-          <i class="bi bi-journal-text pricing-icon text-primary"></i>
-          <h2 class="h4 mt-3 mb-2">Academic & Research Writing</h2>
-          <div class="pricing-rate">
-            <span class="price-amount">$12</span>
-            <span class="price-unit">/page</span>
-          </div>
-        </div>
-        <div class="pricing-body p-4">
-          <p class="text-muted mb-3">From essays to dissertations. Research guidance, literature synthesis, and publication-ready manuscripts with proper citations.</p>
-          <h5 class="mb-3">What's Included:</h5>
-          <ul class="pricing-features">
-            <li><i class="bi bi-check-circle text-success"></i> 100% Original, Plagiarism-Free Text</li>
-            <li><i class="bi bi-check-circle text-success"></i> Professional Citations (APA, Harvard, IEEE, Chicago)</li>
-            <li><i class="bi bi-check-circle text-success"></i> Literature Reviews & Research Maps</li>
-            <li><i class="bi bi-check-circle text-success"></i> Methodology Guidance & Editing</li>
-            <li><i class="bi bi-check-circle text-success"></i> Turnitin Plagiarism Verification</li>
-          </ul>
-          <a href="{{ url_for('main.order') }}" class="btn btn-primary w-100 mt-4">Request Consultation</a>
-        </div>
-      </div>
+{% include 'components/standard_pricing_table.html' %}
+
+<section class="pricing-faq-section section-wrapper">
+  <div class="container">
+    <div class="section-header text-center">
+      <h2 class="section-title">Pricing Questions</h2>
+      <p class="section-description">Short answers, no maze. The actual order quote stays aligned with the three standard price tracks.</p>
     </div>
-
-    <!-- Programming & Technical -->
-    <div class="col-lg-6">
-      <div class="pricing-card h-100 shadow-sm rounded-3 border-primary">
-        <div class="pricing-header bg-primary text-white p-4 rounded-top-3">
-          <div class="badge bg-warning text-dark mb-3">MOST POPULAR</div>
-          <i class="bi bi-code-slash pricing-icon"></i>
-          <h2 class="h4 mt-3 mb-2">Programming & Technical</h2>
-          <div class="pricing-rate">
-            <span class="price-amount">$25</span>
-            <span class="price-unit">/task</span>
-          </div>
-        </div>
-        <div class="pricing-body p-4">
-          <p class="text-muted mb-3">Complete coding solutions—web apps, automation, databases, ML models, and technical architecture with detailed documentation.</p>
-          <h5 class="mb-3">What's Included:</h5>
-          <ul class="pricing-features">
-            <li><i class="bi bi-check-circle text-success"></i> All Major Languages (Python, JS, Java, R, SQL)</li>
-            <li><i class="bi bi-check-circle text-success"></i> Full Codebase Annotations & Explanations</li>
-            <li><i class="bi bi-check-circle text-success"></i> Complete GitHub Workflow Access</li>
-            <li><i class="bi bi-check-circle text-success"></i> Database Design & Architecture</li>
-            <li><i class="bi bi-check-circle text-success"></i> Technical Documentation & Walkthroughs</li>
-          </ul>
-          <a href="{{ url_for('main.order') }}" class="btn btn-primary w-100 mt-4">Request Consultation</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Exam Prep & Support -->
-    <div class="col-lg-6">
-      <div class="pricing-card h-100 shadow-sm rounded-3">
-        <div class="pricing-header bg-light p-4 rounded-top-3">
-          <i class="bi bi-mortarboard pricing-icon text-info"></i>
-          <h2 class="h4 mt-3 mb-2">Exam Preparation</h2>
-          <div class="pricing-rate">
-            <span class="price-amount">$30</span>
-            <span class="price-unit">/session</span>
-          </div>
-        </div>
-        <div class="pricing-body p-4">
-          <p class="text-muted mb-3">Structured exam strategies, concept deep-dives, timed practice tests, and personalized study roadmaps.</p>
-          <h5 class="mb-3">What's Included:</h5>
-          <ul class="pricing-features">
-            <li><i class="bi bi-check-circle text-success"></i> Undergraduate to Ph.D. Level Syllabus Mapping</li>
-            <li><i class="bi bi-check-circle text-success"></i> Simulated Mock Exams & Timed Pressures</li>
-            <li><i class="bi bi-check-circle text-success"></i> Step-by-Step Conceptual Blueprints</li>
-            <li><i class="bi bi-check-circle text-success"></i> Error Diagnostics & Feedback Loops</li>
-            <li><i class="bi bi-check-circle text-success"></i> Continuous Tutoring Support</li>
-          </ul>
-          <a href="{{ url_for('main.order') }}" class="btn btn-primary w-100 mt-4">Request Consultation</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Career & Resume -->
-    <div class="col-lg-6">
-      <div class="pricing-card h-100 shadow-sm rounded-3">
-        <div class="pricing-header bg-light p-4 rounded-top-3">
-          <i class="bi bi-briefcase pricing-icon text-success"></i>
-          <h2 class="h4 mt-3 mb-2">Career & Resume</h2>
-          <div class="pricing-rate">
-            <span class="price-amount">$45</span>
-            <span class="price-unit">/review</span>
-          </div>
-        </div>
-        <div class="pricing-body p-4">
-          <p class="text-muted mb-3">Career positioning—resume overhaul, LinkedIn strategy, application materials, and interview preparation.</p>
-          <h5 class="mb-3">What's Included:</h5>
-          <ul class="pricing-features">
-            <li><i class="bi bi-check-circle text-success"></i> Elite ATS-Ready Resume Restructuring</li>
-            <li><i class="bi bi-check-circle text-success"></i> Persuasive Cover Letter Drafts</li>
-            <li><i class="bi bi-check-circle text-success"></i> LinkedIn Profile Optimization</li>
-            <li><i class="bi bi-check-circle text-success"></i> Personal Statement & Essay Writing</li>
-            <li><i class="bi bi-check-circle text-success"></i> Interview Preparation & Coaching</li>
-          </ul>
-          <a href="{{ url_for('main.order') }}" class="btn btn-primary w-100 mt-4">Request Consultation</a>
-        </div>
-      </div>
+    <div class="pricing-faq-grid">
+      <article class="pricing-faq-card">
+        <h3>How fast do I get a quote?</h3>
+        <p>Most requests are reviewed within minutes after you submit the project details and deadline.</p>
+      </article>
+      <article class="pricing-faq-card">
+        <h3>Can large projects be bundled?</h3>
+        <p>Yes. Multi-part projects can receive one combined quote so the scope stays clear.</p>
+      </article>
+      <article class="pricing-faq-card">
+        <h3>What affects the final price?</h3>
+        <p>Length, urgency, technical difficulty, source requirements, files, and academic level.</p>
+      </article>
+      <article class="pricing-faq-card">
+        <h3>Do revisions cost extra?</h3>
+        <p>Revisions based on the original instructions are supported. New requirements may need a new quote.</p>
+      </article>
     </div>
   </div>
 </section>
 
-<!-- FAQ Section -->
-<section class="mb-5 bg-light p-5 rounded-3">
-  <h2 class="mb-4">Frequently Asked Questions</h2>
-  <div class="accordion" id="pricingAccordion">
-    <div class="accordion-item">
-      <h2 class="accordion-header">
-        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
-          How long does it take to get a quote?
-        </button>
-      </h2>
-      <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#pricingAccordion">
-        <div class="accordion-body">
-          We typically respond with a fixed-price quote within minutes of submitting your project details. For urgent requests, we prioritize immediate assessment.
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <h2 class="accordion-header">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
-          Can prices be negotiated for larger projects?
-        </button>
-      </h2>
-      <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#pricingAccordion">
-        <div class="accordion-body">
-          Yes. For comprehensive multi-track projects or bulk orders, we offer package discounts. Contact us directly for a customized quote.
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <h2 class="accordion-header">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
-          What payment methods do you accept?
-        </button>
-      </h2>
-      <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#pricingAccordion">
-        <div class="accordion-body">
-          We accept credit/debit cards, PayPal, bank transfers, and cryptocurrency for maximum flexibility and security.
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <h2 class="accordion-header">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
-          Is there a refund policy?
-        </button>
-      </h2>
-      <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#pricingAccordion">
-        <div class="accordion-body">
-          We guarantee satisfaction. If you're unhappy with the deliverable, we'll revise until you're satisfied. Full refunds are available if requirements fundamentally change.
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <h2 class="accordion-header">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
-          Do you offer discounts for multiple services?
-        </button>
-      </h2>
-      <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#pricingAccordion">
-        <div class="accordion-body">
-          Absolutely! Bundle pricing is available when combining multiple service tracks (e.g., writing + editing + career coaching). Ask for a custom package quote.
-        </div>
-      </div>
+<section class="service-cta-final pricing-final-cta">
+  <div class="container">
+    <div class="cta-card">
+      <h3>Ready for a fixed quote?</h3>
+      <p>Send your task details and deadline. We’ll help you choose the right pricing track.</p>
+      <a href="{{ ORDER_LINK }}" class="btn btn-primary btn-lg">Place Your Order</a>
     </div>
   </div>
 </section>
-
-<!-- CTA Section -->
-<section class="text-center py-5 bg-primary text-white rounded-3">
-  <h2 class="mb-3">Ready to Get Started?</h2>
-  <p class="mb-4 lead">Submit your project details and receive a fixed-price quote within minutes.</p>
-  <a href="{{ url_for('main.order') }}" class="btn btn-light btn-lg me-3">Request Consultation</a>
-  <a href="{{ url_for('main.contact') }}" class="btn btn-outline-light btn-lg">Contact Us</a>
-</section>
-
-<style>
-.pricing-card {
-  border: none;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.pricing-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
-}
-
-.pricing-header {
-  text-align: center;
-}
-
-.pricing-icon {
-  font-size: 2.5rem;
-}
-
-.pricing-rate {
-  margin-top: 15px;
-}
-
-.price-amount {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: var(--bs-primary);
-}
-
-.pricing-card.border-primary .price-amount {
-  color: white;
-}
-
-.price-unit {
-  font-size: 1rem;
-  color: #666;
-}
-
-.pricing-card.border-primary .price-unit {
-  color: rgba(255,255,255,0.8);
-}
-
-.pricing-features {
-  list-style: none;
-  padding: 0;
-}
-
-.pricing-features li {
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #eee;
-}
-
-.pricing-features li:last-child {
-  border-bottom: none;
-}
-
-.pricing-features i {
-  margin-right: 0.5rem;
-}
-</style>
 {% endblock %}

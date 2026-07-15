@@ -545,7 +545,8 @@
   box-shadow: 4px 0 20px rgba(15, 23, 42, 0.12);
 }
 
-.mobile-drawer.show {
+.mobile-drawer.show,
+.mobile-drawer.drawer-open {
   transform: translateX(0);
 }
 
@@ -559,7 +560,8 @@
   z-index: 1059;
 }
 
-.mobile-drawer-overlay.show {
+.mobile-drawer-overlay.show,
+.mobile-drawer-overlay.drawer-active {
   opacity: 1;
   pointer-events: auto;
 }
@@ -905,7 +907,412 @@
   }
 
   .mobile-drawer {
-    width: 85%;
-    max-width: 320px;
+    width: min(88vw, 320px);
+    max-width: calc(100vw - 1rem);
+  }
+}
+
+/* Professional header refinements */
+.trust-bar {
+  padding: 0.45rem 0;
+  background: linear-gradient(90deg, #071b3f 0%, #0c3476 58%, #102a54 100%);
+  font-size: 0.82rem;
+}
+
+.trust-items {
+  gap: 1.1rem;
+}
+
+.trust-item {
+  white-space: nowrap;
+}
+
+.site-header {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+}
+
+.header-top-row {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.header-shell {
+  min-height: 76px;
+  padding: 0.65rem 0;
+  flex-wrap: nowrap;
+}
+
+.header-brand {
+  min-width: 245px;
+}
+
+.brand-mark {
+  width: 3.9rem;
+  height: 3.9rem;
+  min-width: 3.9rem;
+  border-radius: 1.2rem;
+  background: linear-gradient(145deg, #ffffff, #eef5ff);
+  border: 1px solid rgba(31, 107, 255, 0.12);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+}
+
+.brand-logo {
+  width: 2.55rem;
+}
+
+.header-logo-link {
+  font-size: 1.42rem;
+}
+
+.brand-tagline {
+  max-width: 210px;
+  color: #64748b;
+  font-size: 0.76rem;
+  white-space: nowrap;
+}
+
+.header-actions {
+  gap: 0.55rem;
+}
+
+.icon-action-btn,
+.search-btn,
+.ai-btn {
+  width: 2.55rem;
+  height: 2.55rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #f8fbff;
+}
+
+.header-btn-secondary,
+.header-btn-primary,
+.btn-place-order {
+  border-radius: 999px;
+  min-height: 2.55rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.header-btn-secondary {
+  background: #ffffff;
+}
+
+.header-btn-primary {
+  background: linear-gradient(135deg, #142f68, var(--color-primary));
+}
+
+.btn-place-order {
+  padding: 0.72rem 1.15rem;
+  background: linear-gradient(135deg, #d4af37, #b98116);
+  box-shadow: 0 12px 26px rgba(180, 129, 22, 0.22);
+}
+
+.header-middle-row {
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+}
+
+.header-nav {
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.nav-link,
+.nav-dropdown-toggle {
+  padding: 0.55rem 0.95rem;
+  font-size: 0.9rem;
+}
+
+.dropdown-menu.mega-menu {
+  width: min(900px, calc(100vw - 3rem));
+  min-width: min(900px, calc(100vw - 3rem)) !important;
+  border-radius: 1.25rem;
+}
+
+.resources-menu {
+  min-width: 220px !important;
+}
+
+.mobile-menu-btn {
+  margin-left: auto;
+  width: 2.7rem;
+  height: 2.7rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(31, 107, 255, 0.14);
+  background: #f8fbff;
+}
+
+.mobile-drawer {
+  z-index: 1085;
+  border-radius: 0 1.35rem 1.35rem 0;
+}
+
+.mobile-drawer-overlay {
+  z-index: 1080;
+}
+
+.mobile-drawer-inner {
+  padding: 1.15rem;
+}
+
+.drawer-top {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+}
+
+.drawer-link,
+.drawer-user-link {
+  min-height: 2.85rem;
+}
+
+@media (max-width: 1200px) {
+  .header-brand {
+    min-width: 220px;
+  }
+
+  .header-logo-link {
+    font-size: 1.28rem;
+  }
+
+  .brand-tagline {
+    max-width: 175px;
+  }
+
+  .header-btn-primary {
+    display: none;
+  }
+}
+
+@media (max-width: 992px) {
+  .header-top-row {
+    border-bottom: 0;
+  }
+
+  .header-shell {
+    min-height: 68px;
+  }
+
+  .brand-mark {
+    width: 3.25rem;
+    height: 3.25rem;
+    min-width: 3.25rem;
+  }
+
+  .brand-logo {
+    width: 2.1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .header-brand {
+    min-width: 0;
+    gap: 0.7rem;
+  }
+
+  .brand-mark {
+    width: 2.8rem;
+    height: 2.8rem;
+    min-width: 2.8rem;
+    border-radius: 0.95rem;
+  }
+
+  .brand-logo {
+    width: 1.8rem;
+  }
+
+  .header-logo-link {
+    font-size: 1.05rem;
+  }
+
+  .mobile-drawer {
+    width: min(92vw, 340px);
+  }
+}
+
+/* Clear large logo without decorative border */
+.header-brand {
+  min-width: 360px;
+}
+
+.brand-mark,
+.brand-mark-sm {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+.brand-mark {
+  width: 9.75rem !important;
+  height: 3.75rem !important;
+  min-width: 9.75rem !important;
+}
+
+.brand-logo {
+  width: 9.75rem !important;
+  max-width: none;
+}
+
+.brand-info {
+  display: none;
+}
+
+.brand-mark-sm {
+  width: 8rem !important;
+  height: 2.75rem !important;
+  min-width: 8rem !important;
+}
+
+.brand-logo-sm {
+  width: 8rem !important;
+  max-width: none;
+}
+
+@media (max-width: 1200px) {
+  .header-brand {
+    min-width: 300px;
+  }
+
+  .brand-mark,
+  .brand-logo {
+    width: 8.5rem !important;
+    min-width: 8.5rem !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .header-brand {
+    min-width: 0;
+  }
+
+  .brand-mark,
+  .brand-logo {
+    width: 7.4rem !important;
+    min-width: 7.4rem !important;
+  }
+}
+
+/* Scroll-aware compact header: keep logo + Services, hide the rest while scrolling down */
+.site-header,
+.header-actions,
+.header-middle-row,
+.header-nav > * {
+  transition: opacity 0.22s ease, transform 0.22s ease, max-height 0.22s ease, padding 0.22s ease, visibility 0.22s ease;
+}
+
+.site-header.scrolled {
+  background: rgba(255, 248, 223, 0.94);
+  box-shadow: 0 14px 42px rgba(120, 79, 8, 0.16);
+}
+
+@media (min-width: 992px) {
+  .site-header.scrolling-down .header-actions {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    pointer-events: none;
+  }
+
+  .site-header.scrolling-down .header-middle-row {
+    max-height: 3.25rem;
+  }
+
+  .site-header.scrolling-down .header-nav {
+    justify-content: flex-start;
+    padding-left: calc(360px + 1rem);
+  }
+
+  .site-header.scrolling-down .header-nav > *:not(.services-nav-item) {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    pointer-events: none;
+    width: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .site-header.scrolling-down .services-nav-item {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+}
+
+/* Scroll-aware compact header: keep logo + Services, hide the rest while scrolling down */
+.site-header,
+.header-actions,
+.header-middle-row,
+.header-nav > * {
+  transition: opacity 0.22s ease, transform 0.22s ease, max-height 0.22s ease, padding 0.22s ease, visibility 0.22s ease;
+}
+
+.site-header.scrolling-down .trust-bar,
+.site-header.scrolling-down .header-actions,
+.site-header.scrolling-down .header-nav > :not(.services-nav-item) {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-0.75rem);
+}
+
+.site-header.scrolling-down .header-shell {
+  min-height: 62px;
+  padding-top: 0.35rem;
+  padding-bottom: 0.25rem;
+}
+
+.site-header.scrolling-down .header-top-row {
+  border-bottom-color: transparent;
+}
+
+.site-header.scrolling-down .header-middle-row {
+  margin-top: -3.15rem;
+  padding-top: 0;
+  padding-bottom: 0.25rem;
+  pointer-events: none;
+}
+
+.site-header.scrolling-down .header-nav {
+  justify-content: flex-end;
+  padding-right: 1rem;
+  pointer-events: none;
+}
+
+.site-header.scrolling-down .services-nav-item {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.site-header.scrolling-down .services-nav-item .nav-dropdown-toggle {
+  background: rgba(212, 175, 55, 0.18);
+  color: #081a3a;
+  box-shadow: 0 10px 24px rgba(164, 111, 16, 0.16);
+}
+
+.site-header.scrolling-down .brand-mark,
+.site-header.scrolling-down .brand-logo {
+  width: 8.3rem !important;
+  min-width: 8.3rem !important;
+}
+
+@media (max-width: 992px) {
+  .site-header.scrolling-down .mobile-menu-btn {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .site-header.scrolling-down .brand-mark,
+  .site-header.scrolling-down .brand-logo {
+    width: 7.2rem !important;
+    min-width: 7.2rem !important;
   }
 }

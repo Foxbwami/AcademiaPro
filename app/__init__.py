@@ -370,7 +370,16 @@ def create_app():
                 unread_count = 0
         # Inject WhatsApp number and other globals for templates
         whatsapp = app.config.get("WHATSAPP_NUMBER", "+447426105606")
-        return dict(current_user=current_user, unread_count=unread_count, WHATSAPP_NUMBER=whatsapp)
+        try:
+            from flask import url_for
+            order_href = url_for('main.order') if getattr(current_user, 'is_authenticated', False) else f"https://wa.me/{whatsapp.replace('+','')}?text=Hello%20AcademiaPro%20Admin%2C%20I'd%20like%20to%20place%20an%20order."
+            consult_wa = f"https://wa.me/{whatsapp.replace('+','')}?text=Hello%20AcademiaPro%20Admin%2C%20I'd%20like%20to%20request%20a%20consultation."
+        except Exception:
+            order_href = '#'
+            consult_wa = '#'
+        consult_mailto = app.config.get('SUPPORT_EMAIL', 'support@academiapro.com')
+        consult_mailto = f"mailto:{consult_mailto}?subject=AcademiaPro%20Consultation%20Request"
+        return dict(current_user=current_user, unread_count=unread_count, WHATSAPP_NUMBER=whatsapp, ORDER_LINK=order_href, CONSULT_WA=consult_wa, CONSULT_MAILTO=consult_mailto)
 
     @login_manager.user_loader
     def load_user(user_id):

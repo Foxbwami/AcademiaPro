@@ -8,12 +8,12 @@
 {% set title = 'Get calm, reliable help for your next deadline' %}
 {% set description = 'AcademiaPro supports essays, dissertations, research, programming, data analysis, and editing so you can submit with confidence.' %}
 {% set buttons = [
-  {'href': url_for('main.order'), 'classes': 'btn-primary hero-btn hero-btn-main', 'label': 'Place Order →'},
-  {'href': '#services', 'classes': 'btn-outline-primary hero-btn hero-btn-outline', 'label': 'Browse Services'},
-  {'href': '#globalAiFab', 'classes': 'btn-secondary hero-btn hero-btn-secondary', 'label': 'Chat with AI'}
+  {'href': ORDER_LINK, 'classes': 'btn-primary hero-btn hero-btn-main', 'label': 'Place Order →'},
+  {'href': url_for('main.services_page'), 'classes': 'btn-outline-primary hero-btn hero-btn-outline', 'label': 'Browse Services'},
+  {'href': url_for('main.ai_chat'), 'classes': 'btn-secondary hero-btn hero-btn-secondary', 'label': 'Chat with AI'}
 ] %}
 {% set points = ['🔒 Secure Payments', '✔ Confidential', '⭐ 4.9 Rating', '🕒 24/7 Support'] %}
-{% set panel = {'top':'Live service status','list':['📚 Academic Writing — Available','💻 Programming — Experts Online','📊 Data Analysis — 24/7 Support','📖 Research — Fast Delivery','97% Satisfaction','700+ Projects Completed','★★★★★ 4.9 Rating'],'link': {'href':'#services','label':'See all services'}} %}
+{% set panel = {'top':'Live service status','list':['📚 Academic Writing — Available','💻 Programming — Experts Online','📊 Data Analysis — 24/7 Support','📖 Research — Fast Delivery','98% Client Satisfaction','700+ Projects Delivered','★★★★★ 4.9 Rating'],'link': {'href':'#services','label':'See all services'}} %}
 {% include 'components/hero.html' with context %}
 {% include 'components/hero_status_strip.html' %}
 {% include 'components/services.html' %}

@@ -103,7 +103,7 @@
           {{ form.currency(class="form-select form-select-sm w-auto", id="currencyInput") }}
         </div>
         <div class="price-big" id="estimatedPrice">$0.00</div>
-        <div class="small text-muted mb-2" id="priceMath">0 words × $0.05/word</div>
+        <div class="small text-muted mb-2" id="priceMath">0 pages × $10/page baseline</div>
         <div class="small text-muted">Level multiplier and deadline urgency included.</div>
       </div>
 
@@ -165,7 +165,8 @@
           priceEl.textContent = (cur === "USD" ? "$" : cur + " ") + converted.toFixed(2);
           if (priceMath) {
             const words = Number(payload.word_count) || 0;
-            priceMath.textContent = `${words} words × $0.05/word`;
+            const pages = Math.max(1, Math.ceil(words / 275));
+            priceMath.textContent = `${pages} page${pages === 1 ? "" : "s"} × $10/page baseline`;
           }
         }
       } catch (_err) {}

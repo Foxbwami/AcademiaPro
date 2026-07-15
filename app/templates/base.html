@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -22,6 +22,13 @@
   <!-- Page-specific CSS injected by child templates -->
 </head>
 <body data-authenticated="{{ 'true' if current_user.is_authenticated else 'false' }}">
+  <div class="site-graphics" aria-hidden="true">
+    <span class="graphic-orb graphic-orb-one"></span>
+    <span class="graphic-orb graphic-orb-two"></span>
+    <span class="graphic-line-art graphic-book"></span>
+    <span class="graphic-line-art graphic-triangle"></span>
+  </div>
+  <header class="site-header sticky-top" role="banner">
   {# Trust indicators bar #}
   <div class="trust-bar" role="region" aria-label="Trust indicators">
     <div class="container">
@@ -53,7 +60,7 @@
     </div>
   </div>
 
-  <header class="site-header sticky-top" role="banner">
+
     <div class="container header-top-row">
       <div class="header-shell">
         <div class="header-brand">
@@ -111,7 +118,7 @@
           {% endif %}
 
           <div class="header-sep" aria-hidden="true"></div>
-          <a class="btn btn-place-order ms-3" href="{{ url_for('main.order') }}" role="button" aria-label="Place Order">
+          <a class="btn btn-place-order ms-3" href="{{ ORDER_LINK }}" role="button" aria-label="Place Order">
             <i class="bi bi-cart-fill" aria-hidden="true"></i>
             <span class="place-order-text">Place Order</span>
           </a>
@@ -325,75 +332,99 @@
     {% block content %}{% endblock %}
   </main>
 
-  <!-- Site footer (premium multi-column redesign) -->
-  <footer class="site-footer mt-5" role="contentinfo">
+  {% set footer_pages = [
+    'main.index', 'main.services_page', 'main.pricing_page', 'main.about', 'main.public_blogs',
+    'main.blog_list', 'main.blog_detail', 'main.Samples', 'main.sample_detail', 'main.faq',
+    'main.how_it_works', 'main.testimonials', 'main.privacy_policy', 'main.terms',
+    'main.fair_use', 'main.payment_policy'
+  ] %}
+  {% if request.endpoint in footer_pages %}
+  <footer class="site-footer" role="contentinfo">
     <div class="wrapper">
-      <div class="footer-grid premium-footer rounded-4 p-4 p-lg-5 shadow-soft bg-secondary bg-opacity-6">
-        <div class="footer-col footer-brand-col">
-          <a class="footer-brand" href="{{ url_for('main.index') }}">AcademiaPro</a>
-          <p class="footer-lead">Professional Academic &amp;<br>Technical Consultancy</p>
-          <div class="footer-social mt-3">
-            <a class="social-pill me-2" href="#" aria-label="Facebook"><i class="bi bi-facebook" aria-hidden="true"></i></a>
-            <a class="social-pill me-2" href="#" aria-label="X"><i class="bi bi-x" aria-hidden="true"></i></a>
-            <a class="social-pill me-2" href="#" aria-label="Instagram"><i class="bi bi-instagram" aria-hidden="true"></i></a>
-            <a class="social-pill me-2" href="#" aria-label="LinkedIn"><i class="bi bi-linkedin" aria-hidden="true"></i></a>
-          </div>
-        </div>
-
-        <div class="footer-col footer-links-col">
-          <h4 class="footer-col-title">Services</h4>
-          <ul class="footer-links list-unstyled">
-            <li><a href="{{ url_for('main.academic_writing') }}">Academic Writing</a></li>
-            <li><a href="{{ url_for('main.research_dissertation') }}">Research &amp; Dissertation</a></li>
-            <li><a href="{{ url_for('main.programming') }}">Programming &amp; Development</a></li>
-            <li><a href="{{ url_for('main.editing_proofreading') }}">Editing &amp; Proofreading</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col footer-company-col">
-          <h4 class="footer-col-title">Company</h4>
-          <ul class="footer-links list-unstyled">
-            <li><a href="{{ url_for('main.about') }}">About Us</a></li>
-            <li><a href="{{ url_for('main.public_blogs') }}">Blog</a></li>
-            <li><a href="{{ url_for('main.faq') }}">FAQ</a></li>
-            <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col footer-contact-col">
-          <h4 class="footer-col-title">Contact &amp; Newsletter</h4>
-          <div class="footer-contact-list mb-3">
-            <div class="footer-contact-item"><i class="bi bi-telephone-fill" aria-hidden="true"></i><span>+{{ WHATSAPP_NUMBER }}</span></div>
-            <div class="footer-contact-item"><i class="bi bi-envelope-fill" aria-hidden="true"></i><span>support@academiapro.com</span></div>
-            <div class="footer-contact-item"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i><span>Online</span></div>
-          </div>
-          <form action="#" method="post" class="newsletter-form d-flex gap-2" onsubmit="return false;">
-            <input type="email" name="email" class="form-control form-control-sm" placeholder="Your email" aria-label="Email address">
-            <button class="btn btn-primary btn-sm" type="submit">Subscribe</button>
-          </form>
-
-          <div class="footer-qr-row d-flex gap-2 mt-3">
-            <div class="footer-qr-card rounded-4 shadow-soft p-2 text-center bg-white flex-fill">
-              <div class="footer-qr-title small">Website QR</div>
-              <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/website-qr.png') }}" alt="Website QR code" class="footer-qr-image mx-auto mb-1">
-            </div>
-            <div class="footer-qr-card rounded-4 shadow-soft p-2 text-center bg-white flex-fill">
-              <div class="footer-qr-title small">WhatsApp QR</div>
-              <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/whatsapp-qr.png') }}" alt="WhatsApp QR code" class="footer-qr-image mx-auto mb-1">
+      <div class="footer-shell">
+        <div class="footer-main">
+          <div class="footer-brand-col">
+            <a class="footer-brand" href="{{ url_for('main.index') }}">AcademiaPro</a>
+            <p class="footer-lead">Reliable academic and technical support for research, writing, programming, data analysis, and editing.</p>
+            <div class="footer-trust-row" aria-label="Service highlights">
+              <span><i class="bi bi-star-fill" aria-hidden="true"></i> 4.9 rated</span>
+              <span><i class="bi bi-shield-check" aria-hidden="true"></i> Confidential</span>
+              <span><i class="bi bi-clock-history" aria-hidden="true"></i> 24/7 support</span>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div class="footer-bottom d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 mt-4 pt-3 border-top">
-        <div class="footer-legal small text-muted">© 2026 AcademiaPro · All rights reserved · <a href="{{ url_for('main.privacy_policy') }}">Privacy</a> · <a href="{{ url_for('main.terms') }}">Terms</a></div>
-        <div class="footer-actions d-flex gap-2">
-          <a class="btn btn-outline-dark btn-sm rounded-pill" href="{{ url_for('main.about') }}">Company Profile</a>
-          <a class="btn btn-primary btn-sm rounded-pill" href="{{ url_for('main.order') }}">Place Order</a>
+          <nav class="footer-nav" aria-label="Footer navigation">
+            <div class="footer-col">
+              <h4 class="footer-col-title">Services</h4>
+              <ul class="footer-links list-unstyled">
+                <li><a href="{{ url_for('main.academic_writing') }}">Academic Writing</a></li>
+                <li><a href="{{ url_for('main.research_dissertation') }}">Research &amp; Dissertation</a></li>
+                <li><a href="{{ url_for('main.programming') }}">Programming</a></li>
+                <li><a href="{{ url_for('main.editing_proofreading') }}">Editing</a></li>
+              </ul>
+            </div>
+
+            <div class="footer-col">
+              <h4 class="footer-col-title">Company</h4>
+              <ul class="footer-links list-unstyled">
+                <li><a href="{{ url_for('main.about') }}">About</a></li>
+                <li><a href="{{ url_for('main.pricing_page') }}">Pricing</a></li>
+                <li><a href="{{ url_for('main.Samples') }}">Samples</a></li>
+                <li><a href="{{ url_for('main.public_blogs') }}">Blog</a></li>
+              </ul>
+            </div>
+
+            <div class="footer-col footer-contact-col">
+              <h4 class="footer-col-title">Contact</h4>
+              <ul class="footer-contact-list list-unstyled">
+                <li><i class="bi bi-whatsapp" aria-hidden="true"></i><a href="https://wa.me/{{ WHATSAPP_NUMBER|replace('+','') }}" target="_blank" rel="noopener">WhatsApp</a></li>
+                <li><i class="bi bi-envelope" aria-hidden="true"></i><a href="mailto:support@academiapro.com">support@academiapro.com</a></li>
+                <li><i class="bi bi-globe2" aria-hidden="true"></i><span>Online worldwide</span></li>
+              </ul>
+            </div>
+          </nav>
+        </div>
+
+        <div class="footer-qr-section" aria-label="QR codes">
+          <div class="footer-qr-copy">
+            <span class="footer-cta-kicker">Quick Scan</span>
+            <strong>Open the website or WhatsApp instantly.</strong>
+          </div>
+          <div class="footer-qr-grid">
+            <div class="footer-qr-card">
+              <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/website-qr.png') }}" alt="AcademiaPro website QR code" class="footer-qr-image">
+              <span>Website</span>
+            </div>
+            <div class="footer-qr-card">
+              <img loading="lazy" decoding="async" src="{{ url_for('static', filename='images/whatsapp-qr.png') }}" alt="AcademiaPro WhatsApp QR code" class="footer-qr-image">
+              <span>WhatsApp</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-cta-panel">
+          <div>
+            <span class="footer-cta-kicker">Need help fast?</span>
+            <strong>Send your brief and deadline.</strong>
+          </div>
+          <div class="footer-cta-actions">
+            <a class="btn btn-primary btn-sm rounded-pill" href="{{ ORDER_LINK }}">Place Order</a>
+            <a class="btn btn-outline-light btn-sm rounded-pill" href="{{ url_for('main.ai_chat') }}">Ask AI</a>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <div class="footer-legal">© 2026 AcademiaPro. All rights reserved.</div>
+          <div class="footer-policy-links">
+            <a href="{{ url_for('main.privacy_policy') }}">Privacy</a>
+            <a href="{{ url_for('main.terms') }}">Terms</a>
+            <a href="{{ url_for('main.payment_policy') }}">Payments</a>
+          </div>
         </div>
       </div>
     </div>
   </footer>
+  {% endif %}
 
   <div class="whatsapp-fab-shell">
     <a href="https://wa.me/{{ WHATSAPP_NUMBER|replace('+','') }}?text=Hello%20AcademiaPro%20Admin%2C%20I%27d%20like%20to%20request%20consultation." target="_blank" rel="noopener" class="whatsapp-fab" aria-label="Contact admin via WhatsApp">

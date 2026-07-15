@@ -1,43 +1,30 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 120" role="img" aria-labelledby="title desc">
+  <title id="title">AcademiaPro logo</title>
+  <desc id="desc">Open book and quill icon with clear AcademiaPro text</desc>
   <defs>
-    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#d4af37;stop-opacity:1" />
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe27a"/>
+      <stop offset="52%" stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#a66f10"/>
+    </linearGradient>
+    <linearGradient id="navy" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#123f8a"/>
+      <stop offset="100%" stop-color="#061a3d"/>
     </linearGradient>
   </defs>
-  
-  <!-- Outer circle background - Navy -->
-  <circle cx="100" cy="100" r="98" fill="#0f3a7d" stroke="none"/>
-  
-  <!-- Inner lighter navy circle for depth -->
-  <circle cx="100" cy="100" r="92" fill="#1a4a9e"/>
-  
-  <!-- Gold accent circle -->
-  <circle cx="100" cy="100" r="85" fill="none" stroke="url(#goldGradient)" stroke-width="2"/>
-  
-  <!-- Mortarboard (cap) - Gold gradient -->
-  <g>
-    <!-- Top of mortarboard -->
-    <line x1="50" y1="90" x2="150" y2="90" stroke="url(#goldGradient)" stroke-width="12" stroke-linecap="round"/>
-    <!-- Left tassel -->
-    <line x1="45" y1="90" x2="35" y2="130" stroke="url(#goldGradient)" stroke-width="4" stroke-linecap="round"/>
-    <!-- Center circle of tassel -->
-    <circle cx="35" cy="135" r="5" fill="url(#goldGradient)"/>
+
+  <g transform="translate(10 16)">
+    <path d="M12 62c18-8 34-8 50 3V25c-16-9-33-10-50-2v39z" fill="none" stroke="url(#gold)" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M102 62c-18-8-34-8-50 3V25c16-9 33-10 50-2v39z" fill="none" stroke="url(#gold)" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M12 70c18-7 34-6 50 5 16-11 32-12 50-5" fill="none" stroke="url(#gold)" stroke-width="7" stroke-linecap="round"/>
+    <path d="M67 13c22-9 36-7 44 6-13 2-19 9-20 21-1 14-12 24-34 31 11-18 10-37 10-58z" fill="url(#navy)" stroke="url(#gold)" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M83 18C72 35 65 50 58 72" fill="none" stroke="url(#gold)" stroke-width="4" stroke-linecap="round"/>
   </g>
-  
-  <!-- Book representation - Navy with gold spine -->
-  <g>
-    <!-- Left page -->
-    <rect x="55" y="115" width="35" height="50" fill="#ffffff" opacity="0.95" rx="3"/>
-    <!-- Right page -->
-    <rect x="110" y="115" width="35" height="50" fill="#ffffff" opacity="0.85" rx="3"/>
-    <!-- Spine - Gold -->
-    <rect x="90" y="115" width="20" height="50" fill="url(#goldGradient)" rx="2"/>
-  </g>
-  
-  <!-- Decorative gold stars/accents -->
-  <g fill="url(#goldGradient)">
-    <circle cx="60" cy="70" r="3"/>
-    <circle cx="140" cy="70" r="3"/>
+
+  <g transform="translate(140 30)">
+    <text x="0" y="34" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="34" font-weight="900" letter-spacing="-1.5" fill="#081a3a">Academia</text>
+    <text x="180" y="34" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="34" font-weight="900" letter-spacing="-1.5" fill="url(#gold)">Pro</text>
+    <line x1="2" y1="51" x2="208" y2="51" stroke="url(#gold)" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+    <text x="4" y="74" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="3" fill="#123f8a">ACADEMIC &amp; TECHNICAL SUPPORT</text>
   </g>
 </svg>

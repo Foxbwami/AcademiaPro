@@ -1,94 +1,199 @@
 {% extends "base.html" %}
-{% block title %}Services | AcademicPro{% endblock %}
+{% block title %}Our Services | AcademiaPro - Academic Support Solutions{% endblock %}
 {% block content %}
-<section class="mb-4">
-  <div class="section-kicker">Consultancy Tracks</div>
-  <h1 class="section-title">Academic, Technical, Exam, and Career Support</h1>
-  <p>AcademicPro provides confidential consultancy for students and professionals who need research support, software project help, exam preparation, or career application documents.</p>
+
+<!-- Hero Section -->
+<section class="hero-section" style="padding: 4rem 0;">
+  <div class="wrapper">
+    <div class="text-center mb-4">
+      <h1 class="display-4 fw-bold mb-3">Comprehensive Academic & Technical Services</h1>
+      <p class="lead text-muted" style="max-width: 700px; margin: 0 auto;">
+        Expert support across 25+ service categories. Whether you need academic writing, programming help, exam prep, or career guidance, we have experienced professionals ready to assist.
+      </p>
+    </div>
+  </div>
 </section>
 
-<section class="home-structured-block mb-4">
-  <div class="home-structured-shell">
-    <div class="services-grid">
-      <div id="academic-writing" class="service-feature-card">
-        <article class="service-card h-100">
-          <div class="service-icon"><i class="bi bi-journal-text"></i></div>
-          <h2 class="h5">Academic & Research Writing</h2>
-          <p>Support for dissertations, proposals, applications, and academic editing with premium research guidance.</p>
-          <ul>
-            <li>Dissertation & Thesis Consultation</li>
-            <li>Research Proposals for Master’s and PhD</li>
-            <li>Admissions Essays, SOPs & Scholarships</li>
-            <li>Formatting & Proofreading (APA, Harvard, MLA)</li>
-          </ul>
-          <div class="mt-3"><button type="button" class="btn btn-sm btn-primary service-consult-btn" data-bs-toggle="modal" data-bs-target="#siteContactModal"><i class="bi bi-chat-dots-fill me-2"></i>General Consultation</button></div>
-        </article>
+<!-- Services Grid -->
+<section class="py-5" style="background: #f8fbff;">
+  <div class="wrapper">
+    <h2 class="h3 fw-bold mb-4">All Available Services</h2>
+    
+    <div class="row g-4">
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.essay_writing') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm" style="transition: transform 0.3s, box-shadow 0.3s;">
+            <div class="card-body">
+              <div class="mb-3"><i class="bi bi-file-earmark-text" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div>
+              <h5 class="card-title">Essay Writing</h5>
+              <p class="card-text text-muted small">Custom essays on any topic with original research and proper citations.</p>
+              <span class="badge bg-light text-primary">Learn More →</span>
+            </div>
+          </div>
+        </a>
       </div>
-      <div class="service-feature-card">
-        <article class="service-card h-100">
-          <div class="service-icon"><i class="bi bi-code-slash"></i></div>
-          <h2 class="h5">Programming & Technical Projects</h2>
-          <p>Language-specific code support, data modelling, and technical research delivery for high-value projects.</p>
-          <ul>
-            <li>Data Science & Statistical Analysis</li>
-            <li>Software Development & Code Debugging</li>
-            <li>Database Architecture & Query Optimization</li>
-            <li>AI & Machine Learning Implementation</li>
-          </ul>
-          <div class="mt-3"><button type="button" class="btn btn-sm btn-primary service-consult-btn" data-bs-toggle="modal" data-bs-target="#siteContactModal"><i class="bi bi-chat-dots-fill me-2"></i>General Consultation</button></div>
-        </article>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.research_papers') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-journal-check" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">Research Papers</h5><p class="card-text text-muted small">In-depth research papers with comprehensive source analysis.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
       </div>
-      <div class="service-feature-card">
-        <article class="service-card h-100">
-          <div class="service-icon"><i class="bi bi-mortarboard"></i></div>
-          <h2 class="h5">Exam Preparation</h2>
-          <p>Custom exam planning and mock exams designed to match university syllabi and professional certification standards.</p>
-          <ul>
-            <li>Postgraduate & Certification Prep</li>
-            <li>GRE, GMAT, AWS, Cisco, ACCA support</li>
-            <li>Targeted concept review and diagnostics</li>
-            <li>Syllabus-based mock exams</li>
-          </ul>
-          <div class="mt-3"><button type="button" class="btn btn-sm btn-primary service-consult-btn" data-bs-toggle="modal" data-bs-target="#siteContactModal"><i class="bi bi-chat-dots-fill me-2"></i>General Consultation</button></div>
-        </article>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.case_studies') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-graph-up" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">Case Studies</h5><p class="card-text text-muted small">Professional case study analysis with business insights.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
       </div>
-      <div class="service-feature-card">
-        <article class="service-card h-100">
-          <div class="service-icon"><i class="bi bi-briefcase"></i></div>
-          <h2 class="h5">Career & Resume Services</h2>
-          <p>High-conversion resumes, CVs and LinkedIn profiles built for recruiters and ATS systems.</p>
-          <ul>
-            <li>ATS-Optimized Resumes & CVs</li>
-            <li>LinkedIn Profile Optimization</li>
-            <li>Cover Letters and Personal Branding</li>
-            <li>Professional Application Strategy</li>
-          </ul>
-          <div class="mt-3"><button type="button" class="btn btn-sm btn-primary service-consult-btn" data-bs-toggle="modal" data-bs-target="#siteContactModal"><i class="bi bi-chat-dots-fill me-2"></i>General Consultation</button></div>
-        </article>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.dissertations') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-book" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">Dissertations</h5><p class="card-text text-muted small">Complete dissertation support from topic to defense.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.theses') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-pencil-square" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">Theses</h5><p class="card-text text-muted small">Master's level thesis writing with expert research.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.literature_reviews') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-collection" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">Literature Reviews</h5><p class="card-text text-muted small">Comprehensive literature reviews synthesizing key research.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.narrative_essays') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-quill" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">Narrative Essays</h5><p class="card-text text-muted small">Engaging personal narratives and storytelling.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.analytical_essays') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-puzzle" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">Analytical Essays</h5><p class="card-text text-muted small">Critical analysis essays breaking down complex topics.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.persuasive_essays') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-megaphone" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">Persuasive Essays</h5><p class="card-text text-muted small">Compelling persuasive writing with strong arguments.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.admission_help') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-mortarboard-fill" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">Admission Help</h5><p class="card-text text-muted small">University applications, SOPs, and admission essays.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.exam_preparation') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-bookmark-check" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">Exam Preparation</h5><p class="card-text text-muted small">GRE, GMAT, ACCA, and professional certifications.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.programming') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-code-slash" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">Programming</h5><p class="card-text text-muted small">Full-stack development, debugging, and code optimization.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.statistics') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-bar-chart" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">Statistics & Data Analysis</h5><p class="card-text text-muted small">Statistical analysis and data visualization support.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.database_architecture') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-diagram-3" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">Database & Architecture</h5><p class="card-text text-muted small">Database design and system architecture consulting.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.ai_machine_learning') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-cpu" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">AI & Machine Learning</h5><p class="card-text text-muted small">ML models and AI solution development.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.book_reports') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-book-half" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">Book Reports</h5><p class="card-text text-muted small">Professional book summaries and critical analyses.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.academic_writing') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-pen" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">Academic Writing</h5><p class="card-text text-muted small">General academic writing for all coursework.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.research_dissertation') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-search" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">Research & Dissertation</h5><p class="card-text text-muted small">Research consulting and dissertation management.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.research_proposals') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-lightbulb" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">Research Proposals</h5><p class="card-text text-muted small">Research proposals for grants and PhD applications.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.editing_proofreading') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-check2-circle" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">Editing & Proofreading</h5><p class="card-text text-muted small">Professional editing and formatting in all styles.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.assignments') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-clipboard-check" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">Assignments</h5><p class="card-text text-muted small">Complete assignment help across all subjects.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.business_finance') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-graph-up-arrow" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">Business & Finance</h5><p class="card-text text-muted small">Business plans and financial analysis.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.speeches') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-chat-left-quote" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">Speech Writing</h5><p class="card-text text-muted small">Compelling speeches for presentations and events.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.career_services') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-briefcase" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">Career Services</h5><p class="card-text text-muted small">Resumes, CVs, and professional development.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for('main.linkedin_optimization') }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm"><div class="card-body"><div class="mb-3"><i class="bi bi-linkedin" style="font-size: 2rem; color: var(--color-primary);" aria-hidden="true"></i></div><h5 class="card-title">LinkedIn Optimization</h5><p class="card-text text-muted small">Professional LinkedIn profile optimization.</p><span class="badge bg-light text-primary">Learn More →</span></div></div>
+        </a>
       </div>
     </div>
   </div>
 </section>
 
-<section class="home-structured-block home-structured-block-alt mb-4">
-  <div class="home-structured-shell">
-    <div class="section-kicker">Subjects We Cover</div>
-    <div class="d-flex flex-wrap gap-2">
-      <span class="badge bg-light text-dark border p-2">Computer Science</span>
-      <span class="badge bg-light text-dark border p-2">Business & Finance</span>
-      <span class="badge bg-light text-dark border p-2">Engineering</span>
-      <span class="badge bg-light text-dark border p-2">Mathematics</span>
-      <span class="badge bg-light text-dark border p-2">Medicine & Health</span>
-      <span class="badge bg-light text-dark border p-2">Law & Social Sciences</span>
-      <span class="badge bg-light text-dark border p-2">Humanities & Arts</span>
-      <span class="badge bg-light text-dark border p-2">Sciences</span>
-    </div>
+<!-- CTA Section -->
+<section class="py-5">
+  <div class="wrapper text-center">
+    <h2 class="h3 fw-bold mb-3">Can't Find What You're Looking For?</h2>
+    <p class="text-muted mb-4">Contact our team for custom services or special requests. We're here to help!</p>
+    <a href="{{ url_for('main.order') }}" class="btn btn-primary btn-lg">Get Started Today</a>
   </div>
 </section>
 
-<section class="cta-band text-center py-4">
-  <h2 class="h3 fw-bold">Ready to get started?</h2>
-  <p>Submit your requirements and the admin desk will confirm scope, price, and turnaround.</p>
-  <a href="{{ url_for('main.order') }}" class="btn btn-warning btn-lg">Request Consultation</a>
-</section>
+<style>
+  .card:hover {
+    box-shadow: 0 12px 32px rgba(31, 107, 255, 0.15) !important;
+    transform: translateY(-4px);
+  }
+</style>
+
 {% endblock %}

@@ -1,13 +1,52 @@
 {% extends "base.html" %}
-{% block title %}Dissertations | AcademicPro{% endblock %}
+{% block title %}Dissertations | AcademiaPro{% endblock %}
 {% block content %}
-<section class="section-card p-4">
-  <h1 class="h4 mb-2">Dissertations</h1>
-  <p class="mb-2">This service page is available and currently being expanded with full details.</p>
-  <p class="text-muted mb-3">For immediate support, place an order and include your exact requirements.</p>
-  <div class="d-flex gap-2 flex-wrap">
-    <a class="btn btn-warning" href="{{ url_for('main.order') }}">Place Order</a>
-    <a class="btn btn-outline-primary" href="{{ url_for('main.services_page') }}">Back to Services</a>
+<section class="service-hero-section compact-service-page">
+  <div class="container">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-7">
+        <span class="section-badge">AcademiaPro Service</span>
+        <h1 class="section-title display-5">Dissertations</h1>
+        <p class="section-description">Get focused support from AcademiaPro specialists with clear requirements, secure communication, and deadline-aware delivery.</p>
+        <div class="service-hero-buttons">
+          <a href="{{ ORDER_LINK }}" class="btn btn-primary btn-lg">Place Order</a>
+          <a href="#pricing" class="btn btn-outline-primary btn-lg">View Pricing</a>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="service-hero-features">
+          <div class="feature-item"><i class="bi bi-check-circle-fill" aria-hidden="true"></i><span>Original, requirement-led support</span></div>
+          <div class="feature-item"><i class="bi bi-shield-check" aria-hidden="true"></i><span>Confidential order handling</span></div>
+          <div class="feature-item"><i class="bi bi-clock-history" aria-hidden="true"></i><span>Flexible deadlines and revisions</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="service-content-section">
+  <div class="container">
+    <div class="section-header text-center">
+      <h2 class="section-title">What You Can Request</h2>
+      <p class="section-description">Send your brief, rubric, files, preferred style, and deadline. We organize the work around the exact outcome you need.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4"><div class="service-item-card"><i class="bi bi-file-earmark-text" aria-hidden="true"></i><h5>Structured Deliverables</h5><p>Clear, organized work aligned with your instructions and academic expectations.</p></div></div>
+      <div class="col-md-4"><div class="service-item-card"><i class="bi bi-chat-dots" aria-hidden="true"></i><h5>Guided Communication</h5><p>Ask questions, clarify details, and keep track of progress from one place.</p></div></div>
+      <div class="col-md-4"><div class="service-item-card"><i class="bi bi-arrow-repeat" aria-hidden="true"></i><h5>Revision Support</h5><p>Request refinements when your original instructions need closer alignment.</p></div></div>
+    </div>
+  </div>
+</section>
+
+{% include 'components/standard_pricing_table.html' %}
+
+<section class="service-cta-final">
+  <div class="container">
+    <div class="cta-card">
+      <h3>Ready to Start?</h3>
+      <p>Share the requirements and deadline, and AcademiaPro will guide the next step clearly.</p>
+      <a href="{{ ORDER_LINK }}" class="btn btn-primary btn-lg">Place Your Order</a>
+    </div>
   </div>
 </section>
 {% endblock %}

@@ -84,7 +84,7 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         from werkzeug.security import check_password_hash
         return check_password_hash(self.password_hash, password)
-     
+
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -143,7 +143,7 @@ class Order(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 def calculate_price(word_count, level, deadline):
-    base_rate = 0.05
+    base_rate = 10 / 275
     urgency_multiplier = 2.0 if (deadline - datetime.utcnow()).days <= 1 else 1.0
     level_multiplier = {"Undergrad": 1.0, "Masters": 1.5, "PhD": 2.0}.get(level, 1.0)
     return word_count * base_rate * urgency_multiplier * level_multiplier
@@ -170,7 +170,7 @@ class BlogPost(db.Model):
     content = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
+
 class Sample(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)

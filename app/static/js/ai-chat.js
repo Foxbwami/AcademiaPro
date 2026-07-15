@@ -1,44 +1,75 @@
 (function () {
-  // support both a floating panel (embedded) and a dedicated AI page
-  const fab = document.getElementById('globalAiFab');
-  const panel = document.getElementById('globalAiPanel') || document.getElementById('aiPagePanel');
-  const closeBtn = document.getElementById('globalAiClose') || document.getElementById('aiPageClose');
-  const body = document.getElementById('globalAiBody') || document.getElementById('aiPageBody');
-  const input = document.getElementById('globalAiInput') || document.getElementById('aiPageInput');
-  const send = document.getElementById('globalAiSend') || document.getElementById('aiPageSend');
+  const panel = document.getElementById('aiPagePanel');
+  const body = document.getElementById('aiPageBody');
+  const input = document.getElementById('aiPageInput');
+  const send = document.getElementById('aiPageSend');
+  const closeBtn = document.getElementById('aiPageClose');
+  const newChatBtn = document.getElementById('aiNewChat');
+  const threadList = document.getElementById('aiThreadList');
+  const fileInput = document.getElementById('aiFileInput');
+  const attachmentTray = document.getElementById('aiAttachmentTray');
+  const voiceBtn = document.getElementById('aiVoiceBtn');
 
   if (!panel || !body || !input || !send) return;
 
   const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+  let activeThreadId = null;
+  let attachments = [];
+  let recognition = null;
+  let isRecording = false;
 
   function escapeHtml(value) {
     return String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
   }
 
+  function inlineFormat(text) {
+    return escapeHtml(text)
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  }
+
   function formatAiContent(text) {
     if (!text) return '';
-    const escaped = escapeHtml(text).replace(/\r\n/g, '\n');
-    return escaped
-      .split(/\n{2,}/)
-      .map((block) => {
-        if (/^(?:[-*+] .+(?:\n(?:[-*+] .+))*)$/.test(block.trim())) {
-          const items = block
-            .trim()
-            .split(/\n+/)
-            .map((line) => `<li>${line.replace(/^[*-+] /, '')}</li>`)
-            .join('');
-          return `<ul>${items}</ul>`;
-        }
-        return `<p>${block.replace(/\n/g, '<br>')}</p>`;
-      })
-      .join('');
+    const normalized = String(text).replace(/\r\n/g, '\n').trim();
+    const blocks = normalized.split(/\n{2,}/);
+    return blocks.map((block) => {
+      const trimmed = block.trim();
+      if (/^```/.test(trimmed)) {
+        return `<pre><code>${escapeHtml(trimmed.replace(/^```\w*\n?/, '').replace(/```$/, ''))}</code></pre>`;
+      }
+      if (/^#{1,3}\s+/.test(trimmed)) {
+        return `<h3>${inlineFormat(trimmed.replace(/^#{1,3}\s+/, ''))}</h3>`;
+      }
+      if (/^(?:[-*+]\s+.+)(?:\n[-*+]\s+.+)*$/.test(trimmed)) {
+        const items = trimmed.split(/\n+/).map((line) => `<li>${inlineFormat(line.replace(/^[-*+]\s+/, ''))}</li>`).join('');
+        return `<ul>${items}</ul>`;
+      }
+      if (/^(?:\d+\.\s+.+)(?:\n\d+\.\s+.+)*$/.test(trimmed)) {
+        const items = trimmed.split(/\n+/).map((line) => `<li>${inlineFormat(line.replace(/^\d+\.\s+/, ''))}</li>`).join('');
+        return `<ol>${items}</ol>`;
+      }
+      return `<p>${inlineFormat(trimmed).replace(/\n/g, '<br>')}</p>`;
+    }).join('');
+  }
+
+  function emptyState() {
+    return `
+      <div class="ai-empty-state">
+        <h3>How can I help today?</h3>
+        <p class="text-muted">Try uploading a brief, asking for an outline, or requesting pricing guidance.</p>
+        <div class="ai-suggestion-grid">
+          <button class="ai-suggestion" type="button">Help me prepare an order brief</button>
+          <button class="ai-suggestion" type="button">Summarize my uploaded file</button>
+          <button class="ai-suggestion" type="button">Create a step-by-step study plan</button>
+        </div>
+      </div>`;
   }
 
   function createBubble(role, text, timestamp) {
     const isUser = role === 'user';
-    const classes = isUser ? 'ai-msg me' : 'ai-msg bot';
+    const icon = isUser ? 'U' : '<i class="bi bi-stars" aria-hidden="true"></i>';
     const ts = timestamp ? `<div class="ai-ts">${escapeHtml(timestamp)}</div>` : '';
-    return `<div class="${classes}"><div class="ai-bubble">${formatAiContent(text)}</div>${ts}</div>`;
+    return `<div class="ai-msg ${isUser ? 'me' : 'bot'}"><div class="ai-avatar">${icon}</div><div><div class="ai-bubble">${formatAiContent(text)}</div>${ts}</div></div>`;
   }
 
   function showToast(message) {
@@ -47,101 +78,152 @@
     toast.textContent = message;
     document.body.appendChild(toast);
     requestAnimationFrame(() => toast.classList.add('visible'));
-    setTimeout(() => toast.classList.remove('visible'), 4200);
+    setTimeout(() => toast.classList.remove('visible'), 3600);
     toast.addEventListener('transitionend', () => toast.remove());
   }
 
   function autoGrow() {
     input.style.height = 'auto';
-    input.style.height = `${Math.min(input.scrollHeight, 160)}px`;
+    input.style.height = `${Math.min(input.scrollHeight, 170)}px`;
   }
 
-  async function loadHistory() {
-    try {
-      const response = await fetch('/ai/chat/history', { cache: 'no-store' });
-      const data = await response.json();
-      if (!response.ok || !data.ok) {
-        throw new Error(data.error || 'Unable to load chat history');
-      }
+  function renderAttachments() {
+    if (!attachmentTray) return;
+    attachmentTray.innerHTML = attachments.map((file, index) => `
+      <span class="ai-attachment-pill"><i class="bi bi-file-earmark-text" aria-hidden="true"></i>${escapeHtml(file.name)} <button type="button" data-remove-file="${index}" class="btn-close" aria-label="Remove file"></button></span>
+    `).join('');
+    attachmentTray.classList.toggle('has-files', attachments.length > 0);
+  }
 
+  async function loadThreads() {
+    if (!threadList) return;
+    try {
+      const response = await fetch('/ai/chat/threads', { cache: 'no-store' });
+      const data = await response.json();
+      if (!response.ok || !data.ok) throw new Error('Thread load failed');
+      activeThreadId = data.active_thread_id || activeThreadId;
+      const threads = data.threads || [];
+      threadList.innerHTML = threads.length ? threads.map((thread) => `
+        <button class="ai-thread-item ${thread.id === activeThreadId ? 'active' : ''}" type="button" data-thread-id="${escapeHtml(thread.id)}">
+          <span class="ai-thread-title">${escapeHtml(thread.title)}</span>
+          <span class="ai-thread-meta">${escapeHtml(thread.timestamp || 'Recent')}</span>
+        </button>
+      `).join('') : '<div class="text-muted small">No chat history yet.</div>';
+    } catch (_error) {
+      threadList.innerHTML = '<div class="text-muted small">Unable to load history.</div>';
+    }
+  }
+
+  async function loadHistory(threadId) {
+    try {
+      const url = threadId ? `/ai/chat/history?thread_id=${encodeURIComponent(threadId)}` : '/ai/chat/history';
+      const response = await fetch(url, { cache: 'no-store' });
+      const data = await response.json();
+      if (!response.ok || !data.ok) throw new Error(data.error || 'Unable to load chat history');
+      activeThreadId = data.thread_id || activeThreadId;
       const rows = data.messages || [];
-      if (!rows.length) {
-        body.innerHTML = createBubble('assistant', 'I am ready. Tell me your topic, deadline, level, service type, and word count, and I will guide you step by step.');
-      } else {
-        body.innerHTML = rows.map((message) => createBubble(message.role, message.content, message.timestamp)).join('');
-      }
+      body.innerHTML = rows.length ? rows.map((message) => createBubble(message.role, message.content, message.timestamp)).join('') : emptyState();
       body.scrollTop = body.scrollHeight;
-    } catch (error) {
+      await loadThreads();
+    } catch (_error) {
       showToast('Unable to load AI chat history.');
     }
   }
 
+  async function startNewChat() {
+    const response = await fetch('/ai/chat/new', { method: 'POST', headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {} });
+    const data = await response.json();
+    if (response.ok && data.ok) {
+      activeThreadId = data.thread_id;
+      attachments = [];
+      renderAttachments();
+      input.value = '';
+      autoGrow();
+      await loadHistory(activeThreadId);
+    }
+  }
+
+  async function uploadFiles(files) {
+    if (!files.length) return;
+    const form = new FormData();
+    Array.from(files).slice(0, 5).forEach((file) => form.append('files', file));
+    if (activeThreadId) form.append('thread_id', activeThreadId);
+    showToast('Reading uploaded file...');
+    const response = await fetch('/ai/chat/upload', { method: 'POST', body: form, headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {} });
+    const data = await response.json();
+    if (!response.ok || !data.ok) {
+      showToast(data.error || 'Unable to read file.');
+      return;
+    }
+    attachments = attachments.concat(data.files || []).slice(0, 5);
+    renderAttachments();
+    showToast('File ready. Ask what you want me to do with it.');
+  }
+
   async function sendMessage() {
     const message = input.value.trim();
-    if (!message) return;
-
+    if (!message && !attachments.length) return;
     send.disabled = true;
-    send.textContent = 'Sending...';
-
+    body.insertAdjacentHTML('beforeend', createBubble('user', message || 'Uploaded file for review'));
+    body.scrollTop = body.scrollHeight;
+    const pending = document.createElement('div');
+    pending.className = 'ai-msg bot';
+    pending.innerHTML = '<div class="ai-avatar"><i class="bi bi-stars" aria-hidden="true"></i></div><div><div class="ai-bubble"><p>Thinking through this carefully…</p></div></div>';
+    body.appendChild(pending);
+    body.scrollTop = body.scrollHeight;
     try {
       const response = await fetch('/ai/chat/send', {
         method: 'POST',
         headers: Object.assign({ 'Content-Type': 'application/json' }, csrfToken ? { 'X-CSRFToken': csrfToken } : {}),
-        body: JSON.stringify({ message })
+        body: JSON.stringify({ message, attachments, thread_id: activeThreadId })
       });
       const data = await response.json();
-
-      if (!response.ok || !data.ok) {
-        throw new Error(data.error || 'Unable to send message');
-      }
-
+      if (!response.ok || !data.ok) throw new Error(data.error || 'Unable to send message');
+      activeThreadId = data.thread_id || activeThreadId;
       input.value = '';
+      attachments = [];
+      renderAttachments();
       autoGrow();
-      await loadHistory();
+      await loadHistory(activeThreadId);
+    } catch (_error) {
+      pending.remove();
+      showToast('Unable to connect to the AI service.');
+    } finally {
       send.disabled = false;
-      send.textContent = 'Send';
-    } catch (error) {
-      showToast('Unable to connect to the server.');
-      send.disabled = false;
-      send.textContent = 'Send';
     }
   }
 
-  function openPanel() {
-    panel.classList.remove('d-none');
-    loadHistory();
-  }
-
-  function closePanel() {
-    panel.classList.add('d-none');
-  }
-
-  if (fab) {
-    fab.addEventListener('click', () => {
-      if (panel.classList.contains('d-none')) {
-        openPanel();
-      } else {
-        closePanel();
+  function setupVoice() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!voiceBtn || !SpeechRecognition) {
+      if (voiceBtn) voiceBtn.addEventListener('click', () => showToast('Voice input is not supported in this browser.'));
+      return;
+    }
+    recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = true;
+    recognition.continuous = false;
+    recognition.onresult = (event) => {
+      const transcript = Array.from(event.results).map((result) => result[0].transcript).join(' ');
+      input.value = `${input.value.replace(/\s*$/, '')} ${transcript}`.trim();
+      autoGrow();
+    };
+    recognition.onend = () => {
+      isRecording = false;
+      voiceBtn.classList.remove('recording');
+    };
+    voiceBtn.addEventListener('click', () => {
+      if (isRecording) {
+        recognition.stop();
+        return;
       }
+      isRecording = true;
+      voiceBtn.classList.add('recording');
+      recognition.start();
     });
   }
 
-  if (closeBtn) closeBtn.addEventListener('click', closePanel);
-
-  document.addEventListener('click', (event) => {
-    const clickedInside = panel.contains(event.target);
-    const clickedFab = fab ? fab.contains(event.target) : false;
-    if (!panel.classList.contains('d-none') && !clickedInside && !clickedFab) {
-      closePanel();
-    }
-  });
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && !panel.classList.contains('d-none')) {
-      closePanel();
-    }
-  });
-
+  send.addEventListener('click', sendMessage);
   input.addEventListener('input', autoGrow);
   input.addEventListener('keydown', (event) => {
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -149,6 +231,32 @@
       sendMessage();
     }
   });
+  if (newChatBtn) newChatBtn.addEventListener('click', startNewChat);
+  if (closeBtn) closeBtn.addEventListener('click', () => {
+    body.innerHTML = emptyState();
+  });
+  if (fileInput) fileInput.addEventListener('change', (event) => uploadFiles(event.target.files));
+  if (attachmentTray) attachmentTray.addEventListener('click', (event) => {
+    const index = event.target.getAttribute('data-remove-file');
+    if (index !== null) {
+      attachments.splice(Number(index), 1);
+      renderAttachments();
+    }
+  });
+  if (threadList) threadList.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-thread-id]');
+    if (button) loadHistory(button.getAttribute('data-thread-id'));
+  });
+  body.addEventListener('click', (event) => {
+    const suggestion = event.target.closest('.ai-suggestion');
+    if (suggestion) {
+      input.value = suggestion.textContent.trim();
+      autoGrow();
+      input.focus();
+    }
+  });
 
+  setupVoice();
   autoGrow();
+  loadHistory();
 })();
