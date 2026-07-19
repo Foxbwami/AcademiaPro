@@ -1,0 +1,14 @@
+<div class="messages-preview">
+  {% for msg in (messages or [])[:4] %}
+    <div class="d-flex align-items-start gap-2 mb-2">
+      <img src="{{ msg.avatar or url_for('static', filename='img/avatar.png') }}" alt="" class="rounded-circle" width="36" height="36">
+      <div class="flex-fill">
+        <div class="fw-semibold small">{{ msg.sender or 'Unknown' }}</div>
+        <div class="small text-muted">{{ msg.preview or 'No message preview' }}</div>
+      </div>
+      <div class="small text-muted">{{ msg.time or '' }}</div>
+    </div>
+  {% else %}
+    <div class="text-muted small">No messages</div>
+  {% endfor %}
+</div>

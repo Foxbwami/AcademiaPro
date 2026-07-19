@@ -9,6 +9,20 @@
   const fileInput = document.getElementById('aiFileInput');
   const attachmentTray = document.getElementById('aiAttachmentTray');
   const voiceBtn = document.getElementById('aiVoiceBtn');
+  const modelSelect = document.getElementById('aiModelSelect');
+  const tempRange = document.getElementById('aiTempRange');
+  const tempValue = document.getElementById('aiTempValue');
+  const systemPrompt = document.getElementById('aiSystemPrompt');
+  const saveSettings = document.getElementById('aiSaveSettings');
+  const regenerateBtn = document.getElementById('aiRegenerate');
+  const stopBtn = document.getElementById('aiStop');
+  const threadSearch = document.getElementById('aiThreadSearch');
+  const sidebar = document.getElementById('aiSidebar');
+  const sidebarToggle = document.getElementById('aiSidebarToggle');
+  const sidebarClose = document.getElementById('aiSidebarClose');
+  const sidebarScrim = document.getElementById('aiSidebarScrim');
+  const themeSelect = document.getElementById('aiThemeSelect');
+  const sidebarTheme = document.getElementById('aiSidebarTheme');
 
   if (!panel || !body || !input || !send) return;
 
@@ -17,6 +31,7 @@
   let attachments = [];
   let recognition = null;
   let isRecording = false;
+  let allThreads = [];
 
   function escapeHtml(value) {
     return String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
@@ -56,7 +71,7 @@
     return `
       <div class="ai-empty-state">
         <h3>How can I help today?</h3>
-        <p class="text-muted">Try uploading a brief, asking for an outline, or requesting pricing guidance.</p>
+        <p>Try uploading a brief, asking for an outline, or requesting pricing guidance.</p>
         <div class="ai-suggestion-grid">
           <button class="ai-suggestion" type="button">Help me prepare an order brief</button>
           <button class="ai-suggestion" type="button">Summarize my uploaded file</button>
@@ -95,6 +110,36 @@
     attachmentTray.classList.toggle('has-files', attachments.length > 0);
   }
 
+  function renderThreads(threads) {
+    if (!threadList) return;
+    threadList.innerHTML = threads.length ? threads.map((thread) => `
+      <button class="ai-thread-item ${thread.id === activeThreadId ? 'active' : ''}" type="button" data-thread-id="${escapeHtml(thread.id)}">
+        <span class="ai-thread-title">${escapeHtml(thread.title)}</span>
+        <span class="ai-thread-meta">${escapeHtml(thread.timestamp || 'Recent')}</span>
+      </button>
+    `).join('') : '<div class="ai-thread-empty">No chat history yet.</div>';
+  }
+
+  function filterThreads() {
+    const query = (threadSearch?.value || '').trim().toLowerCase();
+    const filtered = query ? allThreads.filter((thread) => String(thread.title || '').toLowerCase().includes(query)) : allThreads;
+    renderThreads(filtered);
+  }
+
+  function setSidebar(open) {
+    if (!sidebar || !sidebarToggle || !sidebarScrim) return;
+    sidebar.classList.toggle('is-open', open);
+    sidebarScrim.classList.toggle('is-active', open);
+    sidebarToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
+  function applyTheme(theme) {
+    const nextTheme = theme || 'system';
+    document.body.classList.toggle('ai-theme-dark', nextTheme === 'dark');
+    document.body.classList.toggle('ai-theme-light', nextTheme === 'light');
+    if (themeSelect) themeSelect.value = nextTheme;
+  }
+
   async function loadThreads() {
     if (!threadList) return;
     try {
@@ -102,15 +147,10 @@
       const data = await response.json();
       if (!response.ok || !data.ok) throw new Error('Thread load failed');
       activeThreadId = data.active_thread_id || activeThreadId;
-      const threads = data.threads || [];
-      threadList.innerHTML = threads.length ? threads.map((thread) => `
-        <button class="ai-thread-item ${thread.id === activeThreadId ? 'active' : ''}" type="button" data-thread-id="${escapeHtml(thread.id)}">
-          <span class="ai-thread-title">${escapeHtml(thread.title)}</span>
-          <span class="ai-thread-meta">${escapeHtml(thread.timestamp || 'Recent')}</span>
-        </button>
-      `).join('') : '<div class="text-muted small">No chat history yet.</div>';
+      allThreads = data.threads || [];
+      filterThreads();
     } catch (_error) {
-      threadList.innerHTML = '<div class="text-muted small">Unable to load history.</div>';
+      threadList.innerHTML = '<div class="ai-thread-error">Unable to load history.</div>';
     }
   }
 
@@ -127,6 +167,18 @@
       await loadThreads();
     } catch (_error) {
       showToast('Unable to load AI chat history.');
+    }
+  }
+
+  function loadPreferences() {
+    try {
+      const prefs = JSON.parse(localStorage.getItem('ai_prefs') || '{}');
+      if (modelSelect && prefs.model) modelSelect.value = prefs.model;
+      if (tempRange && typeof prefs.temperature !== 'undefined') { tempRange.value = prefs.temperature; if (tempValue) tempValue.textContent = prefs.temperature; }
+      if (systemPrompt && prefs.system_prompt) systemPrompt.value = prefs.system_prompt;
+      applyTheme(prefs.theme || 'system');
+    } catch (e) {
+      applyTheme('system');
     }
   }
 
@@ -172,10 +224,14 @@
     body.appendChild(pending);
     body.scrollTop = body.scrollHeight;
     try {
+      const payload = { message, attachments, thread_id: activeThreadId };
+      if (modelSelect) payload.model = modelSelect.value;
+      if (tempRange) payload.temperature = Number(tempRange.value);
+      if (systemPrompt) payload.system_prompt = systemPrompt.value;
       const response = await fetch('/ai/chat/send', {
         method: 'POST',
         headers: Object.assign({ 'Content-Type': 'application/json' }, csrfToken ? { 'X-CSRFToken': csrfToken } : {}),
-        body: JSON.stringify({ message, attachments, thread_id: activeThreadId })
+        body: JSON.stringify(payload)
       });
       const data = await response.json();
       if (!response.ok || !data.ok) throw new Error(data.error || 'Unable to send message');
@@ -190,6 +246,32 @@
       showToast('Unable to connect to the AI service.');
     } finally {
       send.disabled = false;
+    }
+  }
+
+  async function regenerateLast() {
+    if (!activeThreadId) return showToast('No conversation to regenerate.');
+    try {
+      const response = await fetch('/ai/chat/regenerate', {
+        method: 'POST',
+        headers: Object.assign({ 'Content-Type': 'application/json' }, csrfToken ? { 'X-CSRFToken': csrfToken } : {}),
+        body: JSON.stringify({ thread_id: activeThreadId })
+      });
+      const data = await response.json();
+      if (!response.ok || !data.ok) throw new Error('Regenerate failed');
+      await loadHistory(activeThreadId);
+    } catch (_e) {
+      showToast('Unable to regenerate response.');
+    }
+  }
+
+  async function stopGeneration() {
+    if (!activeThreadId) return;
+    try {
+      await fetch('/ai/chat/stop', { method: 'POST', headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {}, body: JSON.stringify({ thread_id: activeThreadId }) });
+      showToast('Stop request sent.');
+    } catch (_e) {
+      showToast('Unable to stop generation.');
     }
   }
 
@@ -245,7 +327,10 @@
   });
   if (threadList) threadList.addEventListener('click', (event) => {
     const button = event.target.closest('[data-thread-id]');
-    if (button) loadHistory(button.getAttribute('data-thread-id'));
+    if (button) {
+      loadHistory(button.getAttribute('data-thread-id'));
+      setSidebar(false);
+    }
   });
   body.addEventListener('click', (event) => {
     const suggestion = event.target.closest('.ai-suggestion');
@@ -258,5 +343,32 @@
 
   setupVoice();
   autoGrow();
+  loadPreferences();
   loadHistory();
+  try { input.focus(); } catch (e) {}
+  if (saveSettings) saveSettings.addEventListener('click', () => {
+    const prefs = {
+      model: modelSelect?.value || 'gpt-4',
+      temperature: Number(tempRange?.value || 0.2),
+      system_prompt: systemPrompt?.value || '',
+      theme: themeSelect?.value || 'system'
+    };
+    try { localStorage.setItem('ai_prefs', JSON.stringify(prefs)); showToast('Preferences saved.'); } catch (e) { showToast('Unable to save preferences.'); }
+  });
+  if (regenerateBtn) regenerateBtn.addEventListener('click', regenerateLast);
+  if (stopBtn) stopBtn.addEventListener('click', stopGeneration);
+  if (tempRange) tempRange.addEventListener('input', () => { if (tempValue) tempValue.textContent = tempRange.value; });
+  if (threadSearch) threadSearch.addEventListener('input', filterThreads);
+  if (sidebarToggle) sidebarToggle.addEventListener('click', () => setSidebar(true));
+  if (sidebarClose) sidebarClose.addEventListener('click', () => setSidebar(false));
+  if (sidebarScrim) sidebarScrim.addEventListener('click', () => setSidebar(false));
+  if (themeSelect) themeSelect.addEventListener('change', () => applyTheme(themeSelect.value));
+  if (sidebarTheme) sidebarTheme.addEventListener('click', () => {
+    const current = themeSelect?.value || 'system';
+    const next = current === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') setSidebar(false);
+  });
 })();

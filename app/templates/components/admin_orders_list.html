@@ -1,0 +1,16 @@
+<div class="orders-list">
+  {% for order in (orders or [])[:3] %}
+    <div class="order-row">
+      <div class="order-meta">
+        <div class="fw-semibold">#AP-{{ order.id }} — {{ order.title }}</div>
+        <div class="small text-muted">{{ order.category }} • Deadline {{ order.deadline or 'TBD' }}</div>
+      </div>
+      <div class="text-end">
+        <div class="status-pill status-ok">{{ order.status or 'In Progress' }}</div>
+        <div class="small text-muted mt-1">Progress {{ order.progress or '—' }}%</div>
+      </div>
+    </div>
+  {% else %}
+    <div class="order-row text-muted">No recent orders to show.</div>
+  {% endfor %}
+</div>

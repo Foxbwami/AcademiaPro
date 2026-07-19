@@ -35,7 +35,7 @@
       <div class="trust-items">
         <div class="trust-item">
           <i class="bi bi-star-fill" aria-hidden="true"></i>
-          <span><strong>Rated 4.9</strong> by 1,200+ Clients</span>
+          <span><strong>Rated 4.9</strong> by 700+ Clients</span>
         </div>
         <div class="trust-item">
           <i class="bi bi-shield-check" aria-hidden="true"></i>
@@ -50,11 +50,11 @@
           <span><strong>700+</strong> Projects Delivered</span>
         </div>
         <div class="trust-social ms-auto">
-          Follow us:
-          <a href="#" aria-label="Facebook"><i class="bi bi-facebook" aria-hidden="true"></i></a>
-          <a href="#" aria-label="Instagram"><i class="bi bi-instagram" aria-hidden="true"></i></a>
-          <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin" aria-hidden="true"></i></a>
-          <a href="#" aria-label="Twitter"><i class="bi bi-twitter" aria-hidden="true"></i></a>
+          Contact:
+          <a href="{{ CONSULT_WA }}" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i class="bi bi-whatsapp" aria-hidden="true"></i></a>
+          <a href="{{ CONSULT_MAILTO }}" aria-label="Email AcademiaPro"><i class="bi bi-envelope" aria-hidden="true"></i></a>
+          <a href="{{ url_for('main.public_blogs') }}" aria-label="Read AcademiaPro blog"><i class="bi bi-newspaper" aria-hidden="true"></i></a>
+          <a href="{{ url_for('main.ai_chat') }}" aria-label="Open AI support"><i class="bi bi-robot" aria-hidden="true"></i></a>
         </div>
       </div>
     </div>
@@ -63,15 +63,15 @@
 
     <div class="container header-top-row">
       <div class="header-shell">
-        <div class="header-brand">
-          <div class="brand-mark shadow-soft">
+        <a class="header-brand" href="{{ url_for('main.index') }}" aria-label="AcademiaPro home">
+          <span class="brand-mark shadow-soft">
             <img loading="lazy" decoding="async" src="{{ url_for('static', filename='img/academiaprolog.svg') }}" alt="AcademiaPro logo" class="brand-logo">
-          </div>
-          <div class="brand-info">
-            <a class="header-logo-link" href="{{ url_for('main.index') }}">AcademiaPro</a>
-            <div class="brand-tagline">Academic & Technical Consultancy</div>
-          </div>
-        </div>
+          </span>
+          <span class="brand-info">
+            <span class="header-logo-link">AcademiaPro</span>
+            <span class="brand-tagline">Academic & Technical Consultancy</span>
+          </span>
+        </a>
 
         <button class="mobile-menu-btn d-lg-none" id="mobileMenuButton" type="button" aria-controls="mobileDrawer" aria-expanded="false" aria-label="Open navigation menu">
           <i class="bi bi-list" aria-hidden="true"></i>
@@ -136,7 +136,13 @@
             <div class="mega-menu-grid">
               <div class="mega-feature">
                 <div class="mega-feature-media">
-                  <img src="{{ url_for('static', filename='images/mega-feature.jpg') }}" alt="Featured service" loading="lazy">
+                  <div class="mega-feature-icon" aria-hidden="true">
+                    <i class="bi bi-mortarboard-fill"></i>
+                  </div>
+                  <div class="mega-feature-proof">
+                    <span>4.9 rated</span>
+                    <span>700+ projects</span>
+                  </div>
                 </div>
                 <div class="mega-feature-body">
                   <div class="mega-feature-eyebrow">Featured</div>
@@ -149,20 +155,20 @@
               <div class="mega-columns">
                 <div class="mega-menu-column">
                   <h6 class="dropdown-header">Academic</h6>
-                  <a class="dropdown-item" href="{{ url_for('main.academic_writing') }}"><i class="bi bi-book-fill" aria-hidden="true"></i> Academic Writing</a>
-                  <a class="dropdown-item" href="{{ url_for('main.research_dissertation') }}"><i class="bi bi-mortarboard" aria-hidden="true"></i> Research & Dissertation</a>
-                  <a class="dropdown-item" href="{{ url_for('main.editing_proofreading') }}"><i class="bi bi-pencil-square" aria-hidden="true"></i> Editing & Proofreading</a>
+                  <a class="dropdown-item" href="{{ url_for('main.academic_writing') }}"><i class="bi bi-book-fill" aria-hidden="true"></i><span><strong>Academic Writing</strong><small>Essays, reports, coursework</small></span></a>
+                  <a class="dropdown-item" href="{{ url_for('main.research_dissertation') }}"><i class="bi bi-mortarboard" aria-hidden="true"></i><span><strong>Research & Dissertation</strong><small>Proposal to final submission</small></span></a>
+                  <a class="dropdown-item" href="{{ url_for('main.editing_proofreading') }}"><i class="bi bi-pencil-square" aria-hidden="true"></i><span><strong>Editing & Proofreading</strong><small>Clarity, grammar, formatting</small></span></a>
                 </div>
                 <div class="mega-menu-column">
                   <h6 class="dropdown-header">Technical</h6>
-                  <a class="dropdown-item" href="{{ url_for('main.programming') }}"><i class="bi bi-code-slash" aria-hidden="true"></i> Programming</a>
-                  <a class="dropdown-item" href="{{ url_for('main.statistics') }}"><i class="bi bi-graph-up" aria-hidden="true"></i> Data Analysis</a>
+                  <a class="dropdown-item" href="{{ url_for('main.programming') }}"><i class="bi bi-code-slash" aria-hidden="true"></i><span><strong>Programming</strong><small>Code, debugging, projects</small></span></a>
+                  <a class="dropdown-item" href="{{ url_for('main.statistics') }}"><i class="bi bi-graph-up" aria-hidden="true"></i><span><strong>Data Analysis</strong><small>SPSS, R, Python, Excel</small></span></a>
                 </div>
                 <div class="mega-menu-column">
                   <h6 class="dropdown-header">Business & Data</h6>
-                  <a class="dropdown-item" href="{{ url_for('main.business_finance') }}"><i class="bi bi-briefcase" aria-hidden="true"></i> Business & Finance</a>
-                  <a class="dropdown-item" href="{{ url_for('main.statistics') }}"><i class="bi bi-bar-chart-fill" aria-hidden="true"></i> Statistics</a>
-                  <a class="dropdown-item" href="{{ url_for('main.programming') }}"><i class="bi bi-laptop" aria-hidden="true"></i> Machine Learning</a>
+                  <a class="dropdown-item" href="{{ url_for('main.business_finance') }}"><i class="bi bi-briefcase" aria-hidden="true"></i><span><strong>Business & Finance</strong><small>Case studies and models</small></span></a>
+                  <a class="dropdown-item" href="{{ url_for('main.statistics') }}"><i class="bi bi-bar-chart-fill" aria-hidden="true"></i><span><strong>Statistics</strong><small>Tests, interpretation, charts</small></span></a>
+                  <a class="dropdown-item" href="{{ url_for('main.programming') }}"><i class="bi bi-laptop" aria-hidden="true"></i><span><strong>Machine Learning</strong><small>Models, notebooks, reports</small></span></a>
                 </div>
               </div>
             </div>
@@ -195,7 +201,7 @@
       <div class="drawer-top d-flex align-items-start justify-content-between">
         <div class="d-flex align-items-center gap-3">
           <div class="brand-mark brand-mark-sm shadow-soft">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='img/academiaprolog.svg') }}" alt="AcademiaPro logo" class="brand-logo-sm">
+            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='img/academiaprolog-sm.svg') }}" alt="AcademiaPro logo" class="brand-logo-sm">
           </div>
           <div class="drawer-brand">
             <div class="brand-text drawer-title">AcademiaPro</div>
@@ -207,8 +213,8 @@
         </button>
       </div>
 
-      <div class="drawer-banner rounded-4 shadow-soft p-3 mb-4">
-        <div class="d-flex align-items-start gap-3 mb-3">
+      <div class="drawer-banner rounded-4 shadow-soft p-3 mb-3">
+        <div class="d-flex align-items-start gap-3">
           <span class="drawer-banner-icon"><i class="bi bi-shield-fill-check" aria-hidden="true"></i></span>
           <div>
             <div class="fw-semibold">Premium Academic Help</div>
@@ -217,7 +223,7 @@
         </div>
       </div>
 
-      <nav class="drawer-links mb-4" aria-label="Mobile navigation">
+      <nav class="drawer-links mb-3" aria-label="Mobile navigation">
         {# Services Section #}
         <div class="drawer-section">
           <div class="drawer-section-title">Services</div>
@@ -240,8 +246,8 @@
         <a class="drawer-link" href="{{ url_for('main.about') }}"><i class="bi bi-info-circle" aria-hidden="true"></i> About</a>
       </nav>
 
-      <div class="drawer-actions d-grid gap-3 mb-4">
-        <a class="btn btn-gold btn-sm rounded-4 d-flex align-items-center justify-content-center gap-2" href="{{ url_for('main.order') }}">
+      <div class="drawer-actions d-grid gap-2 mb-3">
+        <a class="btn btn-gold btn-sm rounded-4 d-flex align-items-center justify-content-center gap-2" href="{{ ORDER_LINK }}">
           <i class="bi bi-cart-fill" aria-hidden="true"></i>Place Order
         </a>
         <a class="btn btn-outline-secondary btn-sm rounded-4 d-flex align-items-center justify-content-center gap-2" href="{{ url_for('main.ai_chat') }}">
@@ -286,17 +292,18 @@
             </div>
           </div>
         {% else %}
-          <a class="btn btn-light btn-lg rounded-4 d-flex align-items-center justify-content-center gap-2" href="{{ url_for('main.login') }}">Sign In</a>
-          <a class="btn btn-primary btn-lg rounded-4 d-flex align-items-center justify-content-center gap-2" href="{{ url_for('main.register') }}">Sign Up</a>
+          <div class="drawer-guest-note">
+            No account required for orders, consultation, or WhatsApp support.
+          </div>
         {% endif %}
       </div>
 
-      <div class="drawer-support rounded-4 bg-success bg-opacity-15 p-3 mb-4">
-        <div class="d-flex align-items-center gap-3 mb-3">
+      <div class="drawer-support rounded-4 bg-success bg-opacity-15 p-3 mb-3">
+        <div class="d-flex align-items-center gap-3 mb-2">
           <span class="support-icon"><i class="bi bi-headset" aria-hidden="true"></i></span>
           <div>
             <div class="fw-semibold">Need Help?</div>
-            <div class="small text-secondary">Chat with our academic consultants instantly.</div>
+            <div class="small text-secondary">WhatsApp: {{ WHATSAPP_NUMBER }}</div>
           </div>
         </div>
         <a href="https://api.whatsapp.com/send?phone={{ WHATSAPP_NUMBER|replace('+','') }}" target="_blank" rel="noopener" class="btn btn-success btn-sm rounded-pill w-100">
@@ -305,11 +312,10 @@
       </div>
 
         <div class="drawer-social d-flex justify-content-center gap-2 mb-3">
-          <a class="social-pill" href="#" aria-label="Facebook"><i class="bi bi-facebook" aria-hidden="true"></i></a>
-          <a class="social-pill" href="#" aria-label="X"><i class="bi bi-x" aria-hidden="true"></i></a>
-          <a class="social-pill" href="#" aria-label="Instagram"><i class="bi bi-instagram" aria-hidden="true"></i></a>
-          <a class="social-pill" href="#" aria-label="LinkedIn"><i class="bi bi-linkedin" aria-hidden="true"></i></a>
-          <a class="social-pill" href="#" aria-label="TikTok"><i class="bi bi-music-note-beamed" aria-hidden="true"></i></a>
+          <a class="social-pill" href="{{ CONSULT_WA }}" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i class="bi bi-whatsapp" aria-hidden="true"></i></a>
+          <a class="social-pill" href="{{ CONSULT_MAILTO }}" aria-label="Email AcademiaPro"><i class="bi bi-envelope" aria-hidden="true"></i></a>
+          <a class="social-pill" href="{{ url_for('main.public_blogs') }}" aria-label="Read AcademiaPro blog"><i class="bi bi-newspaper" aria-hidden="true"></i></a>
+          <a class="social-pill" href="{{ url_for('main.ai_chat') }}" aria-label="Open AI support"><i class="bi bi-robot" aria-hidden="true"></i></a>
       </div>
 
       <div class="drawer-footer small text-center text-secondary">
@@ -377,7 +383,7 @@
             <div class="footer-col footer-contact-col">
               <h4 class="footer-col-title">Contact</h4>
               <ul class="footer-contact-list list-unstyled">
-                <li><i class="bi bi-whatsapp" aria-hidden="true"></i><a href="https://wa.me/{{ WHATSAPP_NUMBER|replace('+','') }}" target="_blank" rel="noopener">WhatsApp</a></li>
+                <li><i class="bi bi-whatsapp" aria-hidden="true"></i><a href="https://wa.me/{{ WHATSAPP_NUMBER|replace('+','') }}" target="_blank" rel="noopener">WhatsApp: +{{ WHATSAPP_NUMBER|replace('+','') }}</a></li>
                 <li><i class="bi bi-envelope" aria-hidden="true"></i><a href="mailto:support@academiapro.com">support@academiapro.com</a></li>
                 <li><i class="bi bi-globe2" aria-hidden="true"></i><span>Online worldwide</span></li>
               </ul>

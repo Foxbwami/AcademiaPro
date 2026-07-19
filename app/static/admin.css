@@ -399,6 +399,45 @@ body.admin-shell {
   padding: 2rem 2rem 3rem;
 }
 
+/* Topbar */
+.admin-topbar {
+  background: linear-gradient(90deg, #05295a 0%, #163a92 100%);
+  color: #fff;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  margin: 1rem 1rem 0 1rem;
+  box-shadow: 0 8px 24px rgba(7,34,77,0.18);
+}
+.admin-top-logo { width:44px; height:44px; border-radius:8px; background:transparent; }
+.admin-top-welcome { font-weight:700; font-size:1.05rem; }
+.admin-top-actions .btn-warning { background:#ffbf2e; border-color:#ffbf2e; color:#0b1726; }
+.btn-icon { position:relative; background:transparent; border:0; color:#fff; }
+.btn-icon .notif-count { position:absolute; top:-6px; right:-6px; background:#ff4d4f; color:#fff; width:18px; height:18px; display:inline-grid; place-items:center; font-size:11px; border-radius:50%; }
+
+/* Dashboard grid */
+.dashboard-grid { display: grid; grid-template-columns: 1fr 340px; gap: 1.25rem; align-items:start; }
+.dashboard-main { min-width:0; }
+.dashboard-side { position:sticky; top:120px; }
+
+.metrics-row .metric-card { width: 160px; padding: 1rem 1rem; border-radius: 12px; }
+.metrics-row .metric-card .mini-value { font-size:1.6rem; }
+
+.admin-card p, .admin-card h3, .admin-card h6 { margin:0; }
+
+/* Orders list placeholder styling */
+.orders-list { display:flex; flex-direction:column; gap:0.6rem; }
+.orders-list .order-row { padding: .85rem; border-radius: 10px; border:1px solid rgba(17,32,59,0.04); background:#fff; display:flex; align-items:center; gap:1rem; }
+.orders-list .order-row .order-meta { flex:1; }
+
+/* Right column widgets */
+.dashboard-side .admin-card { border-radius:12px; }
+
+@media (max-width: 992px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .admin-topbar { margin: 0; border-radius: 0; }
+  .dashboard-side { position: static; }
+}
+
 .admin-login-shell {
   background: radial-gradient(circle at top left, rgba(101, 83, 255, 0.16), transparent 30%),
               radial-gradient(circle at bottom right, rgba(15, 102, 255, 0.18), transparent 30%),
