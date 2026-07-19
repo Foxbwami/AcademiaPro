@@ -1,30 +1,54 @@
 from pathlib import Path
+import re
 import sys
-p=Path('app/static/style.css')
-if not p.exists():
-    print('MISSING: app/static/style.css')
-    sys.exit(2)
-text=p.read_text(encoding='utf-8')
-checks=[]
-checks.append(('hero_padding_80_0_60', 'padding:80px 0 60px' in text))
-checks.append(('hero_gap_media', '@media(min-width:992px){' in text and '.hero-buttons{ gap:28px' in text))
-checks.append(('section_badge_count', text.count('.section-badge')))
-for sec in ['.services-section', '.why-section', '.process-section', '.testimonials-section', '.cta-section', '.faq-section']:
-    checks.append((f'{sec}_padding_60', f'{sec}{{\n  padding:60px 0' in text or f'{sec}' in text and 'padding:60px 0' in text))
-checks.append(('header_shell_padding_left_1.2', 'padding-left: 1.2rem' in text))
-checks.append(('primary_var', '--primary:' in text))
 
-ok=True
-for k,v in checks:
-    print(k, v)
-    if k=='section_badge_count' and v!=1:
-        ok=False
-    elif isinstance(v,bool) and not v:
-        ok=False
+
+CSS_ROOT = Path("app/static")
+css_files = sorted(CSS_ROOT.rglob("*.css"))
+
+if not css_files:
+    print("MISSING: no CSS files found under app/static")
+    sys.exit(2)
+
+combined = "\n".join(path.read_text(encoding="utf-8") for path in css_files)
+checks = []
+
+required_selectors = [
+    ".site-header",
+    ".trust-bar",
+    ".header-shell",
+    ".mobile-drawer",
+    ".mega-feature",
+    ".hero-section",
+    ".services-section",
+    ".testimonials-section",
+    ".site-footer",
+]
+
+for selector in required_selectors:
+    checks.append((f"selector {selector}", selector in combined))
+
+for path in css_files:
+    text = path.read_text(encoding="utf-8")
+    checks.append((f"balanced braces {path.as_posix()}", text.count("{") == text.count("}")))
+
+    for match in re.finditer(r"url\((?![\"']?(?:data:|https?:|#))([\"']?)([^)\"']+)\1\)", text):
+        raw = match.group(2).strip()
+        target = (path.parent / raw).resolve()
+        checks.append((f"asset {path.as_posix()} -> {raw}", target.exists()))
+
+checks.append(("legacy AcademicPro spelling absent", "AcademicPro" not in combined))
+checks.append(("missing mega image reference absent", "mega-feature.jpg" not in combined))
+
+ok = True
+for name, result in checks:
+    print(name, result)
+    if not result:
+        ok = False
 
 if ok:
-    print('VERIFICATION: PASS')
+    print("VERIFICATION: PASS")
     sys.exit(0)
-else:
-    print('VERIFICATION: FAIL')
-    sys.exit(3)
+
+print("VERIFICATION: FAIL")
+sys.exit(3)

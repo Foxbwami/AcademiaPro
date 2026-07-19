@@ -1,7 +1,5 @@
 /* Homepage visual system — modern academic platform styling */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
-
 :root { font-family: var(--font-sans); }
 
 .hero-section {
@@ -18,18 +16,6 @@
   color: var(--color-primary);
   font-weight: 700;
   letter-spacing: 0.01em;
-}
-
-.hero-title {
-  font-size: clamp(2rem, 3.6vw, 3rem);
-  line-height: 1.05;
-  font-weight: 800;
-}
-
-.hero-description {
-  color: var(--color-muted);
-  font-size: 1.05rem;
-  margin-bottom: 1.25rem;
 }
 
 .hero-panel {
@@ -137,6 +123,18 @@
   background: #f8fafc;
   color: var(--color-text);
   border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.hero-btn-main {
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-600));
+  color: #ffffff;
+  border: 1px solid transparent;
+}
+
+.hero-btn-outline {
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid rgba(31, 107, 255, 0.18);
 }
 
 .hero-badge-row {
@@ -342,11 +340,14 @@
 .services-section .service-card {
   border-radius: 1.25rem;
   border: 1px solid rgba(15, 23, 42, 0.06);
-  padding: 1.4rem;
+  padding: 1.6rem;
   background: #ffffff;
   box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .services-section .service-card:hover {
@@ -363,14 +364,6 @@
   color: #ffffff;
   background: linear-gradient(135deg, var(--color-primary), var(--color-primary-600));
   font-size: 1.35rem;
-}
-
-/* Decorate service cards for premium look */
-.services-section .service-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 1.6rem;
 }
 
 .service-card-head {
@@ -431,7 +424,7 @@
   box-shadow: 0 10px 30px rgba(31,107,255,0.12);
 }
 
-.service-card .service-link {
+.service-card .service-link:not(.service-cta) {
   background: rgba(31, 107, 255, 0.08);
   color: var(--color-primary);
   padding: 0.5rem 0.9rem;
@@ -796,11 +789,6 @@
   color: var(--color-muted) !important;
 }
 
-.cta-section {
-  padding: 2.5rem 0;
-  background: linear-gradient(180deg, #ffffff 0%, #f5f8ff 100%);
-}
-
 @media (max-width: 992px) {
   .hero-section {
     padding: 4rem 0 2.5rem;
@@ -1079,3 +1067,61 @@
     flex-basis: 3.5rem !important;
   }
 }
+
+/* Mobile testimonial overflow fix */
+@media (max-width: 768px) {
+  .testimonials-section,
+  .testimonial-carousel-shell,
+  .testimonial-carousel {
+    overflow: hidden;
+  }
+
+  .testimonial-carousel-shell {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .testimonial-slide,
+  .testimonial-slide.active {
+    left: auto !important;
+    right: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    box-sizing: border-box;
+  }
+
+  .testimonial-body,
+  .testimonial-client,
+  .client-meta,
+  .testimonial-tags {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .testimonial-text,
+  .testimonial-name,
+  .testimonial-role,
+  .testimonial-tags .tag {
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  .testimonial-client {
+    display: grid !important;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .testimonial-tags {
+    grid-column: 1 / -1;
+    display: flex !important;
+    margin-left: 0 !important;
+  }
+
+  .testimonial-tags .tag {
+    max-width: 100%;
+  }
+}
+

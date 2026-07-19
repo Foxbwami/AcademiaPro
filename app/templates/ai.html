@@ -8,57 +8,140 @@
 
 {% block content %}
 <section class="ai-workspace" aria-label="AcademiaPro AI workspace">
-  <aside class="ai-sidebar" aria-label="AI chat history">
-    <div class="ai-sidebar-top">
+  <script>
+    try { document.body.classList.add('ai-page'); } catch (e) {}
+    window.addEventListener('beforeunload', function () { try { document.body.classList.remove('ai-page'); } catch (e) {} });
+  </script>
+
+  <aside class="ai-sidebar" id="aiSidebar" aria-label="AI chat history">
+    <div class="ai-sidebar-brand">
+      <img src="{{ url_for('static', filename='img/academiaprolog.svg') }}" alt="" class="ai-sidebar-logo">
       <div>
-        <span class="section-badge">AI Assistant</span>
-        <h1>AcademiaPro AI</h1>
+        <div class="ai-sidebar-title">AcademiaPro AI</div>
+        <div class="ai-sidebar-subtitle">Academic workspace</div>
       </div>
-      <button id="aiNewChat" class="btn btn-primary btn-sm rounded-pill" type="button">
-        <i class="bi bi-plus-lg" aria-hidden="true"></i> New chat
+      <button id="aiSidebarClose" class="ai-sidebar-close" type="button" aria-label="Close chat sidebar">
+        <i class="bi bi-x-lg" aria-hidden="true"></i>
       </button>
     </div>
-    <div class="ai-sidebar-hint">Recent chats</div>
-    <div id="aiThreadList" class="ai-thread-list" role="list"></div>
+
+    <button id="aiNewChat" class="ai-new-chat" type="button">
+      <i class="bi bi-plus-lg" aria-hidden="true"></i>
+      <span>New Chat</span>
+    </button>
+
+    <label class="ai-search-box" for="aiThreadSearch">
+      <i class="bi bi-search" aria-hidden="true"></i>
+      <input id="aiThreadSearch" type="search" placeholder="Search chats">
+    </label>
+
+    <div class="ai-thread-section">
+      <div class="ai-thread-heading">Today</div>
+      <div id="aiThreadList" class="ai-thread-list" role="list"></div>
+    </div>
+
+    <div class="ai-sidebar-footer">
+      <a href="{{ url_for('main.settings') }}" class="ai-sidebar-link">
+        <i class="bi bi-gear" aria-hidden="true"></i>
+        <span>Settings</span>
+      </a>
+      <button class="ai-sidebar-link" type="button" id="aiSidebarTheme">
+        <i class="bi bi-moon-stars" aria-hidden="true"></i>
+        <span>Theme</span>
+      </button>
+      <a href="{{ url_for('main.profile') }}" class="ai-sidebar-link">
+        <i class="bi bi-person-circle" aria-hidden="true"></i>
+        <span>Profile</span>
+      </a>
+    </div>
   </aside>
 
+  <div class="ai-sidebar-scrim" id="aiSidebarScrim" aria-hidden="true"></div>
+
   <div class="ai-chat-shell" id="aiPagePanel">
-    <header class="ai-chat-header">
-      <div>
-        <div class="ai-chat-kicker">Smart academic support</div>
-        <h2>Ask, upload, plan, and refine</h2>
-        <p>Upload a brief or paste requirements. I’ll read the content and respond step-by-step with clear formatting.</p>
+    <header class="ai-chat-header" aria-label="AI chat header">
+      <button id="aiSidebarToggle" class="ai-header-icon d-lg-none" type="button" aria-controls="aiSidebar" aria-expanded="false" aria-label="Open chat sidebar">
+        <i class="bi bi-list" aria-hidden="true"></i>
+      </button>
+      <div class="ai-model-block">
+        <div class="ai-chat-kicker">AcademiaPro Assistant</div>
+        <h1>Ask, upload, plan, and refine</h1>
       </div>
       <div class="ai-header-actions">
-        <a class="btn btn-outline-primary btn-sm rounded-pill" href="{{ ORDER_LINK }}">Place Order</a>
-        <button class="btn btn-light btn-sm rounded-pill" id="aiPageClose" type="button" aria-label="Clear chat view">Clear View</button>
+        <select id="aiModelSelect" class="ai-model-select" aria-label="AI model">
+          <option value="gpt-4">Academic Pro</option>
+          <option value="gpt-3.5">Fast Draft</option>
+        </select>
+        <button class="ai-header-icon" id="aiPageClose" type="button" aria-label="Clear chat view">
+          <i class="bi bi-trash3" aria-hidden="true"></i>
+        </button>
+        <a class="ai-profile-chip" href="{{ url_for('main.profile') }}" aria-label="Open profile">
+          <i class="bi bi-person-circle" aria-hidden="true"></i>
+        </a>
       </div>
     </header>
 
-    <div id="aiPageBody" class="ai-chat-body" aria-live="polite"></div>
+    <div id="aiPageBody" class="ai-chat-body" aria-live="polite" aria-label="Conversation messages"></div>
 
     <div id="aiAttachmentTray" class="ai-attachment-tray" aria-label="Uploaded file context"></div>
 
     <footer class="ai-composer">
-      <div class="ai-composer-tools">
+      <div class="ai-input-wrap">
         <label class="ai-tool-btn" for="aiFileInput" title="Upload files">
           <i class="bi bi-paperclip" aria-hidden="true"></i>
-          <span>Upload</span>
         </label>
         <input id="aiFileInput" type="file" class="d-none" multiple accept=".txt,.md,.csv,.json,.html,.htm,.pdf,.docx">
+        <button class="ai-tool-btn" type="button" title="Add context">
+          <i class="bi bi-plus-lg" aria-hidden="true"></i>
+        </button>
+        <textarea id="aiPageInput" class="ai-input" rows="1" placeholder="Ask anything..."></textarea>
         <button id="aiVoiceBtn" class="ai-tool-btn" type="button" title="Voice input">
           <i class="bi bi-mic" aria-hidden="true"></i>
-          <span>Voice</span>
         </button>
-      </div>
-      <div class="ai-input-wrap">
-        <textarea id="aiPageInput" class="ai-input" rows="1" placeholder="Message AcademiaPro AI..."></textarea>
         <button id="aiPageSend" class="ai-send-btn" type="button" aria-label="Send message">
           <i class="bi bi-send-fill" aria-hidden="true"></i>
         </button>
       </div>
-      <div class="ai-composer-note">Press Enter to send, Shift+Enter for a new line. Voice uses your browser speech recognition.</div>
     </footer>
   </div>
+
+  <aside class="ai-settings-panel" aria-label="AI settings and controls">
+    <div class="ai-settings-inner">
+      <h2 class="ai-settings-title">Controls</h2>
+
+      <div class="ai-setting ai-theme-setting">
+        <label for="aiThemeSelect" class="form-label">Theme</label>
+        <select id="aiThemeSelect" class="form-select form-select-sm">
+          <option value="system">System</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </div>
+
+      <div class="ai-setting">
+        <label for="aiTempRange" class="form-label">Temperature <span id="aiTempValue">0.2</span></label>
+        <input id="aiTempRange" type="range" min="0" max="1" step="0.05" value="0.2" class="form-range">
+      </div>
+
+      <div class="ai-setting">
+        <label for="aiSystemPrompt" class="form-label">System prompt (optional)</label>
+        <textarea id="aiSystemPrompt" class="form-control form-control-sm" rows="3" placeholder="You are a helpful academic assistant..."></textarea>
+      </div>
+
+      <div class="ai-setting ai-controls">
+        <button id="aiRegenerate" class="btn btn-outline-secondary btn-sm">Regenerate</button>
+        <button id="aiStop" class="btn btn-outline-danger btn-sm">Stop</button>
+      </div>
+
+      <div class="ai-setting">
+        <button id="aiSaveSettings" class="btn btn-primary btn-sm w-100">Save Preferences</button>
+      </div>
+
+      <a class="ai-order-link" href="{{ ORDER_LINK }}">
+        <i class="bi bi-cart-check" aria-hidden="true"></i>
+        <span>Place an order with admin support</span>
+      </a>
+    </div>
+  </aside>
 </section>
 {% endblock %}

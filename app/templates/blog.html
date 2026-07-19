@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Blog & Resources | AcademicPro{% endblock %}
+{% block title %}Blog & Resources | AcademiaPro{% endblock %}
 {% block content %}
 <div class="container py-5">
   <h2 class="mb-2 text-center fw-bold text-primary">Academic Resource Hub</h2>
@@ -53,7 +53,7 @@
           <p class="small text-muted mb-2">{{ pillar_post.excerpt if pillar_post and pillar_post.excerpt else "Long-form guide with actionable examples and academic best practices." }}</p>
           <div class="d-flex flex-wrap gap-1 mb-2">
             <span class="badge bg-light text-dark border">Pillar Guide</span>
-            <span class="badge bg-light text-dark border">AcademicPro Editorial Team</span>
+            <span class="badge bg-light text-dark border">AcademiaPro Editorial Team</span>
           </div>
           <div class="d-flex gap-2 flex-wrap">
             {% if pillar_links.get(p) %}
@@ -160,7 +160,7 @@
             <div class="d-flex flex-wrap gap-1 mb-2">
               {% if article.cluster_topic %}<span class="badge bg-light text-dark border">{{ article.cluster_topic }}</span>{% endif %}
             </div>
-            <div class="small text-muted">By {{ article.author_name or "AcademicPro Editorial Team" }}</div>
+            <div class="small text-muted">By {{ article.author_name or "AcademiaPro Editorial Team" }}</div>
             <div class="mt-3 d-flex flex-wrap gap-2">
               <a href="{{ url_for('main.blog_detail', id=article.id) }}" class="btn btn-outline-primary btn-sm">Read More</a>
               {% if category_links.get(article.category) %}
@@ -190,7 +190,7 @@
                 {% if blog.cluster_topic %}<span class="badge bg-light text-dark border">{{ blog.cluster_topic }}</span>{% endif %}
               </div>
               <p class="card-text flex-grow-1">{{ blog.excerpt or (blog.content[:220] ~ ('...' if blog.content|length > 220 else '')) }}</p>
-              <p class="small text-muted mb-0">By {{ blog.author_name or "AcademicPro Editorial Team" }}</p>
+              <p class="small text-muted mb-0">By {{ blog.author_name or "AcademiaPro Editorial Team" }}</p>
               <div class="mt-3 text-end">
                 <a href="{{ url_for('main.blog_detail', id=blog.id) }}" class="btn btn-outline-primary btn-sm">Read More</a>
               </div>

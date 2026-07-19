@@ -13,7 +13,15 @@
   {'href': url_for('main.ai_chat'), 'classes': 'btn-secondary hero-btn hero-btn-secondary', 'label': 'Chat with AI'}
 ] %}
 {% set points = ['🔒 Secure Payments', '✔ Confidential', '⭐ 4.9 Rating', '🕒 24/7 Support'] %}
-{% set panel = {'top':'Live service status','list':['📚 Academic Writing — Available','💻 Programming — Experts Online','📊 Data Analysis — 24/7 Support','📖 Research — Fast Delivery','98% Client Satisfaction','700+ Projects Delivered','★★★★★ 4.9 Rating'],'link': {'href':'#services','label':'See all services'}} %}
+{% set panel = {
+  'top':'Start with clarity',
+  'intro':'A cleaner path from request to delivery, without repeating the service cards below.',
+  'list':[
+    {'icon':'bi-send-check','title':'Share your brief','text':'Upload instructions, deadline, rubric, or sample files in one place.'},
+    {'icon':'bi-diagram-3','title':'Get matched quickly','text':'We route the work to the right academic or technical specialist.'},
+    {'icon':'bi-check2-circle','title':'Review with confidence','text':'Track progress, request revisions, and receive polished final files.'}
+  ]
+} %}
 {% include 'components/hero.html' with context %}
 {% include 'components/hero_status_strip.html' %}
 {% include 'components/services.html' %}
