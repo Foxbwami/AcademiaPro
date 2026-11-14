@@ -14,6 +14,7 @@ import urllib.error
 import io
 import zipfile
 import xml.etree.ElementTree as ET
+from urllib.parse import urlsplit
 
 from app.extensions import db, login_manager
 from app.forms import OrderForm, RegistrationForm, LoginForm, ProfileForm, SettingForm
@@ -33,6 +34,18 @@ GUEST_THREAD_TAG = "[GUEST_THREAD:"
 SUPPORT_CHAT_TAG = "[Support]"
 SUPPORT_ATTACHMENT_TAG = "[SupportAttachment:"
 AI_THREAD_TAG = "ai_guest_thread_id"
+
+
+def _safe_local_redirect(target):
+    """Return a safe same-site relative URL, or None for external/invalid targets."""
+    if not target or not isinstance(target, str) or not target.startswith("/"):
+        return None
+    if target.startswith("//") or "\\" in target:
+        return None
+    parsed = urlsplit(target)
+    if parsed.scheme or parsed.netloc:
+        return None
+    return target
 
 def _otp_enabled():
     return bool(current_app.config.get("EMAIL_OTP_ENABLED", False))
@@ -836,7 +849,7 @@ def login():
                 flash("Invalid email or password", "danger")
                 return render_template("login.html", form=form)
             login_user(user)
-            next_page = request.args.get("next")
+            next_page = _safe_local_redirect(request.args.get("next"))
             return redirect(next_page) if next_page else redirect(url_for("main.index"))
         else:
             flash("Invalid email or password", "danger")
@@ -859,8 +872,8 @@ def admin_login():
         user = User.query.filter_by(email=form.email.data.strip().lower()).first()
         if user and user.is_admin and check_password_hash(user.password_hash, form.password.data):
             login_user(user)
-            next_page = request.args.get("next")
-            if next_page and next_page.startswith("/"):
+            next_page = _safe_local_redirect(request.args.get("next"))
+            if next_page:
                 return redirect(next_page)
             return redirect(url_for("main.admin_dashboard"))
         flash("Invalid admin credentials", "danger")
