@@ -201,3 +201,23 @@ def test_admin_login_rejects_protocol_relative_next_url(app, client):
 
     assert response.status_code == 302
     assert response.headers["Location"].endswith("/admin/dashboard")
+
+
+
+def test_admin_uploads_require_admin_role(app, client):
+    with app.app_context():
+        _create_user("upload-client@example.com", "Upload Client", "pass12345")
+        _create_user("upload-admin@example.com", "Upload Admin", "pass12345", role="admin")
+
+    anonymous_response = client.get("/admin/uploads")
+    assert anonymous_response.status_code == 302
+    assert "/login" in anonymous_response.headers["Location"]
+
+    _login(client, "upload-client@example.com", "pass12345")
+    client_response = client.get("/admin/uploads")
+    _logout(client)
+    assert client_response.status_code == 403
+
+    _admin_login(client, "upload-admin@example.com", "pass12345")
+    admin_response = client.get("/admin/uploads")
+    assert admin_response.status_code == 200
