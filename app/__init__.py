@@ -44,13 +44,13 @@ def create_app():
         try:
             html = response.get_data(as_text=True)
             token = generate_csrf()
-            form_pattern = re.compile(r"(<form\\b[^>]*>)(.*?)(</form>)", re.IGNORECASE | re.DOTALL)
+            form_pattern = re.compile(r"(<form\b[^>]*>)(.*?)(</form>)", re.IGNORECASE | re.DOTALL)
             def inject_token(match):
                 opening, body, closing = match.groups()
-                method_match = re.search(r"\\bmethod\\s*=\\s*['\"]?([^\\s'\"]+)", opening, re.IGNORECASE)
+                method_match = re.search(r"\bmethod\s*=\s*['\"]?([^\s'\"]+)", opening, re.IGNORECASE)
                 if not method_match or method_match.group(1).lower() != 'post':
                     return match.group(0)
-                if re.search(r"name\\s*=\\s*['\"]csrf_token['\"]", body, re.IGNORECASE):
+                if re.search(r"name\s*=\s*['\"]csrf_token['\"]", body, re.IGNORECASE):
                     return match.group(0)
                 field = '<input type="hidden" name="csrf_token" value="' + token + '">'
                 return opening + field + body + closing
