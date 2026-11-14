@@ -221,3 +221,26 @@ def test_admin_uploads_require_admin_role(app, client):
     _admin_login(client, "upload-admin@example.com", "pass12345")
     admin_response = client.get("/admin/uploads")
     assert admin_response.status_code == 200
+
+
+
+def test_csrf_protects_legacy_post_forms(app, client):
+    app.config["WTF_CSRF_ENABLED"] = True
+
+    rejected = client.post("/lead", data={"topic": "No token"})
+    assert rejected.status_code == 400
+
+    page = client.get("/")
+    assert page.status_code == 200
+    import re
+    match = re.search(
+        rb'name="csrf_token" value="([^"]+)"',
+        page.data,
+    )
+    assert match is not None
+
+    accepted = client.post(
+        "/lead",
+        data={"topic": "Token supplied", "csrf_token": match.group(1).decode()},
+    )
+    assert accepted.status_code == 302
