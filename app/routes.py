@@ -2978,19 +2978,41 @@ def admin_chat():
     return render_template("admin_chat.html")
 
 @main.route('/admin/uploads', methods=['GET', 'POST'])
+@login_required
 def upload_file():
+    if not current_user.is_admin:
+        abort(403)
+
     if request.method == 'POST':
-        uploaded = request.files['file']
-        if uploaded and is_allowed_extension(uploaded.filename):
-            stored = save_uploaded_file(uploaded, _get_upload_root())
-            if stored:
-                file_entry = OrderFile(filename=stored, uploader='admin')
-                db.session.add(file_entry)
-                db.session.commit()
+        uploaded = request.files.get('file')
+        if not uploaded or not uploaded.filename:
+            flash("Choose a file to upload.", "warning")
             return redirect(url_for('main.upload_file'))
+        if not is_allowed_extension(uploaded.filename):
+            flash("This file type is not allowed.", "danger")
+            return redirect(url_for('main.upload_file'))
+
+        stored = save_uploaded_file(uploaded, _get_upload_root())
+        if stored:
+            file_entry = OrderFile(filename=stored, uploader='admin')
+            db.session.add(file_entry)
+            db.session.commit()
+            flash("File uploaded successfully.", "success")
+        else:
+            flash("The file could not be uploaded.", "danger")
+        return redirect(url_for('main.upload_file'))
 
     files = OrderFile.query.order_by(OrderFile.uploaded_at.desc()).all()
     return render_template('admin_uploads.html', files=files)
+
+
+@main.route('/admin/uploads/<int:file_id>/download')
+@login_required
+def download_admin_upload(file_id):
+    if not current_user.is_admin:
+        abort(403)
+    file_entry = OrderFile.query.get_or_404(file_id)
+    return send_from_directory(_get_upload_root(), file_entry.filename, as_attachment=True)
 
 @main.route('/admin/payments')
 def admin_payments():
