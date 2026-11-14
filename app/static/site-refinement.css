@@ -177,3 +177,60 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* Homepage-specific components */
+.pricing-overview-card {
+  width: min(100%, 980px);
+  min-height: 190px;
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0,1fr) auto;
+  align-items: center;
+  gap: 1.25rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
+}
+.pricing-overview-icon {
+  width: 3.4rem;
+  height: 3.4rem;
+  display: grid;
+  place-items: center;
+  border-radius: 1rem;
+  background: var(--ap-gold-soft);
+  color: #8b681c;
+  font-size: 1.45rem;
+}
+.pricing-overview-copy h3 { margin: 0 0 .45rem; font-size: 1.2rem; }
+.pricing-overview-copy p { margin: 0; color: var(--ap-muted); }
+.pricing-overview-actions { display: grid; gap: .6rem; min-width: 190px; }
+.testimonial-list .testimonial-slide { padding: 1.5rem; }
+.testimonial-rating { display: flex; gap: .22rem; color: #b88925; }
+.testimonial-client { display: flex; align-items: center; gap: .8rem; }
+.testimonial-avatar {
+  width: 2.65rem;
+  height: 2.65rem;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: #eaf0fa;
+  color: var(--ap-navy);
+  font-weight: 800;
+}
+.testimonial-name { color: var(--ap-navy); font-weight: 750; }
+.testimonial-role { color: var(--ap-muted); font-size: .85rem; }
+.testimonial-empty {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 2.25rem;
+  border: 1px dashed #cbd6e5;
+  border-radius: var(--ap-radius);
+  background: #fff;
+  text-align: center;
+}
+.testimonial-empty > i { color: var(--ap-blue); font-size: 2rem; }
+.testimonial-empty h3 { margin: .75rem 0 .4rem; font-size: 1.2rem; }
+.testimonial-empty p { color: var(--ap-muted); }
+@media (max-width: 767.98px) {
+  .pricing-overview-card { grid-template-columns: 1fr; }
+  .pricing-overview-actions { min-width: 0; }
+  .pricing-overview-actions .btn { width: 100%; }
+}
