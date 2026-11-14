@@ -174,3 +174,30 @@ def test_order_chat_is_client_and_admin_only(app, client):
             Message.receiver_id == admin_id,
         ).all()
         assert len(sent) >= 1
+
+
+
+def test_client_login_rejects_external_next_url(app, client):
+    with app.app_context():
+        _create_user("redirect-client@example.com", "Redirect Client", "pass12345")
+
+    response = client.post(
+        "/login?next=https://evil.example/phishing",
+        data={"email": "redirect-client@example.com", "password": "pass12345"},
+    )
+
+    assert response.status_code == 302
+    assert response.headers["Location"] == "/"
+
+
+def test_admin_login_rejects_protocol_relative_next_url(app, client):
+    with app.app_context():
+        _create_user("redirect-admin@example.com", "Redirect Admin", "pass12345", role="admin")
+
+    response = client.post(
+        "/staff-portal?next=//evil.example/phishing",
+        data={"email": "redirect-admin@example.com", "password": "pass12345"},
+    )
+
+    assert response.status_code == 302
+    assert response.headers["Location"].endswith("/admin/dashboard")
