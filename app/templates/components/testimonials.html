@@ -1,132 +1,63 @@
-<section class="testimonials-section animate-on-scroll">
+<section class="testimonials-section" aria-labelledby="homepage-testimonials-title">
   <div class="wrapper">
-    {% set eyebrow = 'Client Testimonials' %}
-    {% set title = 'Trusted by Students Worldwide' %}
-    {% set description = 'Over 700 successful projects completed for students in 30+ countries. Your success could be our next success story.' %}
-    {% include 'components/section_header.html' %}
-    <div class="row g-4 testimonial-stats-grid mt-4">
-      <div class="col-sm-6 col-lg-3">
-        <div class="testimonial-stat-card">
-          <div class="stat-value">700+</div>
-          <div class="stat-label">Completed Projects</div>
-        </div>
-      </div>
-      <div class="col-sm-6 col-lg-3">
-        <div class="testimonial-stat-card">
-          <div class="stat-value">98%</div>
-          <div class="stat-label">Client Satisfaction</div>
-        </div>
-      </div>
-      <div class="col-sm-6 col-lg-3">
-        <div class="testimonial-stat-card">
-          <div class="stat-value">30+</div>
-          <div class="stat-label">Countries Served</div>
-        </div>
-      </div>
-      <div class="col-sm-6 col-lg-3">
-        <div class="testimonial-stat-card">
-          <div class="stat-value">4.9★</div>
-          <div class="stat-label">Average Rating</div>
-        </div>
-      </div>
+    <div class="section-header">
+      <div class="section-eyebrow">Client feedback</div>
+      <h2 class="section-title" id="homepage-testimonials-title">Experiences shared by clients</h2>
+      <p class="section-description">Read feedback submitted through AcademiaPro. Published feedback is shown as provided.</p>
     </div>
-    <div class="testimonial-carousel-shell mt-5" tabindex="0" aria-label="Testimonials carousel">
-      <button class="testimonial-nav testimonial-prev" type="button" aria-label="Previous testimonial">❮</button>
-      <div class="testimonial-carousel" id="testimonialCarousel">
-        <article class="testimonial-slide active" data-index="0">
-          <div class="testimonial-quote">
-            <svg width="140" height="120" viewBox="0 0 140 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-              <path d="M24 24c0-13.255 10.745-24 24-24 13.256 0 24 10.745 24 24 0 13.256-10.744 24-24 24-13.255 0-24 10.744-24 24" fill="currentColor" opacity="0.08"/>
-            </svg>
-          </div>
-          <div class="testimonial-body">
-            <div class="testimonial-rating" aria-hidden="true">
-              <svg class="star" viewBox="0 0 24 24" width="20" height="20" fill="#FFC107" xmlns="http://www.w3.org/2000/svg"><path d="M12 .587l3.668 7.431L23.5 9.748l-5.75 5.603L19.335 24 12 19.897 4.665 24l1.585-8.649L.5 9.748l7.832-1.73L12 .587z"/></svg>
-              <svg class="star" viewBox="0 0 24 24" width="20" height="20" fill="#FFC107" xmlns="http://www.w3.org/2000/svg"><path d="M12 .587l3.668 7.431L23.5 9.748l-5.75 5.603L19.335 24 12 19.897 4.665 24l1.585-8.649L.5 9.748l7.832-1.73L12 .587z"/></svg>
-              <svg class="star" viewBox="0 0 24 24" width="20" height="20" fill="#FFC107" xmlns="http://www.w3.org/2000/svg"><path d="M12 .587l3.668 7.431L23.5 9.748l-5.75 5.603L19.335 24 12 19.897 4.665 24l1.585-8.649L.5 9.748l7.832-1.73L12 .587z"/></svg>
-              <svg class="star" viewBox="0 0 24 24" width="20" height="20" fill="#FFC107" xmlns="http://www.w3.org/2000/svg"><path d="M12 .587l3.668 7.431L23.5 9.748l-5.75 5.603L19.335 24 12 19.897 4.665 24l1.585-8.649L.5 9.748l7.832-1.73L12 .587z"/></svg>
-              <svg class="star" viewBox="0 0 24 24" width="20" height="20" fill="#FFC107" xmlns="http://www.w3.org/2000/svg"><path d="M12 .587l3.668 7.431L23.5 9.748l-5.75 5.603L19.335 24 12 19.897 4.665 24l1.585-8.649L.5 9.748l7.832-1.73L12 .587z"/></svg>
-            </div>
-            <blockquote class="testimonial-text">"Our dissertation was delivered two days before the deadline. Communication was excellent."</blockquote>
-            <hr class="testimonial-divider">
-            <div class="testimonial-client d-flex align-items-center gap-3">
-              <div class="testimonial-avatar">SM</div>
-              <div class="client-meta">
-                <div class="testimonial-name">Sarah M.</div>
-                <div class="testimonial-role">Masters Student • Nairobi, Kenya</div>
+    {% if testimonials %}
+      <div class="row g-4 testimonial-list">
+        {% for item in testimonials %}
+          <div class="col-md-6 col-lg-4">
+            <article class="testimonial-slide h-100">
+              {% if item.rating %}
+                <div class="testimonial-rating mb-3" aria-label="{{ item.rating }} out of 5 stars">
+                  {% for star in range(1, 6) %}
+                    <i class="bi {{ 'bi-star-fill' if star <= item.rating else 'bi-star' }}" aria-hidden="true"></i>
+                  {% endfor %}
+                </div>
+              {% endif %}
+              <blockquote class="testimonial-text">“{{ item.content }}”</blockquote>
+              <div class="testimonial-client mt-4">
+                <div class="testimonial-avatar" aria-hidden="true">{{ (item.name or 'Client')[:1]|upper }}</div>
+                <div class="client-meta">
+                  <div class="testimonial-name">{{ item.name or 'AcademiaPro client' }}</div>
+                  <div class="testimonial-role">Client feedback</div>
+                </div>
               </div>
-              <div class="testimonial-tags ms-auto d-flex gap-2">
-                <span class="tag">✓ Verified Client</span>
-                <span class="tag">Dissertation Project</span>
-                <span class="tag">Completed in 4 Days</span>
-              </div>
-            </div>
+            </article>
           </div>
-        </article>
-        <article class="testimonial-slide" data-index="1">
-          <div class="testimonial-quote">
-            <svg width="140" height="120" viewBox="0 0 140 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-              <path d="M24 24c0-13.255 10.745-24 24-24 13.256 0 24 10.745 24 24 0 13.256-10.744 24-24 24-13.255 0-24 10.744-24 24" fill="currentColor" opacity="0.08"/>
-            </svg>
-          </div>
-          <div class="testimonial-body">
-            <div class="testimonial-rating" aria-hidden="true">
-              <svg class="star" viewBox="0 0 24 24" width="20" height="20" fill="#FFC107" xmlns="http://www.w3.org/2000/svg"><path d="M12 .587l3.668 7.431L23.5 9.748l-5.75 5.603L19.335 24 12 19.897 4.665 24l1.585-8.649L.5 9.748l7.832-1.73L12 .587z"/></svg>
-              <svg class="star" viewBox="0 0 24 24" width="20" height="20" fill="#FFC107" xmlns="http://www.w3.org/2000/svg"><path d="M12 .587l3.668 7.431L23.5 9.748l-5.75 5.603L19.335 24 12 19.897 4.665 24l1.585-8.649L.5 9.748l7.832-1.73L12 .587z"/></svg>
-              <svg class="star" viewBox="0 0 24 24" width="20" height="20" fill="#FFC107" xmlns="http://www.w3.org/2000/svg"><path d="M12 .587l3.668 7.431L23.5 9.748l-5.75 5.603L19.335 24 12 19.897 4.665 24l1.585-8.649L.5 9.748l7.832-1.73L12 .587z"/></svg>
-              <svg class="star" viewBox="0 0 24 24" width="20" height="20" fill="#FFC107" xmlns="http://www.w3.org/2000/svg"><path d="M12 .587l3.668 7.431L23.5 9.748l-5.75 5.603L19.335 24 12 19.897 4.665 24l1.585-8.649L.5 9.748l7.832-1.73L12 .587z"/></svg>
-              <svg class="star" viewBox="0 0 24 24" width="20" height="20" fill="#FFC107" xmlns="http://www.w3.org/2000/svg"><path d="M12 .587l3.668 7.431L23.5 9.748l-5.75 5.603L19.335 24 12 19.897 4.665 24l1.585-8.649L.5 9.748l7.832-1.73L12 .587z"/></svg>
-            </div>
-            <blockquote class="testimonial-text">"The programming solution was well documented and easy to understand."</blockquote>
-            <hr class="testimonial-divider">
-            <div class="testimonial-client d-flex align-items-center gap-3">
-              <div class="testimonial-avatar">DK</div>
-              <div class="client-meta">
-                <div class="testimonial-name">David K.</div>
-                <div class="testimonial-role">Computer Science Student</div>
-              </div>
-              <div class="testimonial-tags ms-auto d-flex gap-2">
-                <span class="tag">✓ Verified Client</span>
-                <span class="tag">Programming Project</span>
-                <span class="tag">Completed in 7 Days</span>
-              </div>
-            </div>
-          </div>
-        </article>
-        <article class="testimonial-slide" data-index="2">
-          <div class="testimonial-quote">
-            <svg width="140" height="120" viewBox="0 0 140 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-              <path d="M24 24c0-13.255 10.745-24 24-24 13.256 0 24 10.745 24 24 0 13.256-10.744 24-24 24-13.255 0-24 10.744-24 24" fill="currentColor" opacity="0.08"/>
-            </svg>
-          </div>
-          <div class="testimonial-body">
-            <div class="testimonial-rating" aria-hidden="true">
-              <svg class="star" viewBox="0 0 24 24" width="20" height="20" fill="#FFC107" xmlns="http://www.w3.org/2000/svg"><path d="M12 .587l3.668 7.431L23.5 9.748l-5.75 5.603L19.335 24 12 19.897 4.665 24l1.585-8.649L.5 9.748l7.832-1.73L12 .587z"/></svg>
-              <svg class="star" viewBox="0 0 24 24" width="20" height="20" fill="#FFC107" xmlns="http://www.w3.org/2000/svg"><path d="M12 .587l3.668 7.431L23.5 9.748l-5.75 5.603L19.335 24 12 19.897 4.665 24l1.585-8.649L.5 9.748l7.832-1.73L12 .587z"/></svg>
-              <svg class="star" viewBox="0 0 24 24" width="20" height="20" fill="#FFC107" xmlns="http://www.w3.org/2000/svg"><path d="M12 .587l3.668 7.431L23.5 9.748l-5.75 5.603L19.335 24 12 19.897 4.665 24l1.585-8.649L.5 9.748l7.832-1.73L12 .587z"/></svg>
-              <svg class="star" viewBox="0 0 24 24" width="20" height="20" fill="#FFC107" xmlns="http://www.w3.org/2000/svg"><path d="M12 .587l3.668 7.431L23.5 9.748l-5.75 5.603L19.335 24 12 19.897 4.665 24l1.585-8.649L.5 9.748l7.832-1.73L12 .587z"/></svg>
-              <svg class="star" viewBox="0 0 24 24" width="20" height="20" fill="#FFC107" xmlns="http://www.w3.org/2000/svg"><path d="M12 .587l3.668 7.431L23.5 9.748l-5.75 5.603L19.335 24 12 19.897 4.665 24l1.585-8.649L.5 9.748l7.832-1.73L12 .587z"/></svg>
-            </div>
-            <blockquote class="testimonial-text">"Professional editing and formatting. Passed with distinction."</blockquote>
-            <hr class="testimonial-divider">
-            <div class="testimonial-client d-flex align-items-center gap-3">
-              <div class="testimonial-avatar">BO</div>
-              <div class="client-meta">
-                <div class="testimonial-name">Brian O.</div>
-                <div class="testimonial-role">MBA Student</div>
-              </div>
-              <div class="testimonial-tags ms-auto d-flex gap-2">
-                <span class="tag">✓ Verified Client</span>
-                <span class="tag">Editing Project</span>
-                <span class="tag">Completed in 3 Days</span>
-              </div>
-            </div>
-          </div>
-        </article>
+        {% endfor %}
       </div>
-      <div id="testimonialLive" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
-      <button class="testimonial-nav testimonial-next" type="button" aria-label="Next testimonial">❯</button>
-    </div>
-    <div class="testimonial-dots" id="testimonialDots" aria-label="testimonial navigation"></div>
+    {% elif reviews %}
+      <div class="row g-4 testimonial-list">
+        {% for item in reviews %}
+          <div class="col-md-6 col-lg-4">
+            <article class="testimonial-slide h-100">
+              <div class="testimonial-rating mb-3" aria-label="{{ item.stars }} out of 5 stars">
+                {% for star in range(1, 6) %}
+                  <i class="bi {{ 'bi-star-fill' if star <= item.stars else 'bi-star' }}" aria-hidden="true"></i>
+                {% endfor %}
+              </div>
+              <blockquote class="testimonial-text">“{{ item.comment }}”</blockquote>
+              <div class="testimonial-client mt-4">
+                <div class="testimonial-avatar" aria-hidden="true">{{ (item.reviewer or 'Client')[:1]|upper }}</div>
+                <div class="client-meta">
+                  <div class="testimonial-name">{{ item.reviewer }}</div>
+                  <div class="testimonial-role">Client review</div>
+                </div>
+              </div>
+            </article>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="testimonial-empty">
+        <i class="bi bi-chat-square-text" aria-hidden="true"></i>
+        <h3>Client feedback will appear here</h3>
+        <p>We only publish feedback that has been submitted and approved. Contact the team if you would like to know more about our services.</p>
+        <a class="btn btn-outline-primary" href="{{ CONSULT_WA }}" target="_blank" rel="noopener">Contact AcademiaPro</a>
+      </div>
+    {% endif %}
   </div>
 </section>
