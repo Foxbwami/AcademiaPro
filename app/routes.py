@@ -401,7 +401,7 @@ def lead():
 
 def _get_upload_root():
     # Private client/admin/order documents live outside Flask's public static tree.
-    return os.path.join(current_app.instance_path, 'private_uploads')
+    return os.environ.get('PRIVATE_UPLOAD_DIR') or os.path.join(current_app.instance_path, 'private_uploads')
 
 def _get_sample_folder():
     # Public sample documents are intentionally published for visitors.
