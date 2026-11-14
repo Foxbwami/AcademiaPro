@@ -1,0 +1,179 @@
+/* AcademiaPro design system refinement
+   Purpose: consistent, accessible presentation across public pages.
+   Keep page-specific layouts and component behaviour intact. */
+:root {
+  color-scheme: light;
+  --ap-ink: #17243a;
+  --ap-muted: #64748b;
+  --ap-navy: #102b52;
+  --ap-blue: #1d4ed8;
+  --ap-blue-dark: #173b78;
+  --ap-gold: #c49a36;
+  --ap-gold-soft: #f8f1df;
+  --ap-line: #e4eaf2;
+  --ap-surface: #ffffff;
+  --ap-canvas: #f5f7fb;
+  --ap-radius: 18px;
+  --ap-shadow: 0 12px 34px rgba(16, 43, 82, .07);
+  --ap-shadow-hover: 0 18px 42px rgba(16, 43, 82, .12);
+}
+html { scroll-behavior: smooth; scroll-padding-top: 7rem; }
+body {
+  color: var(--ap-ink);
+  background: var(--ap-canvas) !important;
+  font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+body::before { display: none !important; }
+.site-graphics { display: none !important; }
+main.wrapper {
+  width: min(100% - 2.5rem, 1280px);
+  max-width: 1280px;
+  margin: 0 auto !important;
+  padding: 0;
+}
+h1,h2,h3,h4,h5,h6 {
+  color: var(--ap-navy);
+  font-weight: 750;
+  letter-spacing: -.025em;
+  line-height: 1.2;
+}
+p { color: inherit; }
+a { text-underline-offset: .18em; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid rgba(29,78,216,.45) !important;
+  outline-offset: 3px;
+}
+.btn {
+  min-height: 42px;
+  border-radius: 10px;
+  font-weight: 650;
+  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn-primary {
+  border-color: var(--ap-blue);
+  background: var(--ap-blue);
+  box-shadow: 0 5px 14px rgba(29,78,216,.16);
+}
+.btn-primary:hover { border-color: var(--ap-blue-dark); background: var(--ap-blue-dark); }
+.btn-outline-primary { color: var(--ap-blue); border-color: #b8c9e8; }
+.form-control, .form-select {
+  min-height: 44px;
+  border-color: #d7e0ec;
+  border-radius: 10px;
+  color: var(--ap-ink);
+  background-color: #fff;
+}
+.form-control:focus, .form-select:focus {
+  border-color: #7da2e8;
+  box-shadow: 0 0 0 .2rem rgba(29,78,216,.12);
+}
+.card, .service-card, .service-item-card, .benefit-card, .pricing-card, .sample-card,
+.why-card, .process-card, .testimonial-stat-card, .testimonial-slide {
+  border: 1px solid var(--ap-line);
+  border-radius: var(--ap-radius);
+  background: var(--ap-surface);
+  box-shadow: var(--ap-shadow);
+}
+.card:hover, .service-card:hover, .service-item-card:hover, .benefit-card:hover,
+.pricing-card:hover, .sample-card:hover, .why-card:hover {
+  box-shadow: var(--ap-shadow-hover);
+}
+.card::after, .service-card::after, .service-item-card::after, .benefit-card::after,
+.pricing-card::after, .sample-card::after, .testimonial-slide::after { display: none !important; }
+.wrapper, .container { --bs-gutter-x: 1.5rem; }
+.section-header { max-width: 760px; margin: 0 auto 2rem; text-align: center; }
+.section-eyebrow, .section-badge {
+  color: #8b681c;
+  font-size: .76rem;
+  font-weight: 800;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+.section-title { margin: .45rem 0 .7rem; font-size: clamp(1.8rem, 3vw, 2.55rem); }
+.section-description { max-width: 66ch; margin: 0 auto; color: var(--ap-muted); }
+.hero-section, .service-hero-section, .pricing-page-hero {
+  position: relative !important;
+  top: auto !important;
+  z-index: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  padding: clamp(3rem, 6vw, 5.25rem) 0 !important;
+  background: linear-gradient(135deg, #f1f6ff 0%, #fff 62%, #fbf7ed 100%) !important;
+  box-shadow: none !important;
+}
+.hero-section::before, .hero-section::after, .service-hero-section::before,
+.service-hero-section::after, .pricing-page-hero::before, .pricing-page-hero::after { display: none !important; }
+.hero-section .wrapper { width: min(100% - 2.5rem, 1240px); margin-inline: auto; }
+.hero-title { max-width: 14ch; color: var(--ap-navy); font-size: clamp(2.45rem, 5vw, 4.35rem); line-height: 1.06; letter-spacing: -.045em; }
+.hero-description { max-width: 60ch; color: #53647b; font-size: 1.04rem; line-height: 1.75; }
+.hero-panel { border: 1px solid #e0e8f4; border-radius: 22px; background: rgba(255,255,255,.92); box-shadow: 0 22px 55px rgba(16,43,82,.10); }
+.hero-trust-badge { border: 1px solid var(--ap-line); border-radius: 999px; background: #fff; color: #40536e; }
+.services-section, .why-section, .testimonials-section, .stats-section,
+.process-section, .pricing-section, .standard-pricing-section,
+.service-content-section, .service-benefits-section, .pricing-faq-section {
+  position: relative;
+  padding-block: clamp(3rem, 5vw, 4.75rem) !important;
+  background: #fff !important;
+}
+.pricing-section, .stats-section, .process-section, .pricing-faq-section { background: #f4f7fc !important; }
+.services-section .row, .pricing-section .row, .why-section .row,
+.testimonials-section .row { align-items: stretch; }
+.service-card, .pricing-card, .why-card, .process-card, .testimonial-stat-card {
+  height: 100%;
+  padding: 1.45rem;
+}
+.service-card { display: flex; flex-direction: column; }
+.service-card-head { flex: 1; }
+.service-title { color: var(--ap-navy); font-size: 1.08rem; font-weight: 750; }
+.service-excerpt { color: var(--ap-muted); line-height: 1.65; }
+.service-card-footer { margin-top: 1.2rem; padding-top: .9rem; border-top: 1px solid var(--ap-line); }
+.service-link { color: var(--ap-blue); font-weight: 750; text-decoration: none; }
+.pricing-card { display: flex; flex-direction: column; gap: .6rem; }
+.pricing-card.featured { border: 2px solid var(--ap-blue); box-shadow: 0 18px 42px rgba(29,78,216,.12); }
+.pricing-features { flex: 1; padding-left: 1.2rem; color: var(--ap-muted); }
+.pricing-price { color: var(--ap-navy); font-size: clamp(1.8rem, 3vw, 2.4rem); font-weight: 850; letter-spacing: -.04em; }
+.pricing-meta { color: var(--ap-muted); font-size: .9rem; }
+.why-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1rem; }
+.why-card { display: flex; align-items: flex-start; gap: .85rem; }
+.why-card p { margin: .3rem 0 0; color: var(--ap-muted); }
+.process-wrapper { gap: 1rem; }
+.process-card { background: #fff; }
+.testimonial-carousel { min-height: 0; }
+.testimonial-slide { padding: clamp(1.25rem, 3vw, 2rem); }
+.testimonial-text { color: #33465f; font-size: clamp(1.05rem, 2vw, 1.3rem); line-height: 1.7; }
+.testimonial-tags { flex-wrap: wrap; }
+.cta-section { padding-block: 2.5rem !important; background: #fff !important; }
+.cta-wrapper { border-radius: 22px; background: linear-gradient(120deg, #102b52, #1b477f); box-shadow: 0 20px 48px rgba(16,43,82,.18); }
+.cta-wrapper h2, .cta-wrapper p, .cta-wrapper .section-badge { color: #fff; }
+.site-footer { margin-top: 0; padding: 2.5rem 0 1.5rem; background: #edf2f8; }
+.site-footer > .wrapper { width: min(100% - 2.5rem, 1280px); max-width: 1280px; }
+.footer-shell { border-radius: 22px; }
+.footer-qr-section, .footer-cta-panel { margin-inline: clamp(1rem, 3vw, 2.5rem); }
+.footer-bottom { border-top: 1px solid rgba(255,255,255,.12); }
+.table { --bs-table-color: var(--ap-ink); }
+.table thead th { color: #53647b; font-size: .78rem; letter-spacing: .06em; }
+.alert { border-radius: 12px; }
+.badge { font-weight: 700; }
+@media (max-width: 991.98px) {
+  main.wrapper { width: min(100% - 2rem, 1280px); }
+  .why-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .hero-title { max-width: 17ch; }
+}
+@media (max-width: 767.98px) {
+  main.wrapper { width: 100%; }
+  .hero-section, .service-hero-section, .pricing-page-hero { padding: 2.5rem 0 !important; }
+  .hero-title { font-size: clamp(2.15rem, 9vw, 3.1rem); }
+  .section-header { padding-inline: 1rem; }
+  .why-grid { grid-template-columns: 1fr; }
+  .service-card, .pricing-card, .why-card, .process-card { padding: 1.2rem; }
+  .footer-shell { border-radius: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
