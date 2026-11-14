@@ -1,50 +1,19 @@
-<section class="pricing-section">
+<section class="pricing-section" aria-labelledby="homepage-pricing-title">
   <div class="container">
     <div class="section-header">
-      <div class="section-eyebrow">Pricing</div>
-      <h2 class="section-title">Straightforward pricing for every request</h2>
-      <p class="section-description">Choose the service that fits your task: essays, technical work, or proofreading and editing.</p>
+      <div class="section-eyebrow">Project quotations</div>
+      <h2 class="section-title" id="homepage-pricing-title">Pricing shaped around your brief</h2>
+      <p class="section-description">The cost depends on the subject, scope, academic level, length and deadline. Share your requirements to receive a clear quotation before proceeding.</p>
     </div>
-
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="pricing-card">
-          <div class="pricing-label">Essays</div>
-          <div class="pricing-price">$10</div>
-          <div class="pricing-meta">Per page · 275 words</div>
-          <ul class="pricing-features">
-            <li>General non-technical essays</li>
-            <li>Clear structure and research</li>
-            <li>Original academic writing</li>
-          </ul>
-          <a href="{{ ORDER_LINK }}" class="btn cta-btn">Order Essay Writing</a>
-        </div>
+    <div class="pricing-card pricing-overview-card mx-auto">
+      <div class="pricing-overview-icon" aria-hidden="true"><i class="bi bi-receipt-cutoff"></i></div>
+      <div class="pricing-overview-copy">
+        <h3>Get a quotation for your project</h3>
+        <p>Send the instructions and supporting files. The AcademiaPro admin team will review the requirements and discuss the scope and price with you directly.</p>
       </div>
-      <div class="col-md-4">
-        <div class="pricing-card featured">
-          <div class="pricing-label">Technical</div>
-          <div class="pricing-price">From $50</div>
-          <div class="pricing-meta">Per task</div>
-          <ul class="pricing-features">
-            <li>Programming, cyber security, data analytics</li>
-            <li>Maths and technical assignments</li>
-            <li>Custom solutions by subject</li>
-          </ul>
-          <a href="{{ ORDER_LINK }}" class="btn cta-btn">Request Technical Help</a>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="pricing-card">
-          <div class="pricing-label">Proofreading</div>
-          <div class="pricing-price">$5</div>
-          <div class="pricing-meta">Per page</div>
-          <ul class="pricing-features">
-            <li>Editing and proofreading</li>
-            <li>Grammar, clarity, and flow</li>
-            <li>Polished academic documents</li>
-          </ul>
-          <a href="{{ ORDER_LINK }}" class="btn cta-btn">Order Editing</a>
-        </div>
+      <div class="pricing-overview-actions">
+        <a href="{{ ORDER_LINK }}" class="btn btn-primary">Request a quotation <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i></a>
+        <a href="{{ url_for('main.pricing_page') }}" class="btn btn-outline-primary">View pricing information</a>
       </div>
     </div>
   </div>
