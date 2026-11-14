@@ -31,7 +31,7 @@
       <ul class="list-group">
         {% for file in files %}
         <li class="list-group-item d-flex justify-content-between align-items-center">
-          <a href="{{ url_for('static', filename='uploads/' ~ file) }}" target="_blank">{{ file }}</a>
+          <a href="{{ url_for('main.download_admin_upload', file_id=file.id) }}" target="_blank">{{ file }}</a>
         </li>
         {% endfor %}
       </ul>
