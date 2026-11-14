@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from flask_mail import Mail
 from app.extensions import db, login_manager, migrate
@@ -11,6 +12,8 @@ mail = Mail()
 def create_app():
     app = Flask(__name__)
     app.config.from_object("config.Config")
+    if os.environ.get("RENDER", "").strip().lower() in ("1", "true", "yes", "on") and not app.config.get("SECRET_KEY"):
+        raise RuntimeError("SECRET_KEY must be set in the Render environment before starting AcademiaPro.")
     login_manager.init_app(app)
 
     # Email configuration
