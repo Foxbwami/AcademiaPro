@@ -1,6 +1,8 @@
 import os
+import re
 from flask import Flask
 from flask_mail import Mail
+from flask_wtf.csrf import CSRFProtect, generate_csrf
 from app.extensions import db, login_manager, migrate
 from app.models import User, Message, BlogPost, AIConversationMessage, OTPCode
 from flask_login import current_user
@@ -8,6 +10,7 @@ from sqlalchemy import inspect, text
 from werkzeug.security import generate_password_hash
 
 mail = Mail()
+csrf = CSRFProtect()
 
 def create_app():
     app = Flask(__name__)
@@ -31,6 +34,30 @@ def create_app():
     login_manager.init_app(app)
     migrate.init_app(app, db)
     mail.init_app(app)
+    csrf.init_app(app)
+
+    @app.after_request
+    def add_csrf_tokens_to_post_forms(response):
+        # Legacy plain HTML forms receive a token unless Flask-WTF already added one.
+        if response.mimetype != 'text/html':
+            return response
+        try:
+            html = response.get_data(as_text=True)
+            token = generate_csrf()
+            form_pattern = re.compile(r'(<form\\b[^>]*>)(.*?)(</form>)', re.IGNORECASE | re.DOTALL)
+            def inject_token(match):
+                opening, body, closing = match.groups()
+                method_match = re.search(r'\\bmethod\\s*=\\s*[\"\\']?([^\\s\"\\'>]+)', opening, re.IGNORECASE)
+                if not method_match or method_match.group(1).lower() != 'post':
+                    return match.group(0)
+                if re.search(r'name\\s*=\\s*[\"\\']csrf_token[\"\\']', body, re.IGNORECASE):
+                    return match.group(0)
+                field = '<input type=\"hidden\" name=\"csrf_token\" value=\"' + token + '\">'
+                return opening + field + body + closing
+            response.set_data(form_pattern.sub(inject_token, html))
+        except (RuntimeError, ValueError):
+            app.logger.exception('Unable to add CSRF tokens to rendered forms')
+        return response
 
     with app.app_context():
         # Best-effort compatibility for existing SQLite deployments where
