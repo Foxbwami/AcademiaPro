@@ -400,19 +400,25 @@ def lead():
     return redirect(url_for('main.index'))
 
 def _get_upload_root():
-    return os.path.join(current_app.root_path, 'static', 'uploads')
+    # Private client/admin/order documents live outside Flask's public static tree.
+    return os.path.join(current_app.instance_path, 'private_uploads')
 
 def _get_sample_folder():
-    return os.path.join(_get_upload_root(), 'samples')
+    # Public sample documents are intentionally published for visitors.
+    return os.path.join(current_app.root_path, 'static', 'uploads', 'samples')
 
 def _get_support_folder():
     return os.path.join(_get_upload_root(), 'support')
+
+def _get_profile_photo_folder():
+    # Profile photos are public-facing images, kept in a separate static folder.
+    return os.path.join(current_app.root_path, 'static', 'uploads', 'profiles')
 
 
 def _save_user_photo(user, photo_field):
     if not photo_field or not photo_field.filename:
         return
-    filename = save_uploaded_file(photo_field, _get_upload_root(), prefix=f"user_{user.id}")
+    filename = save_uploaded_file(photo_field, _get_profile_photo_folder(), prefix=f"user_{user.id}")
     if filename:
         user.photo = filename
 
