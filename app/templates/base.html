@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='animations.css') }}">
   {% block styles %}{% endblock %}
   <!-- Page-specific CSS injected by child templates -->
+  <script src="{{ url_for('static', filename='js/csrf.js') }}" defer></script>
 </head>
 <body data-authenticated="{{ 'true' if current_user.is_authenticated else 'false' }}">
   <div class="site-graphics" aria-hidden="true">
