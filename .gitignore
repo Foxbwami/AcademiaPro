@@ -25,3 +25,6 @@ tmp/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Private customer/admin uploads (outside public static assets)
+instance/private_uploads/
