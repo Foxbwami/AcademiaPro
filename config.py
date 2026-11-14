@@ -9,7 +9,14 @@ if load_dotenv is not None:
     load_dotenv()
 
 class Config:
-    SECRET_KEY = os.environ.get("SECRET_KEY", "dev_secret_key")
+    IS_RENDER = os.environ.get("RENDER", "").strip().lower() in ("1", "true", "yes", "on")
+    SECRET_KEY = os.environ.get("SECRET_KEY") or (None if IS_RENDER else "local-development-only-change-me")
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = "Lax"
+    SESSION_COOKIE_SECURE = IS_RENDER
+    REMEMBER_COOKIE_HTTPONLY = True
+    REMEMBER_COOKIE_SAMESITE = "Lax"
+    REMEMBER_COOKIE_SECURE = IS_RENDER
     DATABASE_URL = os.environ.get("SQLALCHEMY_DATABASE_URI") or os.environ.get("DATABASE_URL") or "sqlite:///your.db"
     if DATABASE_URL.startswith("postgres://"):
         DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
