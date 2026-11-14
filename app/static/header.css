@@ -1946,3 +1946,47 @@
     padding: 0.2rem 0.5rem;
   }
 }
+
+
+/* AcademiaPro refinement — compact, balanced navigation */
+.site-header { box-shadow: 0 5px 22px rgba(15, 35, 70, .06); }
+.trust-bar { padding: .32rem 0; font-size: .76rem; }
+.trust-items { gap: 1.15rem; }
+.trust-item { gap: .4rem; }
+.trust-social { gap: .75rem; }
+.header-shell { padding: .55rem 0; gap: 1rem; }
+.header-brand { min-width: 220px; gap: .7rem; }
+.brand-mark { width: 3.6rem; height: 3.6rem; }
+.brand-logo { width: 2.8rem; }
+.header-logo-link { font-size: 1.3rem; }
+.brand-tagline { font-size: .72rem; }
+.header-middle-row { border-top: 1px solid rgba(15, 23, 42, .045); }
+.header-nav { min-height: 2.65rem; gap: .45rem; }
+.nav-link, .nav-dropdown-toggle { padding: .55rem .85rem; font-size: .88rem; }
+.header-actions { gap: .55rem; }
+.icon-action-btn, .search-btn { width: 2.45rem; height: 2.45rem; }
+.ai-btn { width: 2.5rem; height: 2.5rem; }
+.header-btn-secondary, .header-btn-primary { padding: .55rem .85rem; font-size: .86rem; }
+.btn-place-order { padding: .62rem .9rem; margin-left: .25rem !important; }
+.header-sep { height: 28px; margin: 0 .2rem; }
+
+@media (max-width: 1199.98px) {
+  .header-brand { min-width: 190px; }
+  .header-actions { gap: .4rem; }
+  .trust-items { gap: .8rem; }
+}
+@media (max-width: 991.98px) {
+  .trust-bar { padding: .38rem 0; }
+  .trust-items { justify-content: center; gap: .45rem 1rem; }
+  .trust-item:nth-child(n+3) { display: none; }
+  .header-shell { padding: .55rem 0; }
+  .header-brand { min-width: 0; }
+  .brand-mark { width: 3rem; height: 3rem; }
+  .brand-logo { width: 2.45rem; }
+}
+@media (max-width: 575.98px) {
+  .trust-items { justify-content: flex-start; }
+  .trust-item { font-size: .72rem; }
+  .header-logo-link { font-size: 1.12rem; }
+  .brand-tagline { font-size: .64rem; }
+}
