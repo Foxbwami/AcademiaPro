@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='footer.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='animations.css') }}">
   {% block styles %}{% endblock %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='site-refinement.css', v='20261114-1') }}">
   <!-- Page-specific CSS injected by child templates -->
   <script src="{{ url_for('static', filename='js/csrf.js') }}" defer></script>
 </head>
@@ -36,20 +37,16 @@
     <div class="container">
       <div class="trust-items">
         <div class="trust-item">
-          <i class="bi bi-star-fill" aria-hidden="true"></i>
-          <span><strong>Rated 4.9</strong> by 700+ Clients</span>
-        </div>
-        <div class="trust-item">
           <i class="bi bi-shield-check" aria-hidden="true"></i>
-          <span><strong>100%</strong> Confidential</span>
+          <span><strong>Confidential</strong> client communication</span>
         </div>
         <div class="trust-item">
-          <i class="bi bi-headset" aria-hidden="true"></i>
-          <span><strong>24/7</strong> Support</span>
+          <i class="bi bi-chat-dots" aria-hidden="true"></i>
+          <span><strong>Direct</strong> admin support</span>
         </div>
         <div class="trust-item">
-          <i class="bi bi-trophy-fill" aria-hidden="true"></i>
-          <span><strong>700+</strong> Projects Delivered</span>
+          <i class="bi bi-clipboard-check" aria-hidden="true"></i>
+          <span><strong>Clear</strong> project requirements</span>
         </div>
         <div class="trust-social ms-auto">
           Contact:
@@ -355,9 +352,8 @@
             <a class="footer-brand" href="{{ url_for('main.index') }}">AcademiaPro</a>
             <p class="footer-lead">Reliable academic and technical support for research, writing, programming, data analysis, and editing.</p>
             <div class="footer-trust-row" aria-label="Service highlights">
-              <span><i class="bi bi-star-fill" aria-hidden="true"></i> 4.9 rated</span>
-              <span><i class="bi bi-shield-check" aria-hidden="true"></i> Confidential</span>
-              <span><i class="bi bi-clock-history" aria-hidden="true"></i> 24/7 support</span>
+              <span><i class="bi bi-shield-check" aria-hidden="true"></i> Confidential communication</span>
+              <span><i class="bi bi-chat-dots" aria-hidden="true"></i> Direct admin support</span>
             </div>
           </div>
 
