@@ -12,21 +12,20 @@
   {'href': url_for('main.services_page'), 'classes': 'btn-outline-primary hero-btn hero-btn-outline', 'label': 'Browse Services'},
   {'href': url_for('main.ai_chat'), 'classes': 'btn-secondary hero-btn hero-btn-secondary', 'label': 'Chat with AI'}
 ] %}
-{% set points = ['🔒 Secure Payments', '✔ Confidential', '⭐ 4.9 Rating', '🕒 24/7 Support'] %}
+{% set points = ['Confidential communication', 'Direct admin support', 'Clear project scope'] %}
 {% set panel = {
   'top':'Start with clarity',
-  'intro':'A cleaner path from request to delivery, without repeating the service cards below.',
+  'intro':'Your request is reviewed directly by the AcademiaPro admin team.',
   'list':[
     {'icon':'bi-send-check','title':'Share your brief','text':'Upload instructions, deadline, rubric, or sample files in one place.'},
-    {'icon':'bi-diagram-3','title':'Get matched quickly','text':'We route the work to the right academic or technical specialist.'},
-    {'icon':'bi-check2-circle','title':'Review with confidence','text':'Track progress, request revisions, and receive polished final files.'}
+    {'icon':'bi-chat-square-text','title':'Confirm the scope','text':'Discuss requirements, timing and the quotation directly with admin.'},
+    {'icon':'bi-check2-circle','title':'Receive your deliverable','text':'Follow the agreed process and access completed files through your account.'}
   ]
 } %}
 {% include 'components/hero.html' with context %}
 {% include 'components/hero_status_strip.html' %}
 {% include 'components/services.html' %}
 {% include 'components/pricing.html' %}
-{% include 'components/stats.html' %}
 {% include 'components/why_choose_us.html' %}
 {% include 'components/process.html' %}
 {% include 'components/testimonials.html' %}
