@@ -1125,3 +1125,95 @@
   }
 }
 
+
+
+/* AcademiaPro refinement — tighter rhythm and stronger first impression */
+.hero-section {
+  padding: clamp(2.6rem, 5vw, 4.1rem) 0 clamp(2.2rem, 4vw, 3.2rem);
+  background:
+    radial-gradient(circle at 88% 18%, rgba(212, 175, 55, .10), transparent 25rem),
+    linear-gradient(135deg, #f5f9ff 0%, #ffffff 58%, #fffaf0 100%);
+}
+.hero-section .wrapper { max-width: 1240px; margin-inline: auto; padding-inline: 1.25rem; }
+.hero-section .row { --bs-gutter-x: 2.5rem; }
+.hero-section .col-lg-7 { padding-right: clamp(1rem, 3vw, 3rem); }
+.hero-badge { padding: .55rem .9rem; font-size: .84rem; margin-bottom: .8rem; }
+.hero-title {
+  max-width: 13ch;
+  font-size: clamp(2.65rem, 4.25vw, 4.35rem);
+  line-height: 1.04;
+  letter-spacing: -.045em;
+  margin-bottom: 1rem;
+}
+.hero-description { max-width: 58ch; font-size: 1rem; line-height: 1.75; margin-bottom: 1.35rem; }
+.hero-buttons { gap: .7rem; margin-bottom: 1.15rem; }
+.hero-btn { min-width: 9rem; padding: .82rem 1.15rem; border-radius: .8rem; }
+.hero-badge-row { gap: .55rem; margin-bottom: 1.15rem; }
+.hero-trust-badge { padding: .58rem .78rem; font-size: .82rem; background: #fff; border: 1px solid rgba(20, 50, 95, .09); }
+.hero-cta-scroll { font-size: .88rem; }
+.hero-panel {
+  padding: clamp(1.35rem, 2.4vw, 2rem);
+  border: 1px solid rgba(25, 65, 120, .1);
+  border-radius: 1.2rem;
+  box-shadow: 0 22px 55px rgba(20, 45, 80, .10);
+}
+.hero-panel-label { font-size: .78rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--color-primary); margin-bottom: .7rem; }
+.hero-panel-score { font-size: clamp(1.15rem, 1.8vw, 1.45rem); color: var(--color-primary); margin-bottom: .55rem; }
+.hero-panel-text { color: #64748b; font-size: .9rem; line-height: 1.7; }
+.hero-panel-list { display: grid; gap: .65rem; margin-top: 1rem; }
+.hero-panel-item { padding: .72rem .8rem; border: 1px solid rgba(31, 107, 255, .12); border-radius: .75rem; background: #fbfdff; font-size: .84rem; }
+.hero-panel-item i { color: #16a34a; margin-right: .45rem; }
+
+.hero-status-strip {
+  margin: 1.2rem auto 2.4rem;
+  padding: 1.45rem 1.6rem;
+  background: #f7faff;
+  border-color: rgba(31, 107, 255, .12);
+  box-shadow: none;
+}
+.hero-status-strip-title { margin-bottom: .45rem; }
+.hero-status-items { gap: .55rem; }
+.hero-status-item { padding: .65rem .9rem; font-size: .82rem; }
+
+.services-section, .why-section, .testimonials-section { background: #fff; }
+.pricing-section { padding: clamp(3rem, 5vw, 4.2rem) 0; background: #f5f8fd; }
+.stats-section { background: #f2f6fc; }
+.process-section { background: #fbf8ef; }
+.services-section, .stats-section, .why-section, .process-section, .testimonials-section { padding-block: clamp(2.8rem, 4.5vw, 4rem); }
+.section-title { font-size: clamp(1.55rem, 2.2vw, 2rem); letter-spacing: -.025em; }
+.section-description { line-height: 1.7; }
+.services-section .service-card, .why-card, .process-card, .testimonial-stat-card {
+  border-radius: 1.1rem;
+  box-shadow: 0 10px 28px rgba(15, 35, 65, .055);
+}
+.services-section .service-card { padding: 1.35rem; }
+.service-excerpt { line-height: 1.65; }
+.why-grid { gap: 1rem; }
+.why-card { padding: 1.25rem; gap: .75rem; }
+.process-wrapper { gap: 1.25rem; }
+.process-card { padding: 1.25rem 1.4rem; }
+.testimonial-carousel { min-height: 285px; }
+.testimonial-slide { border-radius: 1.35rem; box-shadow: 0 16px 42px rgba(15, 35, 65, .08); }
+.cta-section { padding: 2.2rem 0; }
+.cta-wrapper { border-radius: 1.4rem; padding: clamp(1.4rem, 3vw, 2.2rem); }
+
+@media (max-width: 991.98px) {
+  .hero-section { padding: 2.8rem 0 2.2rem; }
+  .hero-section .col-lg-7 { padding-right: calc(var(--bs-gutter-x) * .5); }
+  .hero-title { max-width: 16ch; }
+  .hero-panel { margin-top: 1.8rem; }
+}
+@media (max-width: 767.98px) {
+  .hero-section { padding: 2.35rem 0 1.6rem; }
+  .hero-section .wrapper { padding-inline: 1rem; }
+  .hero-title { font-size: clamp(2.25rem, 9vw, 3rem); max-width: 15ch; }
+  .hero-description { font-size: .96rem; }
+  .hero-badge-row { justify-content: flex-start; }
+  .hero-trust-badge { font-size: .76rem; }
+  .hero-status-strip { margin: .75rem .75rem 1.8rem; padding: 1rem; }
+  .hero-status-item { width: 100%; border-radius: .7rem; }
+  .testimonial-carousel { min-height: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .services-section .service-card, .pricing-card, .testimonial-slide { transition: none !important; }
+}
