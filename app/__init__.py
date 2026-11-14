@@ -1,5 +1,6 @@
 import os
 import re
+import shutil
 from flask import Flask
 from flask_mail import Mail
 from flask_wtf.csrf import CSRFProtect, generate_csrf
@@ -63,6 +64,37 @@ def create_app():
         # Best-effort compatibility for existing SQLite deployments where
         # model fields/tables were added without a matching migration chain.
         db.create_all()
+        # Move legacy root uploads out of Flask's public static directory.
+        legacy_uploads = os.path.join(app.static_folder, 'uploads')
+        private_uploads = os.environ.get('PRIVATE_UPLOAD_DIR') or os.path.join(app.instance_path, 'private_uploads')
+        profile_uploads = os.path.join(legacy_uploads, 'profiles')
+        os.makedirs(private_uploads, exist_ok=True)
+        os.makedirs(profile_uploads, exist_ok=True)
+        profile_names = {
+            name for (name,) in db.session.query(User.photo).filter(User.photo.isnot(None)).all()
+            if name
+        }
+        if os.path.isdir(legacy_uploads):
+            for entry in os.scandir(legacy_uploads):
+                if not entry.is_file():
+                    continue
+                destination_dir = profile_uploads if entry.name in profile_names else private_uploads
+                destination = os.path.join(destination_dir, entry.name)
+                if not os.path.exists(destination):
+                    shutil.move(entry.path, destination)
+                else:
+                    os.remove(entry.path)
+            legacy_support = os.path.join(legacy_uploads, 'support')
+            private_support = os.path.join(private_uploads, 'support')
+            if os.path.isdir(legacy_support):
+                os.makedirs(private_support, exist_ok=True)
+                for entry in os.scandir(legacy_support):
+                    if entry.is_file():
+                        destination = os.path.join(private_support, entry.name)
+                        if not os.path.exists(destination):
+                            shutil.move(entry.path, destination)
+                        else:
+                            os.remove(entry.path)
         inspector = inspect(db.engine)
         if "order" in inspector.get_table_names():
             order_columns = {col["name"] for col in inspector.get_columns("order")}
