@@ -787,3 +787,36 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .cta-btn { background: var(--amber-500) !important; color: #fff !important; }
 .cta-btn:hover { background: var(--amber-600) !important; color: #fff !important; }
 .testimonials-section:empty { display: none !important; }
+
+
+/* Shared 1140px content grid for public homepage sections */
+.container {
+  width: 100%;
+  max-width: 1140px;
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+.services-section > .wrapper,
+.why-section > .wrapper,
+.testimonials-section > .wrapper,
+.cta-section > .wrapper,
+.pricing-section > .wrapper,
+.process-section > .container,
+.hero-section > .wrapper {
+  width: min(100% - 40px, 1140px) !important;
+  max-width: 1140px !important;
+  margin-inline: auto !important;
+  padding-inline: 0 !important;
+}
+@media (max-width: 767.98px) {
+  .services-section > .wrapper,
+  .why-section > .wrapper,
+  .testimonials-section > .wrapper,
+  .cta-section > .wrapper,
+  .pricing-section > .wrapper,
+  .process-section > .container,
+  .hero-section > .wrapper {
+    width: calc(100% - 32px) !important;
+  }
+  .container { padding-inline: 16px; }
+}
