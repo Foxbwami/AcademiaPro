@@ -21,7 +21,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='footer.css', v='20261115-1') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='animations.css') }}">
   {% block styles %}{% endblock %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='site-refinement.css', v='20261115-9') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='site-refinement.css', v='20261115-10') }}">
   <!-- Page-specific CSS injected by child templates -->
   <script src="{{ url_for('static', filename='js/csrf.js') }}" defer></script>
 </head>
@@ -64,7 +64,11 @@
       <div class="header-shell">
         <a class="header-brand" href="{{ url_for('main.index') }}" aria-label="AcademiaPro home">
           <span class="brand-mark header-brand-mark">
-            <img decoding="async" src="{{ url_for('static', filename='img/academiaprolog.svg', v='20261115-1') }}" alt="AcademiaPro — Academic & Technical Consultancy" class="brand-logo header-brand-logo">
+            <img decoding="async" src="{{ url_for('static', filename='img/academiaprolog-sm.svg', v='20261115-2') }}" alt="" aria-hidden="true" class="brand-icon-img">
+          </span>
+          <span class="brand-info header-brand-info">
+            <span class="brand-name">Academia<span class="brand-name-accent">Pro</span></span>
+            <span class="brand-tagline">Academic &amp; Technical Consultancy</span>
           </span>
         </a>
 
