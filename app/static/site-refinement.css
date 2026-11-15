@@ -579,3 +579,205 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .header-actions .btn-place-order { padding: .58rem .62rem !important; font-size: .76rem !important; }
   .trust-item { font-size: .68rem !important; }
 }
+
+
+/* AcademiaPro implementation refinement — 15 Nov 2026 */
+:root {
+  --navy-900: #0B192C;
+  --navy-800: #132743;
+  --blue-600: #1D4ED8;
+  --amber-500: #D97706;
+  --amber-600: #B45309;
+  --slate-900: #0F172A;
+  --slate-600: #475569;
+  --slate-100: #F8FAFC;
+  --border-light: #E2E8F0;
+}
+.container, .wrapper {
+  --bs-gutter-x: 1.5rem;
+}
+.section { padding-block: 64px; }
+.section--alt { background: var(--slate-100); border-block: 1px solid var(--border-light); }
+
+/* One consistent primary conversion action */
+.btn-place-order,
+.hero-btn-main,
+.footer-cta-actions .btn-place-order {
+  background: var(--amber-500) !important;
+  border: 1px solid var(--amber-500) !important;
+  color: #fff !important;
+  font-weight: 750;
+  box-shadow: 0 5px 14px rgba(180,83,9,.18);
+}
+.btn-place-order:hover,
+.hero-btn-main:hover,
+.footer-cta-actions .btn-place-order:hover {
+  background: var(--amber-600) !important;
+  border-color: var(--amber-600) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 18px rgba(180,83,9,.22);
+}
+.hero-btn-outline {
+  color: var(--slate-900) !important;
+  background: #fff !important;
+  border: 1px solid #cbd5e1 !important;
+}
+.hero-btn-secondary {
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--blue-600) !important;
+  box-shadow: none !important;
+}
+.hero-btn-secondary:hover { background: #eff6ff !important; }
+
+/* Hero trust points are informational, not button-shaped */
+.hero-trust-badge {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding: .2rem .15rem !important;
+  box-shadow: none !important;
+}
+.hero-trust-badge::before {
+  content: "✓";
+  display: inline-block;
+  margin-right: .45rem;
+  color: #16a34a;
+  font-weight: 800;
+}
+.hero-badge-row { gap: .9rem 1.25rem !important; }
+
+/* Why AcademiaPro: true 36px icon circles */
+.why-card {
+  align-items: flex-start !important;
+  gap: 14px !important;
+  padding: 20px !important;
+  border: 1px solid var(--border-light) !important;
+  border-radius: 12px !important;
+  background: #fff !important;
+}
+.why-card .why-icon {
+  flex: 0 0 36px !important;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  border-radius: 50% !important;
+  display: grid !important;
+  place-items: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #eff6ff !important;
+  color: var(--blue-600) !important;
+  font-size: 1rem !important;
+}
+
+/* Four aligned process cards; number and icon share the card header */
+.process-wrapper {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 1rem !important;
+}
+.process-line { display: none !important; }
+.process-item { padding: 0 !important; min-width: 0; }
+.process-card {
+  height: 100%;
+  min-height: 220px;
+  padding: 1.35rem !important;
+  border-radius: 14px !important;
+}
+.process-card-heading {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  margin-bottom: 1.1rem;
+}
+.process-card .step-number {
+  position: static !important;
+  inset: auto !important;
+  width: 36px !important;
+  height: 36px !important;
+  flex: 0 0 36px;
+  box-shadow: none !important;
+  font-size: .9rem;
+}
+.process-card .process-icon {
+  width: 36px !important;
+  height: 36px !important;
+  flex: 0 0 36px;
+  margin: 0 !important;
+  border-radius: 50% !important;
+  background: #eff6ff !important;
+  color: var(--blue-600) !important;
+  font-size: 1rem !important;
+}
+.process-card h3 { font-size: 1.05rem; }
+.process-card p { color: var(--slate-600); margin-bottom: 0; }
+
+/* Footer full-bleed background and readable contact details */
+.site-footer {
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 0 5.5rem !important;
+  border-radius: 0 !important;
+  background: var(--navy-900) !important;
+}
+.site-footer > .wrapper {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.footer-shell {
+  width: 100%;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: var(--navy-900) !important;
+}
+.footer-main {
+  max-width: 1200px;
+  margin-inline: auto;
+  grid-template-columns: minmax(0,1fr) minmax(0,1.65fr);
+}
+.footer-nav { grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(260px,1.35fr) !important; }
+.footer-contact-col { min-width: 0; }
+.footer-contact-list a { overflow-wrap: normal !important; word-break: normal !important; }
+.footer-qr-section, .footer-cta-panel, .footer-bottom {
+  max-width: 1200px;
+  margin-inline: auto !important;
+}
+.footer-qr-section { padding-inline: 0 !important; border: 0 !important; background: transparent !important; }
+.footer-mobile-whatsapp { display: none; }
+.whatsapp-fab-shell { bottom: max(20px, env(safe-area-inset-bottom)) !important; }
+
+@media (max-width: 1100px) {
+  .process-wrapper { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+@media (max-width: 991.98px) {
+  .header-brand { min-width: 0 !important; }
+  .brand-mark { width: 2.5rem !important; height: 2.5rem !important; min-width: 2.5rem !important; }
+  .brand-logo { width: 2rem !important; height: 2rem !important; object-fit: contain; }
+  .mobile-drawer { width: min(82vw, 340px) !important; max-width: 340px !important; }
+  .mobile-drawer .brand-mark { padding: 16px !important; box-sizing: content-box; }
+}
+@media (max-width: 767.98px) {
+  .process-wrapper { grid-template-columns: 1fr !important; }
+  .footer-nav { grid-template-columns: 1fr !important; }
+  .footer-qr-section { display: block !important; padding: 1rem 1.25rem !important; }
+  .footer-qr-grid { display: none !important; }
+  .footer-mobile-whatsapp {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    margin-top: .85rem;
+    padding: .65rem .9rem;
+    border-radius: 9px;
+    background: #15803d;
+    color: #fff !important;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .footer-main { padding-inline: 1.25rem !important; }
+  .footer-cta-panel, .footer-bottom { margin-inline: 1.25rem !important; }
+  .site-footer { padding-bottom: 7rem !important; }
+}
