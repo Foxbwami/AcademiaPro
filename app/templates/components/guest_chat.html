@@ -1,21 +1,26 @@
 {% if not current_user.is_authenticated %}
-<div class="guest-float-stack" aria-label="Guest support tools">
-  <button id="guestMsgFab" class="guest-fab msg" type="button" title="Message Admin" aria-label="Message admin"><i class="bi bi-chat-dots"></i></button>
-</div>
-<div id="guestMsgPanel" class="guest-panel d-none" role="dialog" aria-label="Guest message panel">
-  <div class="guest-panel-head">
-    <strong>Message Admin</strong>
-    <button type="button" class="btn-close btn-close-sm" data-close="guestMsgPanel" aria-label="Close"></button>
+<section class="admin-message-wrapper" aria-labelledby="adminMessageTitle">
+  <div class="admin-message-card">
+    <div class="admin-message-header">
+      <span class="admin-message-badge">Direct Support</span>
+      <h3 id="adminMessageTitle">Message Admin</h3>
+      <p>Have a quick question before placing an order? Send a note directly to our team.</p>
+    </div>
+
+    <div id="guestMsgThread" class="admin-message-thread" aria-live="polite">
+      <div class="small text-muted">Loading your conversation…</div>
+    </div>
+
+    <div class="admin-message-form">
+      <label class="visually-hidden" for="guestMsgEmail">Email address (optional)</label>
+      <input type="email" id="guestMsgEmail" name="email" placeholder="Email (optional, for reply)" autocomplete="email">
+      <label class="visually-hidden" for="guestMsgInput">Your message</label>
+      <textarea id="guestMsgInput" name="message" rows="4" placeholder="Type your message or project question…" required></textarea>
+      <div id="guestMsgStatus" class="admin-message-status small" role="status" aria-live="polite"></div>
+      <button id="guestMsgSendBtn" type="button" class="admin-message-submit">Send Message <span aria-hidden="true">→</span></button>
+    </div>
   </div>
-  <div class="guest-panel-body">
-    <div id="guestMsgThread" class="mb-2"></div>
-    <div class="small text-muted mb-2">For follow-up, include your email.</div>
-    <div class="mb-2"><input id="guestMsgEmail" class="form-control form-control-sm" placeholder="Email (optional)"></div>
-    <div class="mb-2"><textarea id="guestMsgInput" rows="4" class="form-control form-control-sm" placeholder="Type your message..." required></textarea></div>
-    <div id="guestMsgStatus" class="small text-muted"></div>
-  </div>
-  <div class="guest-panel-foot"><button id="guestMsgSendBtn" class="btn btn-primary btn-sm w-100" type="button">Send Message</button></div>
-</div>
+</section>
 <div class="guest-toast-shell">
   <div id="guestWelcomeToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="toast-header">
