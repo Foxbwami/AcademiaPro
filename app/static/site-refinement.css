@@ -1033,3 +1033,86 @@ body.drawer-open .whatsapp-fab-shell {
 @media (max-width: 1199.98px) { .header-brand { width: clamp(180px, 22vw, 245px); } }
 @media (max-width: 991.98px) { .header-brand { width: 210px; max-width: calc(100% - 64px); } .header-brand-logo { max-width: 210px; } }
 @media (max-width: 420px) { .header-brand { width: 184px; } }
+
+
+/* Clear, legible header brand: 32px emblem + readable wordmark */
+.site-header .header-brand {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 9px !important;
+  width: auto !important;
+  min-width: 245px !important;
+  max-width: 290px !important;
+  flex: 0 0 auto !important;
+  text-decoration: none !important;
+}
+.site-header .header-brand .header-brand-mark {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+.site-header .header-brand .brand-icon-img {
+  display: block !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  max-width: 32px !important;
+  object-fit: contain !important;
+}
+.site-header .header-brand .header-brand-info {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  gap: 3px !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+}
+.site-header .header-brand .brand-name {
+  display: block !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #102f5d !important;
+  font-size: 1.28rem !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  letter-spacing: -.045em !important;
+  white-space: nowrap !important;
+}
+.site-header .header-brand .brand-name-accent { color: #c98b13 !important; }
+.site-header .header-brand .brand-tagline {
+  display: block !important;
+  max-width: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  color: #64748b !important;
+  font-size: .62rem !important;
+  font-weight: 650 !important;
+  line-height: 1.15 !important;
+  letter-spacing: .015em !important;
+  white-space: nowrap !important;
+}
+@media (max-width: 1199.98px) {
+  .site-header .header-brand { min-width: 210px !important; }
+}
+@media (max-width: 991.98px) {
+  .site-header .header-brand { min-width: 0 !important; max-width: 220px !important; }
+}
+@media (max-width: 575.98px) {
+  .site-header .header-brand .brand-name { font-size: 1.08rem !important; }
+  .site-header .header-brand .brand-tagline { display: none !important; }
+}
