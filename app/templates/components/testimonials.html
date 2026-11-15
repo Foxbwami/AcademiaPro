@@ -1,3 +1,4 @@
+{% if testimonials or reviews %}
 <section class="testimonials-section" aria-labelledby="homepage-testimonials-title">
   <div class="wrapper">
     <div class="section-header">
@@ -51,13 +52,7 @@
           </div>
         {% endfor %}
       </div>
-    {% else %}
-      <div class="testimonial-empty">
-        <i class="bi bi-chat-square-text" aria-hidden="true"></i>
-        <h3>Client feedback will appear here</h3>
-        <p>We only publish feedback that has been submitted and approved. Contact the team if you would like to know more about our services.</p>
-        <a class="btn btn-outline-primary" href="{{ CONSULT_WA }}" target="_blank" rel="noopener">Contact AcademiaPro</a>
-      </div>
     {% endif %}
   </div>
 </section>
+{% endif %}
