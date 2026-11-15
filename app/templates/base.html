@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='footer.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='animations.css') }}">
   {% block styles %}{% endblock %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='site-refinement.css', v='20261114-1') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='site-refinement.css', v='20261115-1') }}">
   <!-- Page-specific CSS injected by child templates -->
   <script src="{{ url_for('static', filename='js/csrf.js') }}" defer></script>
 </head>
@@ -76,57 +76,8 @@
           <i class="bi bi-list" aria-hidden="true"></i>
         </button>
 
-        <div class="header-actions d-none d-lg-flex align-items-center">
-          <button class="icon-action-btn search-btn" type="button" aria-label="Search" data-bs-toggle="modal" data-bs-target="#searchModal">
-            <i class="bi bi-search" aria-hidden="true"></i>
-          </button>
+    <nav class="header-nav d-none d-lg-flex" aria-label="Primary navigation">
 
-          <a class="icon-action-btn ai-btn" href="{{ url_for('main.ai_chat') }}" role="button" aria-label="AI Assistant">
-            <i class="bi bi-robot" aria-hidden="true"></i>
-          </a>
-
-          <a class="icon-action-btn" href="{{ url_for('main.notifications') }}" aria-label="Notifications">
-            <i class="bi bi-bell-fill" aria-hidden="true"></i>
-            {% if unread_count and unread_count > 0 %}
-              <span class="icon-badge">{{ unread_count }}</span>
-            {% endif %}
-          </a>
-
-          {% if current_user.is_authenticated %}
-            <div class="dropdown profile-dropdown">
-              <button class="btn profile-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="profile-avatar">{{ current_user.name.split(' ')[0][0] if current_user.name else current_user.email.split('@')[0][0] }}</span>
-                <span class="profile-name d-none d-xl-inline">{{ current_user.name.split(' ')[0] if current_user.name else 'Account' }}</span>
-                <i class="bi bi-chevron-down" aria-hidden="true"></i>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end shadow-soft" aria-labelledby="profileDropdown">
-                <li><h6 class="dropdown-header">Account</h6></li>
-                <li><a class="dropdown-item" href="{{ url_for('main.admin_dashboard') if current_user.is_admin else url_for('main.dashboard') }}"><i class="bi bi-speedometer2" aria-hidden="true"></i> Dashboard</a></li>
-                <li><a class="dropdown-item" href="{{ url_for('main.my_orders') }}"><i class="bi bi-bag" aria-hidden="true"></i> My Orders</a></li>
-                <li><a class="dropdown-item" href="{{ url_for('main.notifications') }}"><i class="bi bi-bell" aria-hidden="true"></i> Notifications</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="{{ url_for('main.profile') }}"><i class="bi bi-person" aria-hidden="true"></i> Profile</a></li>
-                <li><a class="dropdown-item" href="{{ url_for('main.settings') }}"><i class="bi bi-gear" aria-hidden="true"></i> Settings</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item text-danger" href="{{ url_for('main.logout') }}"><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Sign Out</a></li>
-              </ul>
-            </div>
-          {% else %}
-            <a class="btn header-btn-secondary" href="{{ url_for('main.login') }}">Login</a>
-            <a class="btn header-btn-primary ms-2" href="{{ url_for('main.register') }}">Create Account</a>
-          {% endif %}
-
-          <div class="header-sep" aria-hidden="true"></div>
-          <a class="btn btn-place-order ms-3" href="{{ ORDER_LINK }}" role="button" aria-label="Place Order">
-            <i class="bi bi-cart-fill" aria-hidden="true"></i>
-            <span class="place-order-text">Place Order</span>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="container header-middle-row d-none d-lg-block">
-      <nav class="header-nav" aria-label="Primary navigation">
         <div class="nav-dropdown">
           <button id="servicesDropdownBtn" class="nav-dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="servicesDropdownMenu">
             Services <i class="bi bi-chevron-down" aria-hidden="true"></i>
@@ -188,7 +139,55 @@
           </div>
         </div>
         <a class="nav-link" href="{{ url_for('main.about') }}">About</a>
-      </nav>
+    </nav>
+
+        <div class="header-actions d-none d-lg-flex align-items-center">
+          <button class="icon-action-btn search-btn" type="button" aria-label="Search" data-bs-toggle="modal" data-bs-target="#searchModal">
+            <i class="bi bi-search" aria-hidden="true"></i>
+          </button>
+
+          <a class="icon-action-btn ai-btn" href="{{ url_for('main.ai_chat') }}" role="button" aria-label="AI Assistant">
+            <i class="bi bi-robot" aria-hidden="true"></i>
+          </a>
+
+          <a class="icon-action-btn" href="{{ url_for('main.notifications') }}" aria-label="Notifications">
+            <i class="bi bi-bell-fill" aria-hidden="true"></i>
+            {% if unread_count and unread_count > 0 %}
+              <span class="icon-badge">{{ unread_count }}</span>
+            {% endif %}
+          </a>
+
+          {% if current_user.is_authenticated %}
+            <div class="dropdown profile-dropdown">
+              <button class="btn profile-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="profile-avatar">{{ current_user.name.split(' ')[0][0] if current_user.name else current_user.email.split('@')[0][0] }}</span>
+                <span class="profile-name d-none d-xl-inline">{{ current_user.name.split(' ')[0] if current_user.name else 'Account' }}</span>
+                <i class="bi bi-chevron-down" aria-hidden="true"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-soft" aria-labelledby="profileDropdown">
+                <li><h6 class="dropdown-header">Account</h6></li>
+                <li><a class="dropdown-item" href="{{ url_for('main.admin_dashboard') if current_user.is_admin else url_for('main.dashboard') }}"><i class="bi bi-speedometer2" aria-hidden="true"></i> Dashboard</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('main.my_orders') }}"><i class="bi bi-bag" aria-hidden="true"></i> My Orders</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('main.notifications') }}"><i class="bi bi-bell" aria-hidden="true"></i> Notifications</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{{ url_for('main.profile') }}"><i class="bi bi-person" aria-hidden="true"></i> Profile</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('main.settings') }}"><i class="bi bi-gear" aria-hidden="true"></i> Settings</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="{{ url_for('main.logout') }}"><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Sign Out</a></li>
+              </ul>
+            </div>
+          {% else %}
+            <a class="btn header-btn-secondary" href="{{ url_for('main.login') }}">Login</a>
+            <a class="btn header-btn-primary ms-2" href="{{ url_for('main.register') }}">Create Account</a>
+          {% endif %}
+
+          <div class="header-sep" aria-hidden="true"></div>
+          <a class="btn btn-place-order ms-3" href="{{ ORDER_LINK }}" role="button" aria-label="Place Order">
+            <i class="bi bi-cart-fill" aria-hidden="true"></i>
+            <span class="place-order-text">Place Order</span>
+          </a>
+        </div>
+      </div>
     </div>
 
     <!-- header subnav removed per layout simplification (services are available on Services page) -->
