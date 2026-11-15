@@ -1990,3 +1990,40 @@
   .header-logo-link { font-size: 1.12rem; }
   .brand-tagline { font-size: .64rem; }
 }
+
+
+/* Compact brand mark and mobile drawer treatment */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255,255,255,.96);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border-light, #e2e8f0);
+}
+.header-brand { gap: 10px; }
+.header-brand .brand-mark {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+.header-brand .brand-logo {
+  width: 32px !important;
+  height: 32px !important;
+  object-fit: contain;
+}
+.mobile-drawer {
+  width: min(82vw, 340px) !important;
+  max-width: 340px !important;
+}
+.mobile-drawer-overlay {
+  backdrop-filter: blur(5px);
+  background: rgba(7, 18, 36, .62) !important;
+}
+.mobile-drawer .brand-mark {
+  padding: 16px !important;
+  box-sizing: content-box;
+}
