@@ -3263,7 +3263,7 @@ def public_blogs():
 
 @main.route("/Blog/<int:id>")
 def blog_detail(id):
-    blog = BlogPost.query.get_or_404(id)
+    blog = BlogPost.query.filter_by(id=id, is_published=True).first_or_404()
     pillar_links, cluster_links, category_links = _resource_hub_reference_links()
     official_links = []
     if blog.pillar and blog.pillar in pillar_links:
