@@ -12,6 +12,7 @@
   <meta property="og:description" content="{% block og_description %}Professional academic and technical consultancy.{% endblock %}">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="canonical" href="{{ request.url }}">
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/academiaprolog-sm.svg') }}">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='tokens.css') }}">
@@ -20,7 +21,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='footer.css', v='20261115-1') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='animations.css') }}">
   {% block styles %}{% endblock %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='site-refinement.css', v='20261115-8') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='site-refinement.css', v='20261115-9') }}">
   <!-- Page-specific CSS injected by child templates -->
   <script src="{{ url_for('static', filename='js/csrf.js') }}" defer></script>
 </head>
@@ -62,12 +63,8 @@
     <div class="container header-top-row">
       <div class="header-shell">
         <a class="header-brand" href="{{ url_for('main.index') }}" aria-label="AcademiaPro home">
-          <span class="brand-mark shadow-soft">
-            <img loading="lazy" decoding="async" src="{{ url_for('static', filename='img/academiaprolog.svg') }}" alt="AcademiaPro logo" class="brand-logo">
-          </span>
-          <span class="brand-info">
-            <span class="header-logo-link">AcademiaPro</span>
-            <span class="brand-tagline">Academic & Technical Consultancy</span>
+          <span class="brand-mark header-brand-mark">
+            <img decoding="async" src="{{ url_for('static', filename='img/academiaprolog.svg') }}" alt="AcademiaPro — Academic & Technical Consultancy" class="brand-logo header-brand-logo">
           </span>
         </a>
 
