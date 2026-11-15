@@ -1,5 +1,5 @@
 {% if not current_user.is_authenticated %}
-<section class="admin-message-wrapper" aria-labelledby="adminMessageTitle">
+<section class="admin-message-wrapper" aria-labelledby="adminMessageTitle" data-messages-url="{{ url_for('main.guest_chat_messages') }}" data-send-url="{{ url_for('main.guest_chat_send') }}">
   <div class="admin-message-card">
     <div class="admin-message-header">
       <span class="admin-message-badge">Direct Support</span>
