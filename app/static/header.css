@@ -2027,3 +2027,29 @@
   padding: 16px !important;
   box-sizing: content-box;
 }
+
+
+/* Header action hierarchy */
+.header-actions .search-btn {
+  width: 2.25rem !important;
+  height: 2.25rem !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #475569 !important;
+  box-shadow: none !important;
+}
+.header-actions .search-btn:hover { background: #f1f5f9 !important; color: #1d4ed8 !important; }
+.header-actions .header-btn-secondary {
+  border: 0 !important;
+  background: transparent !important;
+  color: #334155 !important;
+  box-shadow: none !important;
+}
+.header-actions .header-btn-secondary:hover { color: #1d4ed8 !important; background: #f8fafc !important; }
+.header-actions .header-btn-primary {
+  color: #1d4ed8 !important;
+  background: #fff !important;
+  border: 1px solid #1d4ed8 !important;
+  box-shadow: none !important;
+}
+.header-actions .header-btn-primary:hover { background: #eff6ff !important; }
