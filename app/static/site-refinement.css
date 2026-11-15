@@ -234,3 +234,147 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .pricing-overview-actions { min-width: 0; }
   .pricing-overview-actions .btn { width: 100%; }
 }
+
+
+/* Premium academic header — single desktop navigation row */
+@media (min-width: 992px) {
+  .site-header {
+    background: #fff;
+    box-shadow: 0 5px 22px rgba(12, 35, 72, .07);
+  }
+
+  .header-top-row {
+    border-bottom: 0;
+  }
+
+  .header-shell {
+    min-height: 82px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(.65rem, 1.4vw, 1.4rem);
+    padding: .55rem 0;
+  }
+
+  .header-brand {
+    min-width: 215px;
+    max-width: 245px;
+    gap: .75rem;
+  }
+
+  .brand-mark {
+    width: 3.35rem;
+    height: 3.35rem;
+    min-width: 3.35rem;
+    border: 1px solid #e7edf5;
+    border-radius: 1rem;
+    background: #fff;
+  }
+
+  .brand-logo {
+    width: 2.5rem;
+  }
+
+  .header-logo-link {
+    font-size: 1.28rem;
+    letter-spacing: -.035em;
+  }
+
+  .brand-tagline {
+    font-size: .69rem;
+    white-space: nowrap;
+  }
+
+  .header-nav {
+    flex: 1 1 auto;
+    min-width: 0;
+    justify-content: center;
+    gap: .05rem;
+    margin: 0;
+  }
+
+  .nav-link,
+  .nav-dropdown-toggle {
+    padding: .62rem .68rem;
+    font-size: .86rem;
+    white-space: nowrap;
+  }
+
+  .header-actions {
+    flex: 0 0 auto;
+    gap: .42rem;
+  }
+
+  .icon-action-btn,
+  .search-btn,
+  .ai-btn {
+    width: 2.45rem;
+    height: 2.45rem;
+    border: 1px solid #e3eaf3;
+    border-radius: .8rem;
+    background: #f8fafd;
+    font-size: 1rem;
+  }
+
+  .header-btn-secondary,
+  .header-btn-primary {
+    padding: .62rem .82rem;
+    font-size: .84rem;
+    white-space: nowrap;
+  }
+
+  .header-sep {
+    height: 30px;
+    margin: 0 .15rem;
+  }
+
+  .btn-place-order {
+    margin-left: 0 !important;
+    padding: .7rem .95rem;
+    border-radius: .8rem;
+    background: linear-gradient(135deg, #c99a20, #ad7e12);
+    box-shadow: 0 5px 14px rgba(173, 126, 18, .18);
+    white-space: nowrap;
+    font-size: .86rem;
+  }
+
+  .btn-place-order:hover {
+    box-shadow: 0 8px 18px rgba(173, 126, 18, .24);
+    transform: translateY(-1px);
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .header-brand {
+    min-width: 190px;
+    max-width: 205px;
+  }
+
+  .brand-tagline {
+    font-size: .63rem;
+  }
+
+  .nav-link,
+  .nav-dropdown-toggle {
+    padding-inline: .48rem;
+    font-size: .81rem;
+  }
+
+  .header-actions {
+    gap: .3rem;
+  }
+
+  .header-btn-primary {
+    padding-inline: .68rem;
+  }
+
+  .btn-place-order {
+    padding-inline: .75rem;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .header-shell {
+    min-height: 70px;
+  }
+}
