@@ -781,3 +781,9 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .footer-cta-panel, .footer-bottom { margin-inline: 1.25rem !important; }
   .site-footer { padding-bottom: 7rem !important; }
 }
+
+
+/* Final action hierarchy and mobile footer adjustments */
+.cta-btn { background: var(--amber-500) !important; color: #fff !important; }
+.cta-btn:hover { background: var(--amber-600) !important; color: #fff !important; }
+.testimonials-section:empty { display: none !important; }
