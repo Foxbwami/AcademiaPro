@@ -11,14 +11,14 @@
       <div class="small text-muted">Loading your conversation…</div>
     </div>
 
-    <div class="admin-message-form">
+    <form class="admin-message-form" id="guestMessageForm">
       <label class="visually-hidden" for="guestMsgEmail">Email address (optional)</label>
       <input type="email" id="guestMsgEmail" name="email" placeholder="Email (optional, for reply)" autocomplete="email">
       <label class="visually-hidden" for="guestMsgInput">Your message</label>
       <textarea id="guestMsgInput" name="message" rows="4" placeholder="Type your message or project question…" required></textarea>
       <div id="guestMsgStatus" class="admin-message-status small" role="status" aria-live="polite"></div>
-      <button id="guestMsgSendBtn" type="button" class="admin-message-submit">Send Message <span aria-hidden="true">→</span></button>
-    </div>
+      <button id="guestMsgSendBtn" type="submit" class="admin-message-submit">Send Message <span aria-hidden="true">→</span></button>
+    </form>
   </div>
 </section>
 <div class="guest-toast-shell">
