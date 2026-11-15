@@ -47,6 +47,7 @@ class Config:
     TEMPLATES_AUTO_RELOAD = True
     # Set SEO_SITE_URL to the custom HTTPS domain when one is purchased.
     SEO_SITE_URL = os.environ.get("SEO_SITE_URL", "https://academiapro-9f39.onrender.com").strip().rstrip("/")
+    GOOGLE_SITE_VERIFICATION = os.environ.get("GOOGLE_SITE_VERIFICATION", "").strip()
     SEND_FILE_MAX_AGE_DEFAULT = 0
 
 LOGIN_MESSAGE = "You must log in to access this page."
