@@ -1,7 +1,7 @@
 import os
 import re
 import shutil
-from flask import Flask
+from flask import Flask, Response, request, url_for
 from flask_mail import Mail
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 from app.extensions import db, login_manager, migrate
@@ -452,5 +452,163 @@ def create_app():
     from app.route_modules.ai_routes import ai_bp
     app.register_blueprint(main)
     app.register_blueprint(ai_bp)
+
+
+    # Search-engine discovery for the public AcademiaPro website.
+    # Update SEO_SITE_URL in Render when the project moves to a custom domain.
+    seo_site_url = (app.config.get("SEO_SITE_URL") or "https://academiapro-9f39.onrender.com").rstrip("/")
+
+    seo_pages = {
+        "main.index": ("AcademiaPro Kenya | Academic & Technical Consultancy",
+            "AcademiaPro provides academic and technical support in Kenya, including research guidance, dissertation support, proofreading, editing, data analysis and programming assistance."),
+        "main.about": ("About AcademiaPro | Academic & Technical Support in Kenya",
+            "Learn about AcademiaPro, our student-focused approach, direct admin support, confidentiality and commitment to clear academic and technical guidance."),
+        "main.services_page": ("Academic & Technical Services | AcademiaPro Kenya",
+            "Explore AcademiaPro services in Kenya, including academic writing guidance, research and dissertation support, editing, proofreading, programming and data analysis."),
+        "main.pricing_page": ("Pricing | AcademiaPro Kenya",
+            "Understand AcademiaPro pricing and request a clear quotation for academic support, research guidance, editing, data analysis and technical services."),
+        "main.testimonials": ("Client Testimonials | AcademiaPro Kenya",
+            "Read feedback and experiences shared by people who have used AcademiaPro's academic and technical support services."),
+        "main.privacy_policy": ("Privacy Policy | AcademiaPro",
+            "Read how AcademiaPro handles account details, project information, communication and personal data."),
+        "main.faq": ("Frequently Asked Questions | AcademiaPro Kenya",
+            "Find answers about AcademiaPro services, the order process, communication, project requirements, payments and support."),
+        "main.how_it_works": ("How It Works | AcademiaPro Kenya",
+            "See how to share your project brief, confirm requirements with the AcademiaPro admin team and follow your request through completion."),
+        "main.terms": ("Terms & Conditions | AcademiaPro",
+            "Review the terms and conditions governing the use of AcademiaPro services and website."),
+        "main.fair_use": ("Fair Use Policy | AcademiaPro",
+            "Learn about responsible and appropriate use of AcademiaPro services and website resources."),
+        "main.payment_policy": ("Payment Policy | AcademiaPro",
+            "Review AcademiaPro payment information, quotation steps and payment-related terms."),
+        "main.blog_list": ("Academic Resources & Articles | AcademiaPro Kenya",
+            "Explore practical articles and student resources from AcademiaPro on research, academic writing, study skills, citation, exams and technical topics."),
+        "main.Samples": ("Academic Samples Library | AcademiaPro Kenya",
+            "Browse sample resources by subject, academic level and style to understand formats and project requirements."),
+        "main.essay_writing": ("Essay Writing Guidance | AcademiaPro Kenya",
+            "Get structured guidance on essay planning, argument development, research, referencing, editing and proofreading."),
+        "main.research_papers": ("Research Paper Support | AcademiaPro Kenya",
+            "Explore support for research questions, literature searches, paper structure, methodology, citations and final editing."),
+        "main.case_studies": ("Case Study Support | AcademiaPro Kenya",
+            "Get help understanding case study requirements, analysing evidence, structuring findings and presenting recommendations."),
+        "main.dissertations": ("Dissertation Support | AcademiaPro Kenya",
+            "Explore dissertation guidance covering research questions, literature reviews, methodology, analysis, structure and editing."),
+        "main.theses": ("Thesis Support | AcademiaPro Kenya",
+            "Find guidance for thesis planning, research structure, academic conventions, referencing and proofreading."),
+        "main.speeches": ("Speech Writing Guidance | AcademiaPro Kenya",
+            "Get support with speech structure, audience-focused messaging, research, clarity and presentation preparation."),
+        "main.assignments": ("Assignment Support | AcademiaPro Kenya",
+            "Understand assignment requirements and get guidance on research, planning, structure, citations and proofreading."),
+        "main.narrative_essays": ("Narrative Essay Guidance | AcademiaPro Kenya",
+            "Explore narrative essay structure, storytelling techniques, coherent paragraphs and effective editing."),
+        "main.analytical_essays": ("Analytical Essay Guidance | AcademiaPro Kenya",
+            "Develop analytical essays with clear claims, critical reasoning, evidence, structure and accurate citations."),
+        "main.persuasive_essays": ("Persuasive Essay Guidance | AcademiaPro Kenya",
+            "Build persuasive essays with focused arguments, credible evidence, counterarguments and clear academic structure."),
+        "main.admission_help": ("Admissions Application Support | AcademiaPro Kenya",
+            "Get guidance on organising application materials, personal statements, essays and supporting documents."),
+        "main.literature_reviews": ("Literature Review Support | AcademiaPro Kenya",
+            "Explore literature review planning, source evaluation, synthesis, research gaps, academic structure and referencing."),
+        "main.book_reports": ("Book Report Guidance | AcademiaPro Kenya",
+            "Get guidance on book report structure, summarising key ideas, developing analysis and presenting evidence clearly."),
+        "main.academic_writing": ("Academic Writing Support | AcademiaPro Kenya",
+            "Explore academic writing guidance for essays, reports and coursework, with attention to structure, clarity, citations and originality."),
+        "main.research_dissertation": ("Research & Dissertation Guidance | AcademiaPro Kenya",
+            "Get structured research and dissertation guidance, from refining a topic and proposal to methodology, analysis and final editing."),
+        "main.programming": ("Programming & Coding Support | AcademiaPro Kenya",
+            "Explore programming support for code structure, debugging, project planning, explanations and technical documentation."),
+        "main.statistics": ("Statistics & Data Analysis Support | AcademiaPro Kenya",
+            "Get guidance on statistical methods, data cleaning, analysis, interpretation, charts and reporting using common data tools."),
+        "main.business_finance": ("Business & Finance Support | AcademiaPro Kenya",
+            "Explore business and finance guidance, including financial analysis, business case studies, models and clear reporting."),
+        "main.research_proposals": ("Research Proposal Guidance | AcademiaPro Kenya",
+            "Develop a focused research proposal with guidance on the topic, problem statement, objectives, literature and methodology."),
+        "main.career_services": ("Career Services Support | AcademiaPro Kenya",
+            "Get guidance on career documents, professional presentation and planning your next career step."),
+        "main.linkedin_optimization": ("LinkedIn Profile Guidance | AcademiaPro Kenya",
+            "Improve your LinkedIn profile with clearer positioning, stronger experience descriptions and a professional presentation."),
+        "main.exam_preparation": ("Exam Preparation Resources | AcademiaPro Kenya",
+            "Explore study planning, revision strategies, practice approaches and practical exam preparation guidance."),
+        "main.database_architecture": ("Database Architecture Support | AcademiaPro Kenya",
+            "Explore database design guidance, data modelling, relational structures, queries and technical documentation."),
+        "main.ai_machine_learning": ("AI & Machine Learning Support | AcademiaPro Kenya",
+            "Get guidance on AI and machine learning concepts, model workflows, data preparation, evaluation and technical projects."),
+        "main.editing_proofreading": ("Editing & Proofreading | AcademiaPro Kenya",
+            "Improve clarity, grammar, formatting, flow and referencing with editing and proofreading support from AcademiaPro."),
+        "main.blog_detail": ("Academic Article | AcademiaPro Kenya",
+            "Practical academic guidance and student resources from AcademiaPro Kenya."),
+    }
+
+    @app.context_processor
+    def inject_seo_metadata():
+        endpoint = request.endpoint or ""
+        page_title, page_description = seo_pages.get(
+            endpoint,
+            ("AcademiaPro Kenya | Academic & Technical Consultancy",
+             "AcademiaPro provides academic and technical support, research guidance, editing, proofreading, data analysis and programming assistance.")
+        )
+        canonical_path = request.path.rstrip("/") or "/"
+        canonical_url = f"{seo_site_url}{canonical_path}"
+        return {
+            "seo_default_title": page_title,
+            "seo_default_description": page_description,
+            "seo_robots": "index, follow" if endpoint in seo_pages else "noindex, nofollow",
+            "seo_canonical_url": canonical_url,
+            "seo_organization_schema": {
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                "name": "AcademiaPro",
+                "url": seo_site_url,
+                "description": "Academic and technical support, research guidance, editing, proofreading, data analysis and programming assistance in Kenya.",
+                "areaServed": {"@type": "Country", "name": "Kenya"}
+            }
+        }
+
+    @app.get("/robots.txt")
+    def robots_txt():
+        rules = [
+            "User-agent: *",
+            "Allow: /",
+            "Disallow: /admin",
+            "Disallow: /staff-portal",
+            "Disallow: /dashboard",
+            "Disallow: /my-orders",
+            "Disallow: /orders/",
+            "Disallow: /profile",
+            "Disallow: /settings",
+            "Disallow: /notifications",
+            "Disallow: /support-tickets",
+            "Disallow: /support/",
+            "Disallow: /guest/",
+            "Disallow: /ai/",
+            "Disallow: /api/",
+            "Disallow: /chat/",
+            "Disallow: /admin_chat",
+            "Disallow: /health",
+            f"Sitemap: {seo_site_url}/sitemap.xml"
+        ]
+        return Response("\n".join(rules) + "\n", mimetype="text/plain")
+
+    @app.get("/sitemap.xml")
+    def sitemap_xml():
+        from xml.etree.ElementTree import Element, SubElement, tostring
+
+        namespace = "http://www.sitemaps.org/schemas/sitemap/0.9"
+        urlset = Element("urlset", {"xmlns": namespace})
+        sitemap_endpoints = [endpoint for endpoint in seo_pages if endpoint in app.view_functions]
+        for endpoint in sitemap_endpoints:
+            entry = SubElement(urlset, "url")
+            SubElement(entry, "loc").text = f"{seo_site_url}{url_for(endpoint)}"
+
+        published_posts = BlogPost.query.filter_by(is_published=True).order_by(BlogPost.created_at.desc()).all()
+        for post in published_posts:
+            entry = SubElement(urlset, "url")
+            SubElement(entry, "loc").text = f"{seo_site_url}{url_for('main.blog_detail', id=post.id)}"
+            last_modified = getattr(post, "updated_at", None) or getattr(post, "created_at", None)
+            if last_modified:
+                SubElement(entry, "lastmod").text = last_modified.date().isoformat() if hasattr(last_modified, "date") else str(last_modified)
+
+        xml_bytes = tostring(urlset, encoding="utf-8", xml_declaration=True)
+        return Response(xml_bytes, mimetype="application/xml")
 
     return app  # ✅ this must be inside the create_app() function
