@@ -595,7 +595,7 @@ def create_app():
 
         namespace = "http://www.sitemaps.org/schemas/sitemap/0.9"
         urlset = Element("urlset", {"xmlns": namespace})
-        sitemap_endpoints = [endpoint for endpoint in seo_pages if endpoint in app.view_functions]
+        sitemap_endpoints = [endpoint for endpoint in seo_pages if endpoint != "main.blog_detail" and endpoint in app.view_functions]
         for endpoint in sitemap_endpoints:
             entry = SubElement(urlset, "url")
             SubElement(entry, "loc").text = f"{seo_site_url}{url_for(endpoint)}"
