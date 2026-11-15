@@ -1,12 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-label="AcademiaPro small logo">
-  <defs>
-    <linearGradient id="sg1" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0%" stop-color="#1F6BFF"/>
-      <stop offset="100%" stop-color="#0F3366"/>
-    </linearGradient>
-  </defs>
-  <rect x="2" y="6" width="44" height="36" rx="7" fill="url(#sg1)"/>
-  <path d="M8 12 C16 8, 32 8, 40 12" fill="none" stroke="#FFD166" stroke-width="2" stroke-linecap="round"/>
-  <path d="M8 20 C16 17, 32 17, 40 20" fill="none" stroke="#fff" stroke-opacity="0.18" stroke-width="1.5" stroke-linecap="round"/>
-</svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="AcademiaPro emblem">
+<defs><linearGradient id="n" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#174A91"/><stop offset="1" stop-color="#092B59"/></linearGradient><linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#E6A928"/><stop offset="1" stop-color="#C98B13"/></linearGradient></defs>
+<path d="M15 105 51 24h26l37 81H91L64 48 37 105Z" fill="url(#n)"/><path d="M10 106Q64 94 118 106" fill="none" stroke="url(#g)" stroke-width="7" stroke-linecap="round"/><path d="M22 22 64 5l42 17-42 17Z" fill="url(#n)"/><path d="M106 22v28" stroke="#D99D20" stroke-width="3" stroke-linecap="round"/><circle cx="106" cy="53" r="4" fill="#D99D20"/><path d="M11 82Q63 79 116 45" fill="none" stroke="url(#g)" stroke-width="6" stroke-linecap="round"/><path d="M18 108q23-12 46 0 23-12 46 0l-46 15Z" fill="#fff" stroke="url(#n)" stroke-width="3" stroke-linejoin="round"/><path d="M64 108v15" stroke="url(#g)" stroke-width="2"/></svg>
