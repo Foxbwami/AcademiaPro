@@ -1,14 +1,11 @@
 (function () {
-  const msgFab = document.getElementById('guestMsgFab');
-  const msgPanel = document.getElementById('guestMsgPanel');
+  const msgPanel = document.getElementById('guestMsgThread');
   const sendBtn = document.getElementById('guestMsgSendBtn');
   const msgInput = document.getElementById('guestMsgInput');
   const msgEmail = document.getElementById('guestMsgEmail');
   const msgStatus = document.getElementById('guestMsgStatus');
-  const msgThread = document.getElementById('guestMsgThread');
-  const closeButtons = document.querySelectorAll('[data-close]');
 
-  if (!msgFab || !msgPanel || !sendBtn || !msgInput || !msgStatus || !msgThread) return;
+  if (!msgPanel || !sendBtn || !msgInput || !msgStatus) return;
 
   const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
@@ -22,48 +19,45 @@
     toast.addEventListener('transitionend', () => toast.remove());
   }
 
-  function renderMessages(messages) {
-    if (!messages || !messages.length) {
-      msgThread.innerHTML = '<div class="small text-muted">Start a conversation with admin.</div>';
-      return;
-    }
-
-    msgThread.innerHTML = messages.map((message) => {
-      const classes = message.from_admin ? 'guest-bubble bot' : 'guest-bubble me';
-      const time = message.timestamp ? `<div class="small text-muted mt-1">${escapeHtml(message.timestamp)}</div>` : '';
-      return `<div class="${classes}">${escapeHtml(message.content)}${time}</div>`;
-    }).join('');
-    msgThread.scrollTop = msgThread.scrollHeight;
-  }
-
   function escapeHtml(value) {
     return String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  }
+
+  function renderMessages(messages) {
+    if (!messages || !messages.length) {
+      msgPanel.innerHTML = '<div class="small text-muted">Your conversation with the admin will appear here.</div>';
+      return;
+    }
+    msgPanel.innerHTML = messages.map((message) => {
+      const classes = message.from_admin ? 'guest-bubble bot' : 'guest-bubble me';
+      const time = message.timestamp ? '<div class="small text-muted mt-1">' + escapeHtml(message.timestamp) + '</div>' : '';
+      return '<div class="' + classes + '">' + escapeHtml(message.content) + time + '</div>';
+    }).join('');
+    msgPanel.scrollTop = msgPanel.scrollHeight;
   }
 
   async function refreshGuestMessages() {
     try {
       const response = await fetch('{{ url_for("main.guest_chat_messages") }}', { cache: 'no-store' });
       const data = await response.json();
-      if (!response.ok || !data.ok) {
-        throw new Error(data.error || 'Unable to load messages');
-      }
+      if (!response.ok || !data.ok) throw new Error(data.error || 'Unable to load messages');
       renderMessages(data.messages || []);
     } catch (error) {
-      showToast('Unable to connect to the server.');
+      msgPanel.innerHTML = '<div class="small text-muted">Your message history is temporarily unavailable. You can still send a new message below.</div>';
     }
   }
 
   async function sendGuestMessage() {
     const message = msgInput.value.trim();
     const email = msgEmail?.value.trim() || '';
-
     if (!message) {
-      msgStatus.textContent = 'Message cannot be empty.';
+      msgStatus.textContent = 'Please enter a message before sending.';
+      msgInput.focus();
       return;
     }
 
     sendBtn.disabled = true;
-    sendBtn.textContent = 'Sending...';
+    sendBtn.textContent = 'Sending…';
     msgStatus.textContent = '';
 
     try {
@@ -73,56 +67,22 @@
         body: JSON.stringify({ email, message })
       });
       const data = await response.json();
-      if (!response.ok || !data.ok) {
-        throw new Error(data.error || 'Unable to send message');
-      }
+      if (!response.ok || !data.ok) throw new Error(data.error || 'Unable to send message');
       msgInput.value = '';
-      msgStatus.textContent = data.message || 'Message sent.';
+      msgStatus.textContent = data.message || 'Your message has been sent.';
       await refreshGuestMessages();
     } catch (error) {
-      msgStatus.textContent = 'Network error. Try again.';
-      showToast('Unable to connect to the server.');
+      msgStatus.textContent = error.message || 'Unable to send your message. Please try again.';
+      showToast('Unable to send your message. Please try again.');
     } finally {
       sendBtn.disabled = false;
-      sendBtn.textContent = 'Send Message';
+      sendBtn.textContent = 'Send Message →';
     }
   }
-
-  function openPanel() {
-    msgPanel.classList.remove('d-none');
-    refreshGuestMessages();
-  }
-
-  function closePanel() {
-    msgPanel.classList.add('d-none');
-  }
-
-  msgFab.addEventListener('click', function () {
-    if (msgPanel.classList.contains('d-none')) {
-      openPanel();
-    } else {
-      closePanel();
-    }
-  });
-
-  closeButtons.forEach((button) => {
-    button.addEventListener('click', function () {
-      const target = document.getElementById(button.getAttribute('data-close'));
-      if (target) target.classList.add('d-none');
-    });
-  });
-
-  document.addEventListener('click', function (event) {
-    if (!msgPanel.classList.contains('d-none') && !msgPanel.contains(event.target) && !msgFab.contains(event.target)) {
-      closePanel();
-    }
-  });
-
-  document.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape' && !msgPanel.classList.contains('d-none')) {
-      closePanel();
-    }
-  });
 
   sendBtn.addEventListener('click', sendGuestMessage);
+  msgInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) sendGuestMessage();
+  });
+  refreshGuestMessages();
 })();
