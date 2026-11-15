@@ -1010,3 +1010,17 @@ body.drawer-open .whatsapp-fab-shell {
   .admin-message-wrapper { padding: 28px 16px; }
   .admin-message-card { padding: 20px 16px; border-radius: 14px; }
 }
+
+
+/* Match the compact 82vw mobile drawer specification. */
+@media (max-width: 991.98px) {
+  .mobile-drawer {
+    width: min(82vw, 340px) !important;
+    max-width: 340px !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    background: #fffdf9 !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+  }
+}
