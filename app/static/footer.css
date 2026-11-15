@@ -261,3 +261,7 @@
     width: 100%;
   }
 }
+
+
+/* Full-bleed footer is controlled by the global refinement layer. */
+.footer-contact-list a { word-break: normal; overflow-wrap: normal; }
