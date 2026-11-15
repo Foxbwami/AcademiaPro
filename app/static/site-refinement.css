@@ -378,3 +378,204 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     min-height: 70px;
   }
 }
+
+
+/* AcademiaPro header — final two-tier reference layout */
+@media (min-width: 1024px) {
+  .trust-bar {
+    background: #0b2545 !important;
+    padding: .42rem 0 !important;
+    border-bottom: 1px solid rgba(212,160,23,.2);
+    font-size: .78rem !important;
+  }
+  .trust-items { gap: 1.55rem !important; flex-wrap: nowrap !important; }
+  .trust-item { white-space: nowrap; gap: .48rem !important; }
+  .trust-social { gap: .9rem !important; white-space: nowrap; }
+  .trust-social a { font-size: 1.05rem !important; }
+  .header-top-row { border-top: 0 !important; }
+  .header-shell {
+    min-height: 78px !important;
+    padding: .55rem 0 !important;
+    gap: clamp(.8rem, 1.5vw, 1.5rem) !important;
+  }
+  .header-brand {
+    min-width: 245px !important;
+    max-width: 285px;
+    gap: .65rem !important;
+  }
+  .header-brand .brand-mark {
+    width: 3.8rem !important;
+    height: 3.8rem !important;
+    min-width: 3.8rem !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  .header-brand .brand-logo {
+    width: 3.65rem !important;
+    max-width: 100%;
+  }
+  .header-brand .header-logo-link {
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    color: #101f38 !important;
+    font-size: clamp(1.2rem, 1.45vw, 1.48rem) !important;
+    font-weight: 850 !important;
+  }
+  .header-brand .brand-tagline {
+    padding: 0 !important;
+    color: #64748b !important;
+    font-size: .72rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    white-space: nowrap;
+  }
+  .header-nav {
+    flex: 1 1 auto !important;
+    justify-content: center !important;
+    gap: .05rem !important;
+    min-width: 0;
+  }
+  .header-nav .nav-link,
+  .header-nav .nav-dropdown-toggle {
+    padding: .62rem .72rem !important;
+    font-size: .88rem !important;
+    font-weight: 650 !important;
+    white-space: nowrap;
+  }
+  .header-actions {
+    gap: .45rem !important;
+    flex: 0 0 auto;
+  }
+  .header-actions .search-btn {
+    width: 2.35rem !important;
+    height: 2.35rem !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #64748b !important;
+    font-size: 1.15rem !important;
+  }
+  .header-actions .search-btn:hover {
+    color: #1749a2 !important;
+    background: #f1f5f9 !important;
+  }
+  .header-actions .ai-btn { display: none !important; }
+  .header-actions .header-btn-secondary {
+    padding: .55rem .55rem !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #334155 !important;
+    font-weight: 650 !important;
+  }
+  .header-actions .header-btn-secondary:hover { color: #1749a2 !important; }
+  .header-actions .header-btn-primary {
+    padding: .58rem .82rem !important;
+    border: 1px solid #2456a6 !important;
+    border-radius: .7rem !important;
+    background: #fff !important;
+    color: #2456a6 !important;
+    font-weight: 700 !important;
+    white-space: nowrap;
+  }
+  .header-actions .header-btn-primary:hover { background: #eff6ff !important; }
+  .header-actions .btn-place-order {
+    margin: 0 0 0 .12rem !important;
+    padding: .67rem .95rem !important;
+    border: 0 !important;
+    border-radius: .72rem !important;
+    background: #ca8a04 !important;
+    color: #fff !important;
+    box-shadow: 0 5px 14px rgba(202,138,4,.18) !important;
+    font-size: .87rem !important;
+    white-space: nowrap;
+  }
+  .header-actions .header-sep { display: none !important; }
+}
+
+@media (min-width: 1024px) and (max-width: 1240px) {
+  .header-brand { min-width: 210px !important; }
+  .header-brand .brand-tagline { font-size: .64rem !important; }
+  .header-nav .nav-link,
+  .header-nav .nav-dropdown-toggle { padding-inline: .48rem !important; font-size: .81rem !important; }
+  .header-actions { gap: .25rem !important; }
+  .header-actions .header-btn-primary { padding-inline: .58rem !important; }
+  .header-actions .btn-place-order { padding-inline: .72rem !important; }
+}
+
+/* Tablet and mobile: keep only brand, search, order and drawer toggle in the bar */
+@media (max-width: 1023.98px) {
+  .header-shell { min-height: 68px !important; gap: .5rem !important; }
+  .header-nav { display: none !important; }
+  .mobile-menu-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 2.55rem;
+    height: 2.55rem;
+    margin-left: .2rem;
+    border: 1px solid #e2e8f0;
+    border-radius: .75rem;
+    background: #fff;
+    color: #102b58;
+    font-size: 1.35rem;
+    order: 3;
+  }
+  .header-actions {
+    display: flex !important;
+    align-items: center;
+    gap: .35rem !important;
+    margin-left: auto;
+  }
+  .header-actions > :not(.search-btn):not(.btn-place-order) { display: none !important; }
+  .header-actions .search-btn {
+    width: 2.45rem !important;
+    height: 2.45rem !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #475569 !important;
+  }
+  .header-actions .btn-place-order {
+    margin: 0 !important;
+    padding: .62rem .78rem !important;
+    border-radius: .7rem !important;
+    background: #ca8a04 !important;
+    box-shadow: none !important;
+    font-size: .82rem !important;
+  }
+  .header-actions .btn-place-order .place-order-text { display: inline-block !important; }
+  .header-brand { min-width: 0 !important; gap: .45rem !important; }
+  .header-brand .brand-mark {
+    width: 3.15rem !important;
+    height: 3.15rem !important;
+    min-width: 3.15rem !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  .header-brand .brand-logo { width: 3rem !important; min-width: 0 !important; }
+  .header-brand .header-logo-link {
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: #10213b !important;
+    font-size: 1.12rem !important;
+  }
+  .header-brand .brand-tagline { display: none !important; }
+  .trust-bar { padding: .38rem 0 !important; }
+  .trust-items { gap: .45rem .9rem !important; }
+  .trust-item:nth-child(3) { display: none; }
+  .trust-social { display: none !important; }
+}
+@media (max-width: 420px) {
+  .header-brand .brand-mark { width: 2.7rem !important; min-width: 2.7rem !important; }
+  .header-brand .brand-logo { width: 2.65rem !important; }
+  .header-brand .header-logo-link { font-size: 1rem !important; }
+  .header-actions .btn-place-order { padding: .58rem .62rem !important; font-size: .76rem !important; }
+  .trust-item { font-size: .68rem !important; }
+}
