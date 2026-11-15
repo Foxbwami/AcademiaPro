@@ -2,11 +2,12 @@
   const messageSection = document.querySelector('.admin-message-wrapper');
   const msgPanel = document.getElementById('guestMsgThread');
   const sendBtn = document.getElementById('guestMsgSendBtn');
+  const messageForm = document.getElementById('guestMessageForm');
   const msgInput = document.getElementById('guestMsgInput');
   const msgEmail = document.getElementById('guestMsgEmail');
   const msgStatus = document.getElementById('guestMsgStatus');
 
-  if (!msgPanel || !sendBtn || !msgInput || !msgStatus) return;
+  if (!msgPanel || !sendBtn || !msgInput || !msgStatus || !messageForm) return;
 
   const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
   const messagesUrl = messageSection?.dataset.messagesUrl;
@@ -84,7 +85,10 @@
     }
   }
 
-  sendBtn.addEventListener('click', sendGuestMessage);
+  messageForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    sendGuestMessage();
+  });
   msgInput.addEventListener('keydown', (event) => {
     if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) sendGuestMessage();
   });
