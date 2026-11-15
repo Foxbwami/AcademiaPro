@@ -45,6 +45,8 @@ class Config:
     WHATSAPP_NUMBER = os.environ.get("WHATSAPP_NUMBER", "+447426105606").strip()
     ALLOWED_UPLOAD_EXTENSIONS = {"pdf", "doc", "docx", "txt", "png", "jpg"}
     TEMPLATES_AUTO_RELOAD = True
+    # Set SEO_SITE_URL to the custom HTTPS domain when one is purchased.
+    SEO_SITE_URL = os.environ.get("SEO_SITE_URL", "https://academiapro-9f39.onrender.com").strip().rstrip("/")
     SEND_FILE_MAX_AGE_DEFAULT = 0
 
 LOGIN_MESSAGE = "You must log in to access this page."
