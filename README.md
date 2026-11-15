@@ -59,6 +59,18 @@ Set these in Render under **Environment** before redeploying:
 
 After setting them, redeploy and check `/health`. It should report `groq_api_key: true` and `admin_bootstrap_email: true`.
 
+## Search Engine Setup
+
+The public site exposes a dynamic XML sitemap at `/sitemap.xml` and crawler rules at `/robots.txt`.
+The default canonical site URL is `https://academiapro-9f39.onrender.com`.
+
+Optional Render environment variables:
+
+- `SEO_SITE_URL`: set this to the canonical HTTPS URL when a custom domain is connected.
+- `GOOGLE_SITE_VERIFICATION`: paste only the verification token from Google Search Console's HTML-tag method. The shared public-page template renders the required meta tag automatically.
+
+After deployment, add the URL-prefix property in Google Search Console and submit `https://academiapro-9f39.onrender.com/sitemap.xml`.
+
 ## Launch Flow To Verify
 
 1. Register a client account.
