@@ -1,4 +1,5 @@
 (function () {
+  const messageSection = document.querySelector('.admin-message-wrapper');
   const msgPanel = document.getElementById('guestMsgThread');
   const sendBtn = document.getElementById('guestMsgSendBtn');
   const msgInput = document.getElementById('guestMsgInput');
@@ -8,6 +9,9 @@
   if (!msgPanel || !sendBtn || !msgInput || !msgStatus) return;
 
   const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+  const messagesUrl = messageSection?.dataset.messagesUrl;
+  const sendUrl = messageSection?.dataset.sendUrl;
+  if (!messagesUrl || !sendUrl) return;
 
   function showToast(message) {
     const toast = document.createElement('div');
@@ -38,7 +42,7 @@
 
   async function refreshGuestMessages() {
     try {
-      const response = await fetch('{{ url_for("main.guest_chat_messages") }}', { cache: 'no-store' });
+      const response = await fetch(messagesUrl, { cache: 'no-store' });
       const data = await response.json();
       if (!response.ok || !data.ok) throw new Error(data.error || 'Unable to load messages');
       renderMessages(data.messages || []);
@@ -61,7 +65,7 @@
     msgStatus.textContent = '';
 
     try {
-      const response = await fetch('{{ url_for("main.guest_chat_send") }}', {
+      const response = await fetch(sendUrl, {
         method: 'POST',
         headers: Object.assign({ 'Content-Type': 'application/json' }, csrfToken ? { 'X-CSRFToken': csrfToken } : {}),
         body: JSON.stringify({ email, message })
