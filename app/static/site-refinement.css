@@ -820,3 +820,15 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   }
   .container { padding-inline: 16px; }
 }
+
+
+/* Footer CTA alignment: center the primary action label and icon */
+.footer-cta-actions .btn-place-order {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+.footer-cta-actions {
+  align-items: center;
+}
