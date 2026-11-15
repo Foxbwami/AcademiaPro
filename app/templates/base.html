@@ -7,6 +7,9 @@
   <title>{% block title %}{{ seo_default_title }}{% endblock %}</title>
   <meta name="description" content="{% block meta_description %}{{ seo_default_description }}{% endblock %}">
   <meta name="robots" content="{{ seo_robots|default('noindex, nofollow') }}">
+  {% if config.GOOGLE_SITE_VERIFICATION %}
+  <meta name="google-site-verification" content="{{ config.GOOGLE_SITE_VERIFICATION }}">
+  {% endif %}
   <meta name="keywords" content="AcademiaPro Kenya, academic support, research guidance, proofreading, editing, data analysis, programming">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="AcademiaPro">
